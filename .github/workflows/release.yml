@@ -1,0 +1,52 @@
+name: Release
+
+# Dispara ao enviar uma tag de versão (ex.: git tag v0.1.0 && git push --tags).
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Ajusta version/url/manifest/download do system.json com base no
+      # repositório real e na tag — o manifest publicado fica sempre correto,
+      # independentemente do valor commitado.
+      - name: Patch system.json
+        run: |
+          node - "$GITHUB_REPOSITORY" "$GITHUB_REF_NAME" <<'EOF'
+          const fs = require("fs");
+          const [repo, tag] = process.argv.slice(2);   // ex.: "user/ordem-paranormal", "v0.1.0"
+          const version = tag.replace(/^v/, "");
+          const m = JSON.parse(fs.readFileSync("system.json", "utf8"));
+          m.version  = version;
+          m.url       = `https://github.com/${repo}`;
+          m.manifest  = `https://github.com/${repo}/releases/latest/download/system.json`;
+          m.download  = `https://github.com/${repo}/releases/download/${tag}/ordem-paranormal.zip`;
+          m.readme    = `https://github.com/${repo}/blob/main/README.md`;
+          m.bugs      = `https://github.com/${repo}/issues`;
+          m.changelog = `https://github.com/${repo}/releases`;
+          fs.writeFileSync("system.json", JSON.stringify(m, null, 2) + "\n");
+          console.log(`system.json -> v${version} (${repo})`);
+          EOF
+
+      # Empacota o sistema (exclui metadados de git/CI e PDFs/fontes pesadas).
+      - name: Build zip
+        run: |
+          zip -r ordem-paranormal.zip . \
+            -x ".git/*" ".github/*" "*.pdf" "*.txt" ".claude/*"
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          files: |
+            system.json
+            ordem-paranormal.zip

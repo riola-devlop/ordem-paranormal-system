@@ -51,11 +51,11 @@
   },
   "primaryTokenAttribute": "recursos.pv",
   "secondaryTokenAttribute": "recursos.san",
-  "url": "https://example.com/ordem-paranormal",
-  "manifest": "",
-  "download": "",
-  "license": "",
-  "readme": "",
-  "bugs": "",
-  "changelog": ""
+  "url": "https://github.com/SEU-USUARIO/ordem-paranormal",
+  "manifest": "https://github.com/SEU-USUARIO/ordem-paranormal/releases/latest/download/system.json",
+  "download": "https://github.com/SEU-USUARIO/ordem-paranormal/releases/download/v0.1.0/ordem-paranormal.zip",
+  "license": "LICENSE",
+  "readme": "https://github.com/SEU-USUARIO/ordem-paranormal/blob/main/README.md",
+  "bugs": "https://github.com/SEU-USUARIO/ordem-paranormal/issues",
+  "changelog": "https://github.com/SEU-USUARIO/ordem-paranormal/releases"
 }
