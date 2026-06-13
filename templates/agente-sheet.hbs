@@ -47,6 +47,14 @@
             </select>
           </div>
         {{/if}}
+        <div class="op-campo op-modo-regras">
+          <label>{{localize "ORDEM.Modo.Label"}}</label>
+          <select name="system.modoRegras" title="{{localize 'ORDEM.Modo.Ajuda'}}">
+            {{#each modoOptions}}
+              <option value="{{this.value}}" {{#if (ordemEq this.value ../system.modoRegras)}}selected{{/if}}>{{this.label}}</option>
+            {{/each}}
+          </select>
+        </div>
       </div>
     </div>
   </header>
@@ -246,12 +254,28 @@
         </div>
       {{/if}}
 
+      {{!-- Modo Sobrevivendo ao Horror: progressão por Experiência (XP) --}}
+      {{#if usaXP}}
+        <div class="op-xp-bloco">
+          <div class="op-xp-topo">
+            <span><i class="fas fa-star-half-stroke"></i> {{localize "ORDEM.XP.Titulo"}}</span>
+            <span class="op-xp-valor">{{xp.atual}} <small>({{localize "ORDEM.XP.Total"}}: {{xp.total}})</small></span>
+          </div>
+          <div class="op-xp-acoes">
+            <a class="op-btn-nex" data-action="ganhar-xp"><i class="fas fa-plus"></i> {{localize "ORDEM.XP.Ganhar"}}</a>
+            <a class="op-btn-nex" data-action="gastar-xp"><i class="fas fa-arrow-up-right-dots"></i> {{localize "ORDEM.XP.Gastar"}}</a>
+          </div>
+        </div>
+      {{/if}}
+
       {{!-- Características de classe / progressão de NEX --}}
       {{#if progressao.temClasse}}
         <div class="op-classe-info">
           <div class="op-classe-cabec">
             <span><i class="fas fa-id-badge"></i> {{progressao.classeLabel}}</span>
-            <a class="op-btn-nex" data-action="subir-nex"><i class="fas fa-arrow-up-right-dots"></i> {{localize "ORDEM.NEX.Subir"}}</a>
+            {{#unless usaXP}}
+              <a class="op-btn-nex" data-action="subir-nex"><i class="fas fa-arrow-up-right-dots"></i> {{localize "ORDEM.NEX.Subir"}}</a>
+            {{/unless}}
           </div>
           {{#if progressao.perito}}
             <div class="op-hab-ativa"><i class="fas fa-dice"></i> {{localize "ORDEM.Hab.PeritoNome"}}: <strong>{{progressao.perito}}</strong></div>
@@ -526,6 +550,27 @@
               <li class="vazio">{{localize "ORDEM.Vazio.Rituais"}}</li>
             {{/each}}
           </ul>
+
+          {{!-- Rituais retidos (modo Sobrevivendo ao Horror) --}}
+          {{#if permiteReterRitual}}
+            <div class="secao-cabecalho">
+              <h3><i class="fas fa-anchor"></i> {{localize "ORDEM.ReterRitual.Lista"}}</h3>
+            </div>
+            <ul class="lista-itens rituais-retidos">
+              {{#each rituaisRetidos}}
+                <li class="item-linha" data-index="{{this.index}}">
+                  <img src="{{this.img}}" />
+                  <span class="nome">{{this.nome}}</span>
+                  <span class="dado">−{{this.custoPe}} PE máx</span>
+                  <span class="acoes">
+                    <a data-action="liberar-ritual" data-index="{{this.index}}" title="{{localize 'ORDEM.ReterRitual.Liberar'}}"><i class="fas fa-link-slash"></i></a>
+                  </span>
+                </li>
+              {{else}}
+                <li class="vazio">{{localize "ORDEM.ReterRitual.Vazio"}}</li>
+              {{/each}}
+            </ul>
+          {{/if}}
         </div>
 
         {{!-- -------------------------- INVENTÁRIO ------------------------- --}}

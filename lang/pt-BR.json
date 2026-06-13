@@ -77,6 +77,33 @@
       "NovaTexto": "Contadores de morrendo/enlouquecendo e usos de poderes por cena foram zerados. Lembrete: condições terminam no fim da cena, salvo indicação contrária."
     },
 
+    "Modo": {
+      "Label": "Modo de regras",
+      "padrao": "Padrão (Livro de Regras)",
+      "sah": "Sobrevivendo ao Horror",
+      "Ajuda": "Escolhe o conjunto de regras desta ficha: Padrão (NEX por marcos) ou Sobrevivendo ao Horror (progressão por XP, Reter Ritual, Compreensão Humana)."
+    },
+
+    "XP": {
+      "Titulo": "Experiência",
+      "Total": "total",
+      "Ganhar": "Ganhar XP",
+      "GanharTitulo": "Ganhar Experiência",
+      "Gastar": "Gastar XP",
+      "Acumulado": "XP acumulado: {atual} (faltam {custo} para avançar).",
+      "Ajuda": "Modo Sobrevivendo ao Horror: progressão por pontos de experiência. Os custos exatos ficam em SAH_CONFIG."
+    },
+
+    "ReterRitual": {
+      "Opcao": "Reter ritual (duração retida)",
+      "Aplicado": "Ritual retido: −{custo} PE do máximo e −{san} Sanidade enquanto mantido.",
+      "Lista": "Rituais retidos",
+      "Vazio": "Nenhum ritual retido.",
+      "Liberar": "Liberar ritual (devolve PE máximo)",
+      "Liberado": "Ritual liberado: {nome}",
+      "LiberadoTexto": "PE máximo recuperado: +{custo}."
+    },
+
     "Criador": {
       "Botao": "Criar Item",
       "Titulo": "Criar Item — passo 1: tipo",

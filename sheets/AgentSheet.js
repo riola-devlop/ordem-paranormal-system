@@ -9,8 +9,10 @@ import {
   conjurarRitual, subirNex, voltarNex,
   usarPoder, usarHabilidadeTrilha, rolarManobra, acaoDefesa,
   abrirSeletorCondicao, marcarTurnoMorrendo, estabilizar,
-  marcarTurnoEnlouquecendo, acalmar, abrirInterludio, exportarAgente
+  marcarTurnoEnlouquecendo, acalmar, abrirInterludio, exportarAgente,
+  progredirXP, liberarRitual
 } from "../module.js";
+import { MODOS, modoDoAtor, usaXP, permiteReterRitual } from "../regras.js";
 
 export class OrdemAgentSheet extends ActorSheet {
 
@@ -213,6 +215,22 @@ export class OrdemAgentSheet extends ActorSheet {
       context.progressao = { temClasse: false };
     }
 
+    // ---- Modo de regras (Padrão ↔ Sobrevivendo ao Horror) ----
+    const modo = modoDoAtor(actorData);
+    context.modo = modo;
+    context.usaXP = usaXP(actorData);
+    context.permiteReterRitual = permiteReterRitual(actorData);
+    context.modoOptions = Object.entries(MODOS).map(([k, v]) => ({
+      value: k, label: game.i18n.localize(v.label)
+    }));
+    context.xp = {
+      atual: Number(sys.xp?.atual) || 0,
+      total: Number(sys.xp?.total) || 0
+    };
+    // Rituais retidos (visíveis só no modo SaH).
+    context.rituaisRetidos = (Array.isArray(sys.rituaisRetidos) ? sys.rituaisRetidos : [])
+      .map((r, i) => ({ index: i, nome: r.nome, img: r.img, custoPe: Number(r.custoPe) || 0 }));
+
     // ---- Classes / elementos para selects ----
     context.classeOptions = Object.entries(ORDEM.classes).map(([k, v]) => ({
       value: k, label: game.i18n.localize(v)
@@ -385,6 +403,21 @@ export class OrdemAgentSheet extends ActorSheet {
       return voltarNex(this.actor, Number(ev.currentTarget.dataset.index));
     });
 
+    // Modo SaH: ganhar/gastar XP (NEX & Experiência) e liberar rituais retidos.
+    html.find("[data-action='ganhar-xp']").on("click", async (ev) => {
+      ev.preventDefault();
+      const v = await this._promptNumero(game.i18n.localize("ORDEM.XP.GanharTitulo"), game.i18n.localize("ORDEM.XP.Ganhar"));
+      if (v !== null) return progredirXP(this.actor, v);
+    });
+    html.find("[data-action='gastar-xp']").on("click", (ev) => {
+      ev.preventDefault();
+      return progredirXP(this.actor, 0);
+    });
+    html.find("[data-action='liberar-ritual']").on("click", (ev) => {
+      ev.preventDefault();
+      return liberarRitual(this.actor, Number(ev.currentTarget.dataset.index));
+    });
+
     // Alternar item equipado (arma/proteção) e condição ativa.
     html.find("[data-action='toggle-equipado']").on("change", this._onToggleEquipado.bind(this));
     html.find("[data-action='toggle-condicao']").on("change", this._onToggleCondicao.bind(this));
@@ -408,6 +441,32 @@ export class OrdemAgentSheet extends ActorSheet {
 
     // Usar poder / ritual (envia descrição ao chat).
     html.find("[data-action='usar-item']").on("click", this._onUsarItem.bind(this));
+  }
+
+  /** Diálogo simples para informar um número (ex.: XP ganho). Resolve com number|null. */
+  _promptNumero(titulo, label) {
+    return new Promise(resolve => {
+      new Dialog({
+        title: titulo,
+        content: `<form class="ordem-roll-dialog"><div class="form-group">
+          <label>${label}</label>
+          <input type="number" name="valor" value="0" autofocus />
+        </div></form>`,
+        buttons: {
+          ok: {
+            icon: '<i class="fas fa-check"></i>',
+            label: game.i18n.localize("ORDEM.NEX.Aplicar"),
+            callback: html => resolve(Number(html[0].querySelector("[name='valor']").value) || 0)
+          },
+          cancelar: {
+            icon: '<i class="fas fa-times"></i>',
+            label: game.i18n.localize("ORDEM.Dialog.Cancelar"),
+            callback: () => resolve(null)
+          }
+        },
+        default: "ok"
+      }, { classes: ["ordem-paranormal", "op-theme", "dialog"] }).render(true);
+    });
   }
 
   _onRolarAtaque(event) {

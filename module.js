@@ -1446,6 +1446,8 @@ export async function aplicarDanoMental(actor, dano) {
   if (!actor || !(dano > 0)) return;
   const san = actor.system.recursos?.san;
   if (!san) return;
+  // TODO(SaH): Compreensão Humana — quando `usaCompreensaoHumana(actor)`, aplicar
+  // os limiares/efeitos de SAH_CONFIG.compreensao. Por ora usa a regra padrão.
   const novo = Math.max(0, (Number(san.value) || 0) - dano);
   await actor.update({ "system.recursos.san.value": novo });
   return novo;
@@ -1531,6 +1533,8 @@ export async function estabilizar(medico, alvo) {
  */
 export async function marcarTurnoEnlouquecendo(actor) {
   if (!actor) return;
+  // TODO(SaH): Compreensão Humana — `usaCompreensaoHumana(actor)` pode trocar
+  // o limiar/efeito de enlouquecer (SAH_CONFIG.compreensao). Padrão por ora.
   const atual = (Number(actor.system.recursos?.san?.rodadasEnlouquecendo) || 0) + 1;
   await actor.update({ "system.recursos.san.rodadasEnlouquecendo": atual });
 
@@ -2503,6 +2507,7 @@ export async function conjurarRitual(actor, item) {
     ${metaLinhas.length ? `<p class="ritual-meta">${metaLinhas.join(" &bull; ")}</p>` : ""}
     ${notasHtml}
     ${aprimoramentos.length ? `<fieldset class="op-habilidades"><legend>${game.i18n.localize("ORDEM.Campo.aprimoramentos")}</legend>${aprHtml}</fieldset>` : ""}
+    ${permiteReterRitual(actor) ? `<label class="op-hab op-reter"><input type="checkbox" name="reter" /> ${game.i18n.localize("ORDEM.ReterRitual.Opcao")}</label>` : ""}
   </form>`;
 
   const escolha = await new Promise(resolve => {
@@ -2515,7 +2520,8 @@ export async function conjurarRitual(actor, item) {
           label: game.i18n.localize("ORDEM.Ritual.Conjurar"),
           callback: html => {
             const marcados = [...html[0].querySelectorAll("[name='apr']:checked")].map(cb => Number(cb.value));
-            resolve({ ok: true, aprIndices: marcados });
+            const reter = !!html[0].querySelector("[name='reter']")?.checked;
+            resolve({ ok: true, aprIndices: marcados, reter });
           }
         },
         cancelar: {
@@ -2548,6 +2554,28 @@ export async function conjurarRitual(actor, item) {
 
   // Desconta o PE do conjurador (recurso próprio).
   if (custo > 0) await actor.update({ "system.recursos.pe.value": peAtual - custo });
+
+  // ---- Reter ritual (duração retida, modo SaH) ----
+  // O PE retido sai também do MÁXIMO e custa SAN enquanto o ritual é mantido.
+  let retidoHtml = "";
+  if (escolha.reter && permiteReterRitual(actor) && custo > 0) {
+    const cfg = SAH_CONFIG.reterRitual;
+    const upd = {};
+    if (cfg.reduzPeMaximo) {
+      const bonusMax = Number(actor.system.recursos?.pe?.bonusMax) || 0;
+      upd["system.recursos.pe.bonusMax"] = bonusMax - custo;
+    }
+    const custoSan = Number(cfg.custoSan) || 0;
+    if (custoSan > 0) {
+      const san = actor.system.recursos?.san;
+      if (san) upd["system.recursos.san.value"] = Math.max(0, (Number(san.value) || 0) - custoSan);
+    }
+    const retidos = foundry.utils.deepClone(actor.system.rituaisRetidos ?? []);
+    retidos.push({ nome: item.name, img: item.img, custoPe: custo, itemId: item.id });
+    upd["system.rituaisRetidos"] = retidos;
+    await actor.update(upd);
+    retidoHtml = `<div class="ritual-custo retido"><i class="fas fa-anchor"></i> ${game.i18n.format("ORDEM.ReterRitual.Aplicado", { custo, san: custoSan })}</div>`;
+  }
 
   // ---- "O Custo do Paranormal": elementos ≠ Medo exigem teste de Ocultismo ----
   const exigeTeste = (sys.elemento || "") !== "medo";
@@ -2622,6 +2650,7 @@ export async function conjurarRitual(actor, item) {
       ${aprCardHtml}
       ${notasCardHtml}
       ${custoHtml}
+      ${retidoHtml}
       ${resistHtml}
       <div class="descricao">${descricao}</div>
     </div>
@@ -2632,6 +2661,35 @@ export async function conjurarRitual(actor, item) {
     content: conteudo,
     rolls,
     flags: { "ordem-paranormal": { tipo: "ritual" } }
+  });
+}
+
+/**
+ * Libera um ritual retido (modo SaH): devolve o PE ao MÁXIMO (não ao atual,
+ * conforme a regra) e remove da lista de rituais retidos.
+ *
+ * @param {OrdemActor} actor
+ * @param {number}     indice  Índice em system.rituaisRetidos
+ */
+export async function liberarRitual(actor, indice) {
+  if (!actor) return;
+  const retidos = foundry.utils.deepClone(actor.system.rituaisRetidos ?? []);
+  const r = retidos[indice];
+  if (!r) return;
+
+  const upd = {};
+  if (SAH_CONFIG.reterRitual.reduzPeMaximo) {
+    const bonusMax = Number(actor.system.recursos?.pe?.bonusMax) || 0;
+    upd["system.recursos.pe.bonusMax"] = bonusMax + (Number(r.custoPe) || 0);
+  }
+  retidos.splice(indice, 1);
+  upd["system.rituaisRetidos"] = retidos;
+  await actor.update(upd);
+
+  await _cardEvento(actor, {
+    icone: "fa-link-slash", classe: "",
+    titulo: game.i18n.format("ORDEM.ReterRitual.Liberado", { nome: r.nome }),
+    texto: game.i18n.format("ORDEM.ReterRitual.LiberadoTexto", { custo: Number(r.custoPe) || 0 })
   });
 }
 
@@ -4316,6 +4374,10 @@ Hooks.once("init", function () {
     conjurarRitual,
     subirNex,
     voltarNex,
+    // Modo de regras (Padrão ↔ Sobrevivendo ao Horror)
+    modoDoAtor,
+    progredirXP,
+    liberarRitual,
     // Fórmulas (atributos + dados em qualquer campo)
     resolverTokensFormula,
     avaliarFormulaPassiva,
