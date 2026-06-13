@@ -1,0 +1,249 @@
+{
+  "Actor": {
+    "types": ["agente", "criatura"],
+
+    "templates": {
+      "base": {
+        "atributos": {
+          "agi": 1,
+          "for": 1,
+          "int": 1,
+          "pre": 1,
+          "vig": 1
+        },
+        "deslocamento": 9,
+        "notas": "",
+        "modoRegras": "padrao"
+      }
+    },
+
+    "agente": {
+      "templates": ["base"],
+      "recursos": {
+        "pv":  { "value": 0, "min": 0, "max": 0, "bonusMax": 0, "rodadasMorrendo": 0 },
+        "pe":  { "value": 0, "min": 0, "max": 0, "bonusMax": 0 },
+        "san": { "value": 0, "min": 0, "max": 0, "bonusMax": 0, "rodadasEnlouquecendo": 0 }
+      },
+      "peRodada": 0,
+      "nex": 0,
+      "classe": "",
+      "trilha": "",
+      "origem": "",
+      "afinidade": "",
+      "patente": "recruta",
+      "prestigio": 0,
+      "defesa": {
+        "base": 10,
+        "equip": 0,
+        "outros": 0,
+        "bloqueio": 0,
+        "esquiva": 0
+      },
+      "protecao": "",
+      "resistencias": "",
+      "pericias": {
+        "acrobacia":     { "treino": 0, "outros": 0, "atributo": "" },
+        "adestramento":  { "treino": 0, "outros": 0, "atributo": "" },
+        "artes":         { "treino": 0, "outros": 0, "atributo": "" },
+        "atletismo":     { "treino": 0, "outros": 0, "atributo": "" },
+        "atualidades":   { "treino": 0, "outros": 0, "atributo": "" },
+        "ciencias":      { "treino": 0, "outros": 0, "atributo": "" },
+        "crime":         { "treino": 0, "outros": 0, "atributo": "" },
+        "diplomacia":    { "treino": 0, "outros": 0, "atributo": "" },
+        "enganacao":     { "treino": 0, "outros": 0, "atributo": "" },
+        "fortitude":     { "treino": 0, "outros": 0, "atributo": "" },
+        "furtividade":   { "treino": 0, "outros": 0, "atributo": "" },
+        "iniciativa":    { "treino": 0, "outros": 0, "atributo": "" },
+        "intimidacao":   { "treino": 0, "outros": 0, "atributo": "" },
+        "intuicao":      { "treino": 0, "outros": 0, "atributo": "" },
+        "investigacao":  { "treino": 0, "outros": 0, "atributo": "" },
+        "luta":          { "treino": 0, "outros": 0, "atributo": "" },
+        "medicina":      { "treino": 0, "outros": 0, "atributo": "" },
+        "ocultismo":     { "treino": 0, "outros": 0, "atributo": "" },
+        "percepcao":     { "treino": 0, "outros": 0, "atributo": "" },
+        "pilotagem":     { "treino": 0, "outros": 0, "atributo": "" },
+        "pontaria":      { "treino": 0, "outros": 0, "atributo": "" },
+        "profissao":     { "treino": 0, "outros": 0, "atributo": "" },
+        "reflexos":      { "treino": 0, "outros": 0, "atributo": "" },
+        "religiao":      { "treino": 0, "outros": 0, "atributo": "" },
+        "sobrevivencia": { "treino": 0, "outros": 0, "atributo": "" },
+        "tatica":        { "treino": 0, "outros": 0, "atributo": "" },
+        "tecnologia":    { "treino": 0, "outros": 0, "atributo": "" },
+        "vontade":       { "treino": 0, "outros": 0, "atributo": "" }
+      },
+      "condicoes": [],
+      "recursosCustom": [],
+      "acoesCustom": [],
+      "xp": { "atual": 0, "total": 0 },
+      "rituaisRetidos": [],
+      "compreensao": {},
+      "progressao": {
+        "historico": []
+      },
+      "detalhes": {
+        "aparencia": "",
+        "personalidade": "",
+        "historico": "",
+        "objetivo": ""
+      }
+    },
+
+    "criatura": {
+      "templates": ["base"],
+      "categoria": "humana",
+      "tipoSer": "criatura",
+      "tamanho": "medio",
+      "descritores": "",
+      "vd": "1",
+      "nex": 0,
+      "elemento": "",
+      "recursos": {
+        "pv": { "value": 0, "min": 0, "max": 0 },
+        "pe": { "value": 0, "min": 0, "max": 0 }
+      },
+      "defesa": {
+        "base": 10,
+        "outros": 0,
+        "valor": 0
+      },
+      "sentidos": {
+        "percepcao": { "dados": 1, "bonus": 0 },
+        "iniciativa": { "dados": 1, "bonus": 0 },
+        "extra": ""
+      },
+      "saves": {
+        "fortitude": { "dados": 1, "bonus": 0 },
+        "reflexos": { "dados": 1, "bonus": 0 },
+        "vontade": { "dados": 1, "bonus": 0 }
+      },
+      "rd": [],
+      "imunidades": [],
+      "vulnerabilidades": [],
+      "periciasLista": [],
+      "presenca": {
+        "dt": 0,
+        "nexImune": 0,
+        "dano": ""
+      },
+      "presencaPerturbadora": 0,
+      "enigmaMedo": "",
+      "ataquesLista": [],
+      "habilidadesLista": [],
+      "ataques": "",
+      "habilidades": ""
+    }
+  },
+
+  "Item": {
+    "types": ["pericia", "poder", "arma", "ritual", "equipamento", "origem", "trilha", "protecao", "condicao"],
+
+    "templates": {
+      "modificavel": {
+        "modificadores": []
+      },
+      "fisico": {
+        "categoria": "0",
+        "peso": 0,
+        "quantidade": 1,
+        "espacos": 1,
+        "equipado": false
+      }
+    },
+
+    "pericia": {
+      "atributo": "int",
+      "nivelTreinamento": "destreinado",
+      "descricao": ""
+    },
+
+    "poder": {
+      "templates": ["modificavel"],
+      "classe": "",
+      "requisitoNex": 0,
+      "requisitos": "",
+      "custoPe": 0,
+      "tipo": "passivo",
+      "paranormal": false,
+      "elemento": "",
+      "usosPorCena": 0,
+      "usosAtuais": 0,
+      "descricao": ""
+    },
+
+    "origem": {
+      "templates": ["modificavel"],
+      "periciasTreinadas": "",
+      "poderNome": "",
+      "descricao": ""
+    },
+
+    "trilha": {
+      "templates": ["modificavel"],
+      "classe": "",
+      "nex": 10,
+      "habilidades": [],
+      "descricao": ""
+    },
+
+    "arma": {
+      "templates": ["modificavel", "fisico"],
+      "dano": "1d6",
+      "tipoDano": "impacto",
+      "tipoArma": "simples",
+      "alcance": "corpoacorpo",
+      "empunhadura": "umaMao",
+      "proficiente": true,
+      "testePericia": "luta",
+      "somaAtributoDano": "for",
+      "critico": "20/x2",
+      "margemAmeaca": 20,
+      "multiplicadorCritico": 2,
+      "bonusAtaque": 0,
+      "municao": { "value": 0, "max": 0 },
+      "propriedades": "",
+      "descricao": ""
+    },
+
+    "protecao": {
+      "templates": ["modificavel", "fisico"],
+      "defesaBonus": 0,
+      "penalidade": 0,
+      "tipoProtecao": "leve",
+      "proficiente": true,
+      "descricao": ""
+    },
+
+    "ritual": {
+      "templates": ["modificavel"],
+      "circulo": 1,
+      "elemento": "conhecimento",
+      "custoPe": 1,
+      "componentes": "",
+      "execucao": "padrao",
+      "alcance": "",
+      "area": "",
+      "duracao": "",
+      "resistencia": "",
+      "resistenciaPericia": "",
+      "periciasNecessarias": "Ocultismo",
+      "efeito": "",
+      "efeitoFalhaCritica": "",
+      "aprimoramentos": "",
+      "aprimoramentosLista": [],
+      "descricao": ""
+    },
+
+    "equipamento": {
+      "templates": ["modificavel", "fisico"],
+      "descricao": ""
+    },
+
+    "condicao": {
+      "templates": ["modificavel"],
+      "ativo": true,
+      "chave": "",
+      "implicadas": [],
+      "descricao": ""
+    }
+  }
+}

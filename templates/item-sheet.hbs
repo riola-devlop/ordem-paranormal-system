@@ -1,0 +1,356 @@
+{{!-- Ficha genérica de Item: alterna campos conforme item.type --}}
+<form class="ordem-item-sheet {{item.type}}" autocomplete="off">
+
+  <header class="item-header">
+    <img class="item-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
+    <div class="item-titulo">
+      <input type="text" name="name" value="{{item.name}}" placeholder="{{localize 'ORDEM.Campo.nome'}}" />
+      <span class="tipo-rotulo">{{localize (ordemConcat "ORDEM.TipoItem." item.type)}}</span>
+    </div>
+  </header>
+
+  <nav class="sheet-tabs tabs" data-group="primary">
+    <a class="item" data-tab="detalhes"><i class="fas fa-list"></i> {{localize "ORDEM.Aba.Detalhes"}}</a>
+    {{#if temModificadores}}
+      <a class="item" data-tab="modificadores"><i class="fas fa-sliders"></i> {{localize "ORDEM.Aba.Modificadores"}}</a>
+    {{/if}}
+    <a class="item" data-tab="descricao"><i class="fas fa-align-left"></i> {{localize "ORDEM.Aba.Descricao"}}</a>
+  </nav>
+
+  <section class="sheet-body">
+
+    {{!-- ----------------------------- DETALHES ---------------------------- --}}
+    <div class="tab" data-group="primary" data-tab="detalhes">
+      <div class="campos-grid">
+
+        {{#if (ordemEq item.type "pericia")}}
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.atributo"}}</label>
+            <select name="system.atributo">
+              {{#each atributoOptions}}<option value="{{this.value}}" {{#if (ordemEq this.value ../system.atributo)}}selected{{/if}}>{{this.label}}</option>{{/each}}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.nivelTreinamento"}}</label>
+            <select name="system.nivelTreinamento">
+              {{#each nivelTreinamentoOptions}}<option value="{{this.value}}" {{#if (ordemEq this.value ../system.nivelTreinamento)}}selected{{/if}}>{{this.label}}</option>{{/each}}
+            </select>
+          </div>
+        {{/if}}
+
+        {{#if (ordemEq item.type "origem")}}
+          <div class="form-group span2">
+            <label>{{localize "ORDEM.Campo.periciasTreinadas"}}</label>
+            <input type="text" name="system.periciasTreinadas" value="{{system.periciasTreinadas}}" placeholder="Ex.: Ciências, Investigação" />
+          </div>
+          <div class="form-group span2">
+            <label>{{localize "ORDEM.Campo.poderNome"}}</label>
+            <input type="text" name="system.poderNome" value="{{system.poderNome}}" />
+          </div>
+        {{/if}}
+
+        {{#if (ordemEq item.type "trilha")}}
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.classe"}}</label>
+            <select name="system.classe">
+              <option value="">—</option>
+              {{#each classeOptions}}<option value="{{this.value}}" {{#if (ordemEq this.value ../system.classe)}}selected{{/if}}>{{this.label}}</option>{{/each}}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.requisitoNex"}}</label>
+            <input type="number" name="system.nex" value="{{system.nex}}" min="0" max="99" />
+          </div>
+
+          {{!-- Habilidades da trilha por marco de NEX --}}
+          <div class="span2 th-bloco">
+            <div class="secao-cabecalho">
+              <label>{{localize "ORDEM.Trilha.Habilidades"}}</label>
+              <a class="botao-adicionar" data-action="th-add"><i class="fas fa-plus"></i></a>
+            </div>
+            {{#each system.habilidades}}
+              <div class="th-linha" data-index="{{@index}}">
+                <input class="th-campo th-nex" data-field="nex" type="number" value="{{this.nex}}" min="5" max="99" step="5" title="{{localize 'ORDEM.Campo.requisitoNex'}}" />
+                <input class="th-campo th-nome" data-field="nome" type="text" value="{{this.nome}}" placeholder="{{localize 'ORDEM.Campo.nome'}}" />
+                <input class="th-campo th-custo" data-field="custoPe" type="number" value="{{this.custoPe}}" min="0" title="{{localize 'ORDEM.Campo.custoPe'}}" />
+                <a class="mod-remover" data-action="th-remove" data-index="{{@index}}"><i class="fas fa-trash"></i></a>
+                <textarea class="th-campo th-desc" data-field="descricao" rows="2" placeholder="{{localize 'ORDEM.Campo.efeito'}}">{{this.descricao}}</textarea>
+              </div>
+            {{else}}
+              <p class="vazio">{{localize "ORDEM.Trilha.SemHabilidades"}}</p>
+            {{/each}}
+            <p class="hint">{{localize "ORDEM.Trilha.ModNexAjuda"}}</p>
+          </div>
+        {{/if}}
+
+        {{#if (ordemEq item.type "poder")}}
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.classe"}}</label>
+            <select name="system.classe">
+              <option value="">—</option>
+              {{#each classeOptions}}<option value="{{this.value}}" {{#if (ordemEq this.value ../system.classe)}}selected{{/if}}>{{this.label}}</option>{{/each}}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.requisitoNex"}}</label>
+            <input type="number" name="system.requisitoNex" value="{{system.requisitoNex}}" min="0" max="99" />
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.custoPe"}}</label>
+            <input type="number" name="system.custoPe" value="{{system.custoPe}}" min="0" />
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.tipo"}}</label>
+            <select name="system.tipo">
+              {{#each tipoPoderOptions}}<option value="{{this.value}}" {{#if (ordemEq this.value ../system.tipo)}}selected{{/if}}>{{this.label}}</option>{{/each}}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Poder.UsosPorCena"}}</label>
+            <input type="number" name="system.usosPorCena" value="{{system.usosPorCena}}" min="0" title="{{localize 'ORDEM.Poder.UsosPorCenaAjuda'}}" />
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Poder.UsosAtuais"}}</label>
+            <input type="number" name="system.usosAtuais" value="{{system.usosAtuais}}" min="0" />
+          </div>
+          <label class="check-inline"><input type="checkbox" name="system.paranormal" {{checked system.paranormal}} /> {{localize "ORDEM.Poder.Paranormal"}}</label>
+          {{#if system.paranormal}}
+            <div class="form-group">
+              <label>{{localize "ORDEM.Campo.elemento"}}</label>
+              <select name="system.elemento">
+                <option value="">—</option>
+                {{#each elementoOptions}}<option value="{{this.value}}" {{#if (ordemEq this.value ../system.elemento)}}selected{{/if}}>{{this.label}}</option>{{/each}}
+              </select>
+            </div>
+          {{/if}}
+          <div class="form-group span2">
+            <label>{{localize "ORDEM.Poder.Requisitos"}}</label>
+            <input type="text" name="system.requisitos" value="{{system.requisitos}}" placeholder="{{localize 'ORDEM.Poder.RequisitosPlaceholder'}}" />
+          </div>
+        {{/if}}
+
+        {{#if (ordemEq item.type "arma")}}
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.dano"}}</label>
+            <div class="dano-linha">
+              <input type="text" name="system.dano" value="{{system.dano}}" placeholder="2d6" />
+              <a class="botao-mini rolar" data-action="rolar-dano" title="{{localize 'ORDEM.Dano.Rolar'}}"><i class="fas fa-burst"></i></a>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.tipoDano"}}</label>
+            <input type="text" name="system.tipoDano" value="{{system.tipoDano}}" />
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.tipoArma"}}</label>
+            <select name="system.tipoArma">
+              {{#each tipoArmaOptions}}<option value="{{this.value}}" {{#if (ordemEq this.value ../system.tipoArma)}}selected{{/if}}>{{this.label}}</option>{{/each}}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.empunhadura"}}</label>
+            <select name="system.empunhadura">
+              {{#each empunhaduraOptions}}<option value="{{this.value}}" {{#if (ordemEq this.value ../system.empunhadura)}}selected{{/if}}>{{this.label}}</option>{{/each}}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.testePericia"}}</label>
+            <select name="system.testePericia">
+              {{#each periciaTesteOptions}}<option value="{{this.value}}" {{#if (ordemEq this.value ../system.testePericia)}}selected{{/if}}>{{this.label}}</option>{{/each}}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.somaAtributoDano"}}</label>
+            <select name="system.somaAtributoDano">
+              <option value="">—</option>
+              {{#each atributoOptions}}<option value="{{this.value}}" {{#if (ordemEq this.value ../system.somaAtributoDano)}}selected{{/if}}>{{this.label}}</option>{{/each}}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.alcance"}}</label>
+            <input type="text" name="system.alcance" value="{{system.alcance}}" placeholder="corpoacorpo / curto / médio" />
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.margemAmeaca"}}</label>
+            <input type="number" name="system.margemAmeaca" value="{{system.margemAmeaca}}" min="1" max="20" />
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.critico"}}</label>
+            <input type="text" name="system.critico" value="{{system.critico}}" placeholder="20/x2" />
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.bonusAtaque"}}</label>
+            <input type="text" name="system.bonusAtaque" value="{{system.bonusAtaque}}" placeholder="{{localize 'ORDEM.Mod.ValorPlaceholder'}}" title="{{localize 'ORDEM.Mod.ValorAjuda'}}" />
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.municao"}}</label>
+            <div class="dano-linha">
+              <input type="number" name="system.municao.value" value="{{system.municao.value}}" /> /
+              <input type="number" name="system.municao.max" value="{{system.municao.max}}" />
+            </div>
+          </div>
+          <label class="check-inline"><input type="checkbox" name="system.proficiente" {{checked system.proficiente}} /> {{localize "ORDEM.Campo.proficiente"}}</label>
+          <div class="form-group span2">
+            <label>{{localize "ORDEM.Campo.propriedades"}}</label>
+            <input type="text" name="system.propriedades" value="{{system.propriedades}}" />
+          </div>
+        {{/if}}
+
+        {{#if (ordemEq item.type "protecao")}}
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.defesaBonus"}}</label>
+            <input type="number" name="system.defesaBonus" value="{{system.defesaBonus}}" />
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.penalidade"}}</label>
+            <input type="number" name="system.penalidade" value="{{system.penalidade}}" />
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.tipoProtecao"}}</label>
+            <select name="system.tipoProtecao">
+              {{#each tipoProtecaoOptions}}<option value="{{this.value}}" {{#if (ordemEq this.value ../system.tipoProtecao)}}selected{{/if}}>{{this.label}}</option>{{/each}}
+            </select>
+          </div>
+          <label class="check-inline"><input type="checkbox" name="system.proficiente" {{checked system.proficiente}} /> {{localize "ORDEM.Campo.proficiente"}}</label>
+        {{/if}}
+
+        {{#if (ordemEq item.type "ritual")}}
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.circulo"}}</label>
+            <input type="number" name="system.circulo" value="{{system.circulo}}" min="1" max="4" />
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.elemento"}}</label>
+            <select name="system.elemento">
+              {{#each elementoOptions}}<option value="{{this.value}}" {{#if (ordemEq this.value ../system.elemento)}}selected{{/if}}>{{this.label}}</option>{{/each}}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.custoPe"}}</label>
+            <input type="number" name="system.custoPe" value="{{system.custoPe}}" min="0" />
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.execucao"}}</label>
+            <input type="text" name="system.execucao" value="{{system.execucao}}" />
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.alcanceRitual"}}</label>
+            <input type="text" name="system.alcance" value="{{system.alcance}}" />
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.area"}}</label>
+            <input type="text" name="system.area" value="{{system.area}}" />
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.duracao"}}</label>
+            <input type="text" name="system.duracao" value="{{system.duracao}}" />
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Ritual.ResistPericia"}}</label>
+            <select name="system.resistenciaPericia" title="{{localize 'ORDEM.Ritual.ResistPericiaAjuda'}}">
+              <option value="">—</option>
+              {{#each resistenciaOptions}}<option value="{{this.value}}" {{#if (ordemEq this.value ../system.resistenciaPericia)}}selected{{/if}}>{{this.label}}</option>{{/each}}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.resistencia"}}</label>
+            <input type="text" name="system.resistencia" value="{{system.resistencia}}" placeholder="{{localize 'ORDEM.Ritual.ResistEfeitoPlaceholder'}}" />
+          </div>
+          <div class="form-group span2">
+            <label>{{localize "ORDEM.Campo.componentes"}}</label>
+            <input type="text" name="system.componentes" value="{{system.componentes}}" />
+          </div>
+          <div class="form-group span2">
+            <label>{{localize "ORDEM.Campo.periciasNecessarias"}}</label>
+            <input type="text" name="system.periciasNecessarias" value="{{system.periciasNecessarias}}" />
+          </div>
+          <div class="form-group span2">
+            <label>{{localize "ORDEM.Campo.efeito"}}</label>
+            <textarea name="system.efeito" rows="3">{{system.efeito}}</textarea>
+          </div>
+
+          {{!-- Aprimoramentos estruturados (selecionáveis ao conjurar) --}}
+          <div class="span2 apr-bloco">
+            <div class="secao-cabecalho">
+              <label>{{localize "ORDEM.Campo.aprimoramentos"}}</label>
+              <a class="botao-adicionar" data-action="apr-add"><i class="fas fa-plus"></i></a>
+            </div>
+            {{#each system.aprimoramentosLista}}
+              <div class="apr-linha" data-index="{{@index}}">
+                <input class="apr-campo apr-nome" data-field="nome" type="text" value="{{this.nome}}" placeholder="{{localize 'ORDEM.Ritual.AprNomePlaceholder'}}" />
+                <input class="apr-campo apr-custo" data-field="custoPe" type="number" value="{{this.custoPe}}" min="0" title="{{localize 'ORDEM.Campo.custoPe'}}" />
+                <a class="mod-remover" data-action="apr-remove" data-index="{{@index}}"><i class="fas fa-trash"></i></a>
+                <textarea class="apr-campo apr-desc" data-field="descricao" rows="2" placeholder="{{localize 'ORDEM.Campo.efeito'}}">{{this.descricao}}</textarea>
+              </div>
+            {{else}}
+              <p class="vazio">{{localize "ORDEM.Ritual.SemAprimoramentos"}}</p>
+            {{/each}}
+          </div>
+
+          <div class="form-group span2">
+            <label>{{localize "ORDEM.Campo.efeitoFalhaCritica"}}</label>
+            <textarea name="system.efeitoFalhaCritica" rows="2">{{system.efeitoFalhaCritica}}</textarea>
+          </div>
+        {{/if}}
+
+        {{#if (ordemEq item.type "condicao")}}
+          <label class="check-inline"><input type="checkbox" name="system.ativo" {{checked system.ativo}} /> {{localize "ORDEM.Campo.ativo"}}</label>
+        {{/if}}
+
+        {{!-- Campos físicos comuns (arma, proteção, equipamento): carga/categoria --}}
+        {{#if ehFisico}}
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.categoria"}}</label>
+            <input type="text" name="system.categoria" value="{{system.categoria}}" placeholder="0, I, II, III, IV" />
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.espacos"}}</label>
+            <input type="number" name="system.espacos" value="{{system.espacos}}" min="0" step="0.5" />
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.peso"}}</label>
+            <input type="number" name="system.peso" value="{{system.peso}}" min="0" step="0.1" />
+          </div>
+          <div class="form-group">
+            <label>{{localize "ORDEM.Campo.quantidade"}}</label>
+            <input type="number" name="system.quantidade" value="{{system.quantidade}}" min="0" />
+          </div>
+          <label class="check-inline"><input type="checkbox" name="system.equipado" {{checked system.equipado}} /> {{localize "ORDEM.Campo.equipado"}}</label>
+        {{/if}}
+
+      </div>
+    </div>
+
+    {{!-- -------------------------- MODIFICADORES -------------------------- --}}
+    {{#if temModificadores}}
+      <div class="tab" data-group="primary" data-tab="modificadores">
+        <p class="hint">{{localize "ORDEM.Mod.Ajuda"}}</p>
+        <div class="mod-lista">
+          {{#each system.modificadores}}
+            <div class="mod-linha" data-index="{{@index}}">
+              <select class="mod-campo" data-field="alvo">
+                {{#each ../alvoOptions}}<option value="{{this.value}}" {{#if (ordemEq this.value ../alvo)}}selected{{/if}}>{{this.label}}</option>{{/each}}
+              </select>
+              <input class="mod-campo mod-valor" data-field="valor" type="text" value="{{this.valor}}" placeholder="{{localize 'ORDEM.Mod.ValorPlaceholder'}}" title="{{localize 'ORDEM.Mod.ValorAjuda'}}" />
+              {{#if ../ehTrilha}}
+                <input class="mod-campo mod-nex" data-field="nex" type="number" value="{{this.nex}}" min="0" max="99" step="5" placeholder="NEX" title="{{localize 'ORDEM.Trilha.ModNexAjuda'}}" />
+              {{/if}}
+              <input class="mod-campo mod-rotulo" data-field="rotulo" type="text" value="{{this.rotulo}}" placeholder="{{localize 'ORDEM.Mod.Rotulo'}}" />
+              <label class="mod-ativo" title="{{localize 'ORDEM.Mod.Ativo'}}"><input class="mod-campo" data-field="ativo" type="checkbox" {{checked this.ativo}} /></label>
+              <a class="mod-remover" data-action="mod-remove" data-index="{{@index}}"><i class="fas fa-trash"></i></a>
+            </div>
+          {{else}}
+            <p class="vazio">{{localize "ORDEM.Mod.Vazio"}}</p>
+          {{/each}}
+        </div>
+        <a class="botao-adicionar" data-action="mod-add"><i class="fas fa-plus"></i> {{localize "ORDEM.Mod.Adicionar"}}</a>
+      </div>
+    {{/if}}
+
+    {{!-- ----------------------------- DESCRIÇÃO --------------------------- --}}
+    <div class="tab" data-group="primary" data-tab="descricao">
+      {{editor descricaoHTML target="system.descricao" button=true editable=editable engine="prosemirror"}}
+    </div>
+
+  </section>
+</form>

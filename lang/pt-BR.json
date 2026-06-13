@@ -1,0 +1,910 @@
+{
+  "TYPES": {
+    "Actor": {
+      "agente": "Agente",
+      "criatura": "Criatura"
+    },
+    "Item": {
+      "pericia": "Perícia",
+      "poder": "Poder",
+      "arma": "Arma",
+      "ritual": "Ritual",
+      "equipamento": "Equipamento",
+      "origem": "Origem",
+      "trilha": "Trilha",
+      "protecao": "Proteção",
+      "condicao": "Condição"
+    }
+  },
+
+  "ORDEM": {
+    "Sheet": {
+      "Agente": "Ficha de Agente",
+      "Criatura": "Ficha de Criatura",
+      "Item": "Ficha de Item"
+    },
+
+    "Pentagono": {
+      "Centro": "Atributos"
+    },
+
+    "Atributo": {
+      "agi": "Agilidade",
+      "for": "Força",
+      "int": "Intelecto",
+      "pre": "Presença",
+      "vig": "Vigor"
+    },
+    "AtributoAbrev": {
+      "agi": "AGI",
+      "for": "FOR",
+      "int": "INT",
+      "pre": "PRE",
+      "vig": "VIG"
+    },
+
+    "Classe": {
+      "combatente": "Combatente",
+      "especialista": "Especialista",
+      "ocultista": "Ocultista",
+      "Sugerido": "Sugerido (classe + NEX)"
+    },
+
+    "Hab": {
+      "Perito": "Perito ({custo} PE, +{dado})",
+      "PeritoCurto": "Perito {dado} (+{valor})",
+      "PeritoNome": "Perito",
+      "Ecletico": "Eclético — tratar como treinado (2 PE)",
+      "EcleticoCurto": "Eclético (+5)",
+      "AtaqueEspecial": "Ataque Especial ({custo} PE, +{bonus})",
+      "AtaqueEspecialCurto": "Ataque Especial (+{bonus})",
+      "AtaqueEspecialNome": "Ataque Especial"
+    },
+
+    "Elemento": {
+      "conhecimento": "Conhecimento",
+      "energia": "Energia",
+      "morte": "Morte",
+      "sangue": "Sangue",
+      "medo": "Medo"
+    },
+
+    "Cena": {
+      "acao": "Cena de Ação",
+      "investigacao": "Cena de Investigação",
+      "interludio": "Interlúdio",
+      "Nova": "Nova Cena",
+      "NovaTexto": "Contadores de morrendo/enlouquecendo e usos de poderes por cena foram zerados. Lembrete: condições terminam no fim da cena, salvo indicação contrária."
+    },
+
+    "Criador": {
+      "Botao": "Criar Item",
+      "Titulo": "Criar Item — passo 1: tipo",
+      "Titulo2": "Criar Item — {nome}",
+      "Ajuda": "Assistente passo a passo. Escolha o tipo e o nome; no próximo passo preencha os campos (vários aceitam fórmula com @status e dados).",
+      "Tipo": "Tipo de item",
+      "NomePlaceholder": "Nome do item",
+      "Proximo": "Próximo",
+      "Voltar": "Voltar",
+      "Criar": "Criar item",
+      "Criado": "Item \"{nome}\" criado. Arraste para um compêndio Ordem para reutilizar.",
+      "FormulaAjuda": "Campos de fórmula aceitam @status (ex.: @FOR, @NEX) e dados (ex.: 1d6+@FOR). O item é criado no diretório de Itens.",
+      "SemPermissao": "Você não tem permissão para criar itens."
+    },
+
+    "IO": {
+      "Exportar": "Exportar JSON",
+      "Exportado": "Ficha de {nome} exportada como JSON.",
+      "ImportarAgente": "Importar Agente",
+      "ImportarTitulo": "Importar Fichas (JSON / GitHub)",
+      "Importar": "Importar",
+      "Importados": "{qtd} ficha(s) importada(s).",
+      "Ajuda": "Importe fichas exportadas pelo sistema. Selecione um ou mais arquivos .json e/ou informe um link do GitHub.",
+      "ArquivoLabel": "Arquivo(s) JSON",
+      "Ou": "— ou —",
+      "UrlLabel": "Link do GitHub",
+      "UrlAjuda": "Aceita: arquivo .json (raw ou /blob/), pasta (/tree/) ou repositório com vários agentes.",
+      "AgruparPasta": "Agrupar os importados em uma pasta",
+      "PastaNome": "Agentes Importados",
+      "SemPermissao": "Você não tem permissão para criar atores.",
+      "NadaSelecionado": "Selecione um arquivo ou informe um link.",
+      "SemAtoresValidos": "Nenhuma ficha de Agente/Criatura válida encontrada no conteúdo.",
+      "ErroLeitura": "Não foi possível ler o JSON. Verifique o arquivo ou o link.",
+      "ErroPasta": "A resposta do GitHub não é uma listagem de pasta válida.",
+      "ErroCriar": "Falha ao criar a ficha \"{nome}\"."
+    },
+
+    "CD": {
+      "facil": "Fácil (10)",
+      "moderado": "Moderado (15)",
+      "dificil": "Difícil (18)",
+      "paranormal": "Paranormal (20+)"
+    },
+
+    "Treinamento": {
+      "destreinado": "Destreinado",
+      "treinado": "Treinado",
+      "veterano": "Veterano",
+      "expert": "Expert"
+    },
+
+    "CategoriaArma": {
+      "simples": "Simples",
+      "tatica": "Tática",
+      "pesada": "Pesada"
+    },
+
+    "TipoPoder": {
+      "ativo": "Ativo",
+      "passivo": "Passivo"
+    },
+
+    "Categoria": {
+      "humana": "Humana",
+      "paranormal": "Paranormal",
+      "outra": "Outra"
+    },
+
+    "TipoDano": {
+      "Label": "Tipo de dano",
+      "impacto": "Impacto",
+      "corte": "Corte",
+      "perfuracao": "Perfuração",
+      "balistico": "Balístico",
+      "fogo": "Fogo",
+      "quimico": "Químico",
+      "eletrico": "Elétrico",
+      "mental": "Mental",
+      "morte": "Morte",
+      "sangue": "Sangue",
+      "energia": "Energia",
+      "conhecimento": "Conhecimento",
+      "medo": "Medo"
+    },
+
+    "Pericia": {
+      "Nome": "Perícia",
+      "Dados": "Dados",
+      "Atributo": "Atrib.",
+      "AtributoAlt": "Atributo (o Mestre pode autorizar combinações alternativas)",
+      "Treino": "Treino",
+      "Treinada": "Treinada",
+      "SoTreinada": "* Somente quando treinada.",
+      "Bonus": "Bônus",
+      "Outros": "Outros",
+      "Total": "Total",
+
+      "acrobacia": "Acrobacia",
+      "adestramento": "Adestramento",
+      "artes": "Artes",
+      "atletismo": "Atletismo",
+      "atualidades": "Atualidades",
+      "ciencias": "Ciências",
+      "crime": "Crime",
+      "diplomacia": "Diplomacia",
+      "enganacao": "Enganação",
+      "fortitude": "Fortitude",
+      "furtividade": "Furtividade",
+      "iniciativa": "Iniciativa",
+      "intimidacao": "Intimidação",
+      "intuicao": "Intuição",
+      "investigacao": "Investigação",
+      "luta": "Luta",
+      "medicina": "Medicina",
+      "ocultismo": "Ocultismo",
+      "percepcao": "Percepção",
+      "pilotagem": "Pilotagem",
+      "pontaria": "Pontaria",
+      "profissao": "Profissão",
+      "reflexos": "Reflexos",
+      "religiao": "Religião",
+      "sobrevivencia": "Sobrevivência",
+      "tatica": "Tática",
+      "tecnologia": "Tecnologia",
+      "vontade": "Vontade"
+    },
+
+    "Recurso": {
+      "pv": "Pontos de Vida",
+      "pe": "Pontos de Esforço",
+      "san": "Sanidade",
+      "MaxDerivado": "Máximo calculado pela classe + NEX + bônus",
+      "BonusMax": "Bônus manual ao máximo"
+    },
+
+    "Campo": {
+      "nome": "Nome",
+      "nomeAgente": "Nome do Agente",
+      "classe": "Classe",
+      "trilha": "Trilha",
+      "origem": "Origem",
+      "patente": "Patente",
+      "nex": "NEX",
+      "defesa": "Defesa",
+      "equip": "Equip.",
+      "outros": "Outros",
+      "bloqueio": "Bloqueio",
+      "esquiva": "Esquiva",
+      "deslocamento": "Deslocamento",
+      "peRodada": "PE / Turno",
+      "prestigio": "Prestígio",
+      "protecao": "Proteção",
+      "resistencias": "Resistências",
+      "imunidades": "Imunidades",
+      "habilidades": "Habilidades",
+      "ataques": "Ataques",
+      "vd": "VD",
+      "notas": "Notas",
+      "atributo": "Atributo",
+      "nivelTreinamento": "Treinamento",
+      "requisitoNex": "Requisito de NEX (%)",
+      "custoPe": "Custo (PE)",
+      "tipo": "Tipo",
+      "dano": "Dano",
+      "tipoDano": "Tipo de Dano",
+      "categoriaArma": "Categoria",
+      "categoria": "Categoria",
+      "alcance": "Alcance",
+      "alcanceRitual": "Alcance",
+      "critico": "Crítico",
+      "propriedades": "Propriedades",
+      "circulo": "Círculo",
+      "elemento": "Elemento",
+      "execucao": "Execução",
+      "duracao": "Duração",
+      "componentes": "Componentes",
+      "periciasNecessarias": "Perícias necessárias",
+      "efeito": "Efeito",
+      "efeitoFalhaCritica": "Efeito em Falha Crítica",
+      "espacos": "Espaços",
+      "peso": "Peso",
+      "quantidade": "Quantidade",
+      "dtRituais": "DT de Rituais",
+      "periciasTreinadas": "Perícias treinadas",
+      "poderNome": "Poder da origem",
+      "tipoArma": "Categoria da arma",
+      "empunhadura": "Empunhadura",
+      "testePericia": "Perícia de ataque",
+      "somaAtributoDano": "Atributo no dano",
+      "margemAmeaca": "Margem de ameaça",
+      "bonusAtaque": "Bônus de ataque",
+      "municao": "Munição",
+      "proficiente": "Proficiente",
+      "equipado": "Equipado",
+      "defesaBonus": "Bônus de Defesa",
+      "penalidade": "Penalidade de carga",
+      "tipoProtecao": "Tipo de proteção",
+      "area": "Área",
+      "resistencia": "Resistência",
+      "aprimoramentos": "Aprimoramentos",
+      "ativo": "Ativo",
+      "limiteCredito": "Limite de crédito"
+    },
+
+    "Detalhe": {
+      "aparencia": "Aparência",
+      "personalidade": "Personalidade",
+      "objetivo": "Objetivo",
+      "historico": "Histórico"
+    },
+
+    "Aba": {
+      "Pericias": "Perícias",
+      "Combate": "Combate",
+      "Habilidades": "Habilidades",
+      "Poderes": "Poderes & Rituais",
+      "PoderesLista": "Poderes",
+      "Rituais": "Rituais",
+      "Armas": "Armas & Ataques",
+      "Inventario": "Inventário",
+      "Notas": "Notas",
+      "Detalhes": "Detalhes",
+      "Descricao": "Descrição",
+      "Principal": "Principal",
+      "Ataques": "Ataques",
+      "Modificadores": "Modificadores",
+      "Trilhas": "Trilhas",
+      "Condicoes": "Condições",
+      "Paranormal": "Paranormal"
+    },
+
+    "Combate": {
+      "Acao": "Ação",
+      "Movimento": "Movimento",
+      "AcaoMinima": "Ação Mínima",
+      "Reacao": "Reação",
+      "Atacar": "Atacar (teste vs Defesa do alvo)"
+    },
+
+    "NEX": {
+      "Ajuda": "Nível de Exposição Paranormal — substitui o sistema de níveis. Aumenta em marcos de 5%.",
+      "ProximoMarco": "Próximo marco",
+      "Subir": "Subir NEX",
+      "Desbloqueia": "Desbloqueia",
+      "NoMaximo": "NEX máximo atingido (99%).",
+      "PrimeiroAviso": "Primeiro marco: os valores iniciais de PV, PE e SAN da classe serão definidos.",
+      "Ganhos": "Ganhos",
+      "NovoMax": "novo máx.",
+      "AumentoAtributo": "Aumento de atributo (+1)",
+      "GrauTreinamento": "Grau de treinamento (perícia treinada → veterano/expert)",
+      "SemPericiasTreinaveis": "Nenhuma perícia treinada disponível para evoluir.",
+      "PoderClasse": "Poder de classe",
+      "EscolherDepois": "— escolher depois —",
+      "SemPoderesMundo": "Nenhum poder compatível nos Itens do Mundo. Crie itens do tipo Poder para escolher aqui.",
+      "HabTrilha": "Habilidade de trilha",
+      "TrilhaSemHabNoMarco": "A trilha não tem habilidade cadastrada neste marco.",
+      "SemTrilha": "Nenhuma trilha adicionada à ficha.",
+      "Versatilidade": "Versatilidade: escolha um poder de classe OU um poder paranormal (Transcender).",
+      "SubirTitulo": "Subir para NEX {nex}%",
+      "Aplicar": "Aplicar",
+      "Lembrete": "Outras escolhas do marco (poderes, trilha, grau de treinamento) devem ser aplicadas manualmente na ficha. Você pode reverter este nível pelo histórico.",
+      "Historico": "Histórico de NEX",
+      "Voltar": "Voltar para antes deste nível",
+      "VoltarTitulo": "Voltar de NEX",
+      "VoltarConfirma": "Reverter para o estado anterior (NEX {nex}%)? Mudanças manuais feitas depois serão perdidas.",
+      "Revertido": "Revertido para NEX {nex}%.",
+      "LimitePeAjuda": "Limite de PE que você pode gastar por turno (= nível de NEX)."
+    },
+
+    "Rolar": {
+      "Atributo": "Rolar teste de atributo",
+      "Pericia": "Rolar teste de perícia"
+    },
+
+    "Dano": {
+      "Titulo": "Dano",
+      "Generico": "Dano",
+      "Critico": "Dano Crítico",
+      "Rolar": "Rolar dano",
+      "RolarCritico": "Rolar dano crítico",
+      "AplicarSelecionados": "Aplicar aos tokens selecionados",
+      "SemSelecionados": "Selecione ao menos um token para aplicar o dano.",
+      "Aplicado": "{dano} de dano aplicado a {qtd} token(s)."
+    },
+
+    "Ritual": {
+      "Conjurar": "Conjurar ritual",
+      "ConjurarTitulo": "Conjurar: {nome}",
+      "CustoFalhou": "Custo do Paranormal — falhou no teste de Ocultismo",
+      "CustoResistido": "Custo do Paranormal — resistido",
+      "DanoMental": "Sofre {dano} de dano mental",
+      "PerdaPermanente": "−1 Sanidade permanente",
+      "AplicarPerda": "Aplicar perda (no próprio agente)",
+      "PerdaAplicada": "Perda do Custo do Paranormal aplicada.",
+      "AcimaLimitePe": "Atenção: {custo} PE excede o limite por rodada ({limite}).",
+      "AfinidadeSemComponentes": "Afinidade: este ritual não exige componentes ritualísticos.",
+      "Opressor": "{ritual} oprime {alvo}: vantagem contra {nome}.",
+      "MesmoElemento": "{nome} é do elemento {elemento}: resistente ao próprio elemento.",
+      "ResistenciaLinha": "Resistência: {pericia} (DT {dt})",
+      "RolarResistencia": "Rolar resistência (token selecionado)",
+      "ResistenciaTitulo": "Resistência contra ritual",
+      "ResistPericia": "Perícia de resistência",
+      "ResistPericiaAjuda": "Se definida, o card de conjuração mostra a DT e o botão para o alvo rolar.",
+      "ResistEfeitoPlaceholder": "Ex.: Vontade reduz à metade",
+      "AprNomePlaceholder": "Ex.: Discente / Verdadeiro",
+      "SemAprimoramentos": "Nenhum aprimoramento. Clique em + para adicionar (selecionáveis ao conjurar)."
+    },
+
+    "Dialog": {
+      "Titulo": "Teste: {nome}",
+      "Info": "Rolando {nome} ({atributo}) — {dados}d20, melhor resultado.",
+      "CD": "Dificuldade (CD)",
+      "ModExtra": "Modificador extra",
+      "DadosExtra": "Dados d20 extras",
+      "DadosExtraHint": "Some dados bônus (ex.: dados concedidos por habilidades).",
+      "AvisoSoTreinada": "Esta perícia só pode ser usada quando treinada.",
+      "Habilidades": "Habilidades de classe",
+      "PEAtual": "PE atual",
+      "Rolar": "Rolar",
+      "Cancelar": "Cancelar",
+      "Circunstancia": "Circunstância",
+      "Normal": "Normal",
+      "Favoravel": "Favorável (+1d20)",
+      "Desfavoravel": "Desfavorável (−1d20)",
+      "DadosCondicao": "[Condições/itens: {valor} dado(s)]"
+    },
+
+    "Situacao": {
+      "Titulo": "Situação do ataque (Tabela 4.4)",
+      "Flanqueando": "Flanqueando (+1d20)",
+      "FlanqueandoOpcao": "Flanqueando o alvo (+1d20, corpo a corpo)",
+      "Elevada": "Posição elevada (+1d20)",
+      "ElevadaOpcao": "Em posição elevada (+1d20)",
+      "Cobertura": "Alvo sob cobertura (+5 Defesa)",
+      "CoberturaLabel": "Cobertura do alvo",
+      "CoberturaParcial": "Cobertura (+5 na Defesa do alvo)",
+      "CamuflagemLabel": "Camuflagem do alvo",
+      "Nenhuma": "Nenhuma",
+      "Camuflagem": {
+        "parcial": "Camuflagem (20% de falha)",
+        "total": "Camuflagem total (50% de falha)"
+      },
+      "CamuflagemRolagem": "{tipo} — d10: {valor} (falha com {limite} ou menos)"
+    },
+
+    "Manobra": {
+      "Titulo": "Manobras de combate",
+      "Ajuda": "Teste de Luta oposto. Marque um alvo (T) para rolar a oposição automaticamente.",
+      "Oposicao": "Oposição de {nome}",
+      "agarrar": "Agarrar",
+      "derrubar": "Derrubar",
+      "desarmar": "Desarmar",
+      "empurrar": "Empurrar",
+      "quebrar": "Quebrar",
+      "atropelar": "Atropelar",
+      "Efeito": {
+        "agarrar": "O alvo fica agarrado (desprevenido, imóvel, −1d20 em ataques, só armas leves). Ele pode se soltar com ação padrão vencendo teste oposto.",
+        "derrubar": "O alvo fica caído (−2d20 em ataques corpo a corpo, −5 Defesa contra corpo a corpo, +5 contra ataques à distância).",
+        "desarmar": "O item que o alvo segura cai no chão, no espaço dele.",
+        "empurrar": "Empurra o alvo 1,5 m.",
+        "quebrar": "Você atinge um item que o alvo está segurando (veja Quebrando Objetos).",
+        "atropelar": "Avança pelo espaço do alvo e o deixa caído."
+      },
+      "Extra": {
+        "agarrar": "",
+        "derrubar": "Venceu por 5+: também empurra o alvo 1 quadrado na direção escolhida.",
+        "desarmar": "Venceu por 5+: o item é arremessado 1 quadrado na direção escolhida.",
+        "empurrar": "A cada 5 pontos de diferença, empurra +1,5 m.",
+        "quebrar": "",
+        "atropelar": ""
+      }
+    },
+
+    "Defesa": {
+      "Titulo": "Ações especiais de defesa",
+      "Bloqueio": "Bloqueio",
+      "Esquiva": "Esquiva",
+      "ContraAtaque": "Contra-ataque",
+      "BloqueioAjuda": "Reação (treinado em Fortitude): RD igual ao bônus de Fortitude contra um ataque corpo a corpo.",
+      "EsquivaAjuda": "Reação (treinado em Reflexos): soma o bônus de Reflexos à Defesa contra um ataque.",
+      "ContraAtaqueAjuda": "Reação (treinado em Luta): quando um ataque corpo a corpo contra você erra, faça um ataque contra o atacante.",
+      "BloqueioTexto": "Recebe RD {rd} contra este ataque corpo a corpo (use antes da rolagem do inimigo). Apenas 1 ação de defesa por rodada.",
+      "EsquivaTexto": "Soma +{bonus} de Reflexos à Defesa contra este ataque (Defesa {defesa}). Use antes da rolagem do inimigo. Apenas 1 ação de defesa por rodada.",
+      "ContraAtaqueTexto": "Se o ataque corpo a corpo contra você errar, use a reação para atacar o atacante.",
+      "ExigeTreino": "Esta ação exige treinamento em {pericia}."
+    },
+
+    "Resultado": {
+      "Sucesso": "Sucesso",
+      "Falha": "Falha",
+      "Extraordinario": "Sucesso Extraordinário!",
+      "Critico": "Acerto Crítico!",
+      "Desastre": "Falha Crítica (Desastre)!",
+      "ErrouCamuflagem": "Errou — camuflagem do alvo!"
+    },
+
+    "Card": {
+      "MaiorResultado": "Maior resultado mantido",
+      "MenorResultado": "Menor resultado mantido (atributo 0)",
+      "CD": "CD",
+      "NaoProficiente": "Sem proficiência (−10 no ataque)"
+    },
+
+    "Item": {
+      "Novo": "Novo(a) {tipo}",
+      "Usar": "Enviar ao chat",
+      "RemoverTitulo": "Remover item",
+      "RemoverConfirma": "Tem certeza que deseja remover \"{nome}\"?"
+    },
+
+    "TipoItem": {
+      "pericia": "Perícia",
+      "poder": "Poder",
+      "arma": "Arma",
+      "ritual": "Ritual",
+      "equipamento": "Equipamento",
+      "origem": "Origem",
+      "trilha": "Trilha",
+      "protecao": "Proteção",
+      "condicao": "Condição"
+    },
+
+    "Empunhadura": {
+      "leve": "Leve",
+      "umaMao": "Uma mão",
+      "duasMaos": "Duas mãos"
+    },
+
+    "TipoProtecao": {
+      "leve": "Leve",
+      "pesada": "Pesada"
+    },
+
+    "Patente": {
+      "recruta": "Recruta",
+      "operador": "Operador",
+      "agenteEspecial": "Agente Especial",
+      "oficial": "Oficial de Operações",
+      "agenteElite": "Agente de Elite",
+      "LimiteItens": "Itens/missão",
+      "LimiteItensAjuda": "Limite de itens por categoria (I/II/III/IV) que a Ordem libera por missão.",
+      "Sugestao": "Pelos Pontos de Prestígio, a patente sugerida é {patente} (aplicada a partir da próxima missão)."
+    },
+
+    "Afinidade": {
+      "Label": "Afinidade",
+      "Ajuda": "NEX 50%+: escolha um elemento (exceto Medo). Com afinidade, rituais desse elemento dispensam componentes; +2d20 em testes contra efeitos do próprio elemento e −2d20 contra o elemento opressor."
+    },
+
+    "Condicao": {
+      "Recebeu": "Condição: {nome}",
+      "Removida": "Condição encerrada: {nome}",
+      "JaPossui": "{nome} já está aplicada.",
+      "Agravou": "Condição agravada",
+      "AgravouTexto": "{de} novamente — em vez disso, fica {para}.",
+      "SeletorTitulo": "Aplicar condição — {nome}",
+      "SeletorAjuda": "Clique em uma condição oficial para aplicá-la com os efeitos automáticos (penalidades em dados, Defesa, deslocamento). Condições implicadas já estão incluídas.",
+      "Personalizada": "Personalizada"
+    },
+
+    "Morte": {
+      "DanoMassivo": "Dano massivo!",
+      "DanoMassivoTexto": "Sofreu {dano} de dano (≥ metade dos PV totais) de uma só vez: faça um teste de Fortitude (DT {dt}). Se falhar, é reduzido a 0 PV (inconsciente e morrendo).",
+      "Caiu": "{nome} caiu!",
+      "CaiuTexto": "Com 0 PV: fica inconsciente e morrendo. Se iniciar 3 turnos morrendo na mesma cena, morre. Medicina (DT 20) estabiliza; curar 1+ PV encerra as duas condições.",
+      "Recuperou": "{nome} recobrou a consciência",
+      "TurnoMorrendo": "Turno morrendo ({atual}/{max})",
+      "TurnoMorrendoTexto": "Iniciou um turno morrendo. Ao terceiro turno na mesma cena, morre.",
+      "Morreu": "Morte",
+      "MorreuTexto": "{nome} iniciou o terceiro turno morrendo na mesma cena e morreu.",
+      "EstabilizarTitulo": "Estabilizar {nome} (Medicina)",
+      "Estabilizado": "Estabilizado",
+      "EstabilizadoTexto": "{medico} estabilizou {nome}: não está mais morrendo (continua inconsciente até ser curado).",
+      "MarcarTurno": "Marcar turno morrendo ({atual}/{max})",
+      "MarcarTurnoAjuda": "Marcar o início de um turno morrendo (3 na mesma cena = morte)",
+      "EstabilizarAjuda": "Estabilizar com Medicina DT 20 (selecione antes o token do socorrista)",
+      "SelecioneMedico": "Selecione o token do personagem que fará o teste de Medicina.",
+      "LembreteTurno": "Turno de {nome} — atenção ao estado!"
+    },
+
+    "San": {
+      "Zerou": "{nome} está enlouquecendo!",
+      "ZerouTexto": "Com Sanidade 0. Se iniciar 3 turnos enlouquecendo na mesma cena, fica insano (NPC). Diplomacia (DT 20) acalma; recuperar 1+ SAN encerra a condição.",
+      "TurnoEnlouquecendo": "Turno enlouquecendo ({atual}/{max})",
+      "TurnoEnlouquecendoTexto": "Iniciou um turno enlouquecendo. Ao terceiro turno na mesma cena, fica insano.",
+      "Insano": "Insano",
+      "InsanoTexto": "{nome} sucumbiu à loucura e se torna um NPC sob controle do Mestre.",
+      "AcalmarTitulo": "Acalmar {nome} (Diplomacia)",
+      "Acalmado": "Acalmado",
+      "AcalmadoTexto": "{diplomata} acalmou {nome}: não está mais enlouquecendo.",
+      "MarcarTurno": "Marcar turno enlouquecendo ({atual}/{max})",
+      "MarcarTurnoAjuda": "Marcar o início de um turno enlouquecendo (3 na mesma cena = insano)",
+      "AcalmarAjuda": "Acalmar com Diplomacia DT 20 (selecione antes o token de quem acalma)",
+      "SelecioneDiplomata": "Selecione o token do personagem que fará o teste de Diplomacia."
+    },
+
+    "Poder": {
+      "Usar": "Usar poder (gasta PE e controla usos)",
+      "Paranormal": "Paranormal",
+      "Usos": "Uso {atual}/{max} na cena",
+      "UsosPorCena": "Usos por cena",
+      "UsosPorCenaAjuda": "0 = sem limite. O contador zera com a ferramenta Nova Cena.",
+      "UsosAtuais": "Usos gastos",
+      "UsosEsgotados": "{nome}: limite de {max} uso(s) por cena atingido.",
+      "Requisitos": "Pré-requisitos (texto)",
+      "RequisitosPlaceholder": "Ex.: For 2, treinado em Luta, Morte 2",
+      "AvisoNex": "exige NEX {req}% (atual: {atual}%).",
+      "AvisoClasse": "é um poder de {req}.",
+      "AvisoElemento": "exige afinidade/poderes de {req}."
+    },
+
+    "Trilha": {
+      "Habilidades": "Habilidades por NEX",
+      "SemHabilidades": "Nenhuma habilidade. Clique em + para adicionar (NEX 10/40/65/99).",
+      "Bloqueada": "Habilidade bloqueada: exige NEX {nex}%.",
+      "AvisoClasse": "{trilha} é uma trilha de {classe}.",
+      "ModNexAjuda": "Modificadores de trilha com NEX preenchido só valem a partir daquele marco.",
+      "Usar": "Usar habilidade (gasta PE)"
+    },
+
+    "Origem": {
+      "Aplicada": "Origem: {nome}",
+      "PericiasAplicadas": "Perícias treinadas automaticamente: {pericias}.",
+      "PoderConcedido": "Poder de origem: {poder} (adicione como item Poder, se desejar automação)."
+    },
+
+    "Interludio": {
+      "Botao": "Interlúdio",
+      "Titulo": "Interlúdio — {nome}",
+      "Realizar": "Realizar ação",
+      "AcaoLabel": "Ação de interlúdio",
+      "DescansoLabel": "Condição de descanso",
+      "Info": "Recuperação base = limite de PE por rodada ({base}).",
+      "Ajuda": "Cada ação de interlúdio só pode ser feita uma vez por interlúdio (exceto revisar caso). Pratos especiais e regalias podem melhorar a recuperação.",
+      "Acao": {
+        "dormir": "Dormir (recupera PV e PE)",
+        "relaxar": "Relaxar (recupera Sanidade)",
+        "exercitar": "Exercitar-se (+1d6 em teste físico)",
+        "ler": "Ler (+1d6 em teste mental)",
+        "revisar": "Revisar caso (pista complementar)",
+        "manutencao": "Manutenção (conserta um item)"
+      },
+      "Descanso": {
+        "precaria": "Precária (×½) — carro, tenda",
+        "normal": "Normal (×1) — quarto simples",
+        "confortavel": "Confortável (×2) — hotel 3 estrelas",
+        "luxuosa": "Luxuosa (×3) — hotel de luxo"
+      },
+      "DormirTexto": "Recuperou {valor} PV e {valor} PE.",
+      "RelaxarTexto": "Recuperou {valor} de Sanidade. Cada participante que relaxar no mesmo interlúdio concede +1 SAN a todos (aplique manualmente).",
+      "ExercitarTexto": "Recebe +1d6 em um teste baseado em Agilidade, Força ou Vigor até o fim da missão (acumula até o valor de Vigor; 1 bônus por teste). Use o campo Dados Extras ao rolar.",
+      "LerTexto": "Recebe +1d6 em um teste baseado em Intelecto ou Presença até o fim da missão (acumula até o valor de Intelecto; 1 bônus por teste).",
+      "RevisarTexto": "Se passar no teste, recebe uma pista complementar que deixou passar na cena revisada.",
+      "ManutencaoTexto": "Um item quebrado é consertado, recuperando os PV dele ao máximo."
+    },
+
+    "Criatura": {
+      "Ataque": "Ataque de criatura",
+      "VsDefesa": "{total} vs Defesa do alvo",
+      "Habilidade": "Habilidade de criatura",
+      "UsarHabilidade": "Usar habilidade (gasta PE, se houver)",
+      "SemHabilidades": "Nenhuma habilidade estruturada. Clique em + para adicionar.",
+      "SemAtaques": "Nenhum ataque estruturado. Clique em + para adicionar.",
+      "TesteAjuda": "Teste do ataque: quantidade de d20 (mantém o maior) + bônus (aceita fórmula, ex.: FOR+5). Ex.: 3Ⓞ+5",
+      "EfeitoPlaceholder": "Efeito adicional (ex.: agarrado, veneno...)",
+      "ResistPlaceholder": "Ex.: Balístico, impacto, perfuração 5; Sangue 10",
+      "Vulnerabilidades": "Vulnerabilidades",
+      "VulnerPlaceholder": "Ex.: Morte, fogo",
+      "ElementoAjuda": "Elemento da criatura: rituais do elemento opressor têm vantagem contra ela.",
+      "Presenca": "Presença Perturbadora",
+      "PresencaDano": "Dano mental",
+      "PresencaImune": "Imune a partir de",
+      "PresencaBotao": "Pedir Vontade de todos",
+      "PresencaAjuda": "Ao enxergar a criatura, cada agente faz Vontade (CD = DT). Falha = dano mental total; sucesso = metade. Agentes com NEX ≥ ao limite são imunes. 0 na DT desativa.",
+      "PresencaTitulo": "Presença Perturbadora — {nome}",
+      "PresencaTexto": "Vontade DT {dt}. Falha sofre {dano} de dano mental (sucesso = metade). Imune a partir de NEX {nex}%.",
+      "SemPresenca": "Defina a DT da Presença Perturbadora na ficha da criatura.",
+      "TodosImunes": "Todos os agentes na cena são imunes a esta Presença Perturbadora (NEX suficiente).",
+      "Derrotada": "{nome} foi derrotada (0 PV).",
+      "Enigma": "Enigma do Medo",
+      "EnigmaAjuda": "Criaturas de Medo transcendem as regras dos elementos: descreva aqui o enigma/condição que permite enfrentá-la ou neutralizá-la.",
+      "OrigemParanormal": "Origem Paranormal: criaturas não têm Sanidade e são imunes a dano mental, condições mentais e de medo, e a rituais de Medo.",
+      "TipoSer": "Tipo",
+      "Tamanho": "Tamanho",
+      "Descritores": "Descritores",
+      "DescritoresPlaceholder": "Ex.: Sangue, Morto-vivo",
+      "DefesaFixa": "Defesa fixa",
+      "DefesaFixaAjuda": "Valor de Defesa do statblock. Se 0, usa 10 + AGI + Outros.",
+      "Sentidos": "Sentidos",
+      "SentidosExtraPlaceholder": "Ex.: Percepção às cegas, Visão no escuro, Faro",
+      "Resistencias": "Resistências (testes)",
+      "RD": "Resistência a Dano (RD)",
+      "RDAjuda": "Adicione um tipo de dano e o valor reduzido. 'Todos' aplica a qualquer tipo. Usado no cálculo automático ao aplicar dano.",
+      "SemRD": "Sem Resistência a Dano. Clique em + para adicionar.",
+      "ResistDanos": "Resistências & Danos",
+      "ResistDanosAjuda": "Editar RD, imunidades e vulnerabilidades (cálculo automático de dano).",
+      "ResistDanosTitulo": "Resistências & Danos — {nome}",
+      "Editar": "Editar",
+      "TipoTodos": "Todos os tipos",
+      "MultiAjuda": "(Ctrl/Shift para marcar vários)",
+      "CondLabel": "Condição",
+      "OutrasPericias": "Outras perícias",
+      "SemPericias": "Nenhuma perícia adicional. Clique em + para adicionar.",
+      "DanoImune": "imune a este dano (0).",
+      "DanoVulneravel": "vulnerável — dano dobrado para {dano}.",
+      "DanoRD": "RD {rd} reduz o dano para {dano}.",
+      "ImuneCondicao": "{nome}: a criatura é imune a esta condição.",
+      "Multiplicador": "Ataques por ação (multiplicador)",
+      "CorpoACorpo": "Corpo a corpo",
+      "Distancia": "À distância",
+      "Tipo": {
+        "criatura": "Criatura",
+        "humano": "Humano",
+        "animal": "Animal",
+        "construto": "Construto",
+        "demais": "Outro"
+      }
+    },
+
+    "Tamanho": {
+      "minusculo": "Minúsculo",
+      "pequeno": "Pequeno",
+      "medio": "Médio",
+      "grande": "Grande",
+      "enorme": "Enorme",
+      "colossal": "Colossal"
+    },
+
+    "AcaoTipo": {
+      "Label": "Tipo de ação",
+      "padrao": "Padrão",
+      "movimento": "Movimento",
+      "completa": "Completa",
+      "livre": "Livre",
+      "reacao": "Reação"
+    },
+
+    "CondCategoria": {
+      "fisica": "Física",
+      "mental": "Mental",
+      "medo": "Medo",
+      "paralisia": "Paralisia",
+      "fadiga": "Fadiga",
+      "sentidos": "Sentidos",
+      "especial": "Especial"
+    },
+
+    "Alvo": {
+      "pvMax": "PV máximo",
+      "peMax": "PE máximo",
+      "sanMax": "Sanidade máxima",
+      "defesa": "Defesa",
+      "deslocamento": "Deslocamento",
+      "peRodada": "Limite de PE / turno",
+      "dtRituais": "DT de Rituais",
+      "carga": "Limite de carga",
+      "atribAgi": "Atributo: Agilidade",
+      "atribFor": "Atributo: Força",
+      "atribInt": "Atributo: Intelecto",
+      "atribPre": "Atributo: Presença",
+      "atribVig": "Atributo: Vigor",
+      "periciaTodas": "Todas as perícias",
+      "periciaPrefixo": "Perícia",
+      "custoPe": "Custo de PE (habilidades/rituais)",
+      "dadosTodos": "Dados: todos os testes",
+      "dadosAtaque": "Dados: testes de ataque",
+      "dadosAgi": "Dados: testes de Agilidade",
+      "dadosFor": "Dados: testes de Força",
+      "dadosInt": "Dados: testes de Intelecto",
+      "dadosPre": "Dados: testes de Presença",
+      "dadosVig": "Dados: testes de Vigor",
+      "dadosPericiaPrefixo": "Dados"
+    },
+
+    "Mod": {
+      "Ajuda": "Modificadores são somados automaticamente à ficha quando o item está ativo/equipado. O valor aceita fórmula (inteiro, atributos e dados).",
+      "Rotulo": "Rótulo (opcional)",
+      "Ativo": "Ativo",
+      "Vazio": "Nenhum modificador.",
+      "Adicionar": "Adicionar modificador",
+      "ValorPlaceholder": "5, @FOR+2, 1d6+@NEX",
+      "ValorAjuda": "Fórmula: inteiro, dados (ex.: 1d6) e referências @status. Use @ para qualquer status da ficha: @FOR @AGI @INT @PRE @VIG, @NEX, @NIVEL, @PV/@PVMAX, @PE/@PEMAX, @SAN/@SANMAX, @DEFESA, @DTRITUAIS, @DESLOCAMENTO, @VD, @luta (bônus de perícia) ou caminho cru (@recursos.pv.max). Em valores passivos, os dados usam a média."
+    },
+
+    "Carga": {
+      "Titulo": "Carga",
+      "Sobrecarregado": "Sobrecarregado: −5 Defesa, −3 m deslocamento e penalidade nas perícias de carga."
+    },
+
+    "Custom": {
+      "AddRecurso": "Adicionar recurso",
+      "NomeRecurso": "Nome do recurso",
+      "Cor": "Cor da barra",
+      "Remover": "Remover",
+      "LimiteRecursos": "Limite de 10 recursos personalizados atingido.",
+      "Acoes": "Ações personalizadas",
+      "Acao": "Ação personalizada",
+      "AcaoSemNome": "Ação",
+      "NomeAcao": "Nome da ação",
+      "Usar": "Usar ação (envia ao chat e gasta PE)",
+      "AcoesVazio": "Nenhuma ação personalizada. Clique em + para adicionar (até 10).",
+      "LimiteAcoes": "Limite de 10 ações personalizadas atingido."
+    },
+
+    "Carrossel": {
+      "Rodada": "Rodada",
+      "TurnoAnterior": "Turno anterior",
+      "ProximoTurno": "Próximo turno",
+      "RolarTodos": "Rolar iniciativa de todos",
+      "Setting": "Mostrar carrossel de combate",
+      "SettingHint": "Exibe a faixa de turnos de combate no topo da tela durante combates."
+    },
+
+    "Estado": {
+      "machucado": "Machucado",
+      "perturbado": "Perturbado",
+      "morrendo": "Morrendo",
+      "enlouquecendo": "Enlouquecendo"
+    },
+
+    "Vazio": {
+      "Armas": "Nenhuma arma. Clique em + para adicionar.",
+      "Poderes": "Nenhum poder. Clique em + para adicionar.",
+      "Rituais": "Nenhum ritual. Clique em + para adicionar.",
+      "Inventario": "Inventário vazio. Clique em + para adicionar."
+    },
+
+    "Aviso": {
+      "SemAtor": "Nenhum ator selecionado para a rolagem.",
+      "SoTreinada": "{pericia} só pode ser usada quando treinada — rolando mesmo assim.",
+      "FormulaInvalida": "Fórmula de dano inválida: {formula}",
+      "PEInsuficiente": "PE insuficiente: precisa de {custo}, você tem {atual}.",
+      "SemClasse": "Defina uma classe para o agente antes de subir de NEX.",
+      "NexMaximo": "O agente já está no NEX máximo (99%).",
+      "SemHistorico": "Não há histórico para reverter.",
+      "ItemNaoEncontrado": "Item não encontrado.",
+      "SemPermissao": "Esta ação é exclusiva do Mestre."
+    },
+
+    "Ajuda": {
+      "Titulo": "Ajudar aliado",
+      "ColTitulo": "Ajuda",
+      "Botao": "Ajudar aliado com esta perícia",
+      "LiderLabel": "Aliado ajudado",
+      "LiderPlaceholder": "Nome do aliado ou líder",
+      "LiderPadrao": "aliado",
+      "PericiaLabel": "Perícia usada para ajudar",
+      "Sucesso": "Sucesso: +{bonus} para {lider}",
+      "Falha": "Falha: sem bônus",
+      "CardHint": "Use +{bonus} como Mod Extra no próximo teste de {lider}."
+    },
+
+    "TE": {
+      "Titulo": "Teste Estendido",
+      "CriarTitulo": "Novo Teste Estendido",
+      "Criar": "Criar",
+      "TituloLabel": "Título",
+      "ComplexidadeLabel": "Complexidade",
+      "VariacaoLabel": "Variação",
+      "CD": "CD",
+      "Complexidade": {
+        "baixa": "Baixa",
+        "media": "Média",
+        "alta": "Alta"
+      },
+      "Variacao": {
+        "normal": "Normal",
+        "crescente": "Dificuldade crescente (+2 CD por teste)",
+        "grupo": "Em grupo (todos agem por rodada)",
+        "aberto": "Aberto (perícias variadas)"
+      },
+      "Contribuir": "Contribuir",
+      "Concluido": "Teste concluído com sucesso!",
+      "FalhaTotal": "Falha — 3 falhas acumuladas.",
+      "Sucessos": "Sucessos",
+      "Falhas": "Falhas",
+      "Historico": "Histórico de contribuições"
+    },
+
+    "PT": {
+      "BotaoLabel": "Pedir Teste",
+      "DialogTitulo": "Solicitar Teste aos Jogadores",
+      "NomeLabel": "Nome do teste",
+      "NomePlaceholder": "Ex.: Perceber emboscada",
+      "NomePadrao": "Teste solicitado",
+      "PericiaLabel": "Perícia",
+      "CDLabel": "CD",
+      "TokensLabel": "Participantes (tokens na cena)",
+      "SemTokens": "Nenhum token disponível na cena.",
+      "SemTokensSelecionados": "Selecione ao menos um participante.",
+      "Solicitar": "Solicitar",
+      "Aguardando": "Aguardando...",
+      "BotaoRolar": "Rolar",
+      "JaRolou": "Já rolou",
+      "Resumo": "{rolaram} de {total} rolaram | ✔ {sucessos} | ✗ {falhas}",
+      "MiniDialogTitulo": "Rolar teste solicitado",
+      "Oculto": "Oculto",
+      "OcultoLabel": "Rolagem secreta (o Mestre rola tudo agora)",
+      "OcultoAjuda": "Rola imediatamente a perícia de cada token, sem diálogo, e mostra os resultados apenas para o Mestre (ex.: Percepção passiva)."
+    },
+
+    "Inv": {
+      "Titulo": "Cena de Investigação",
+      "TituloDefault": "Investigação",
+      "CriarTitulo": "Nova Cena de Investigação",
+      "Criar": "Iniciar cena",
+      "TituloLabel": "Título da cena",
+      "ResumoLabel": "Resumo do caso",
+      "ObjetivoLabel": "Objetivo",
+      "PerguntasLabel": "Perguntas a responder",
+      "Rodada": "Rodada",
+      "Objetivo": "Objetivo",
+      "Perguntas": "Perguntas",
+      "Pistas": "Pistas",
+      "AddPista": "Adicionar pista",
+      "PistaPlaceholder": "Descreva a pista...",
+      "SemPistas": "Nenhuma pista descoberta ainda.",
+      "Procurar": "Procurar pistas",
+      "Facilitar": "Facilitar investigação",
+      "Ajudar": "Ajudar",
+      "ProximaRodada": "Próxima rodada",
+      "RodadaAnnounce": "Início da rodada {rodada} de investigação.",
+      "FacilitarSucesso": "{nome} facilita a investigação — aliados recebem +2 no próximo teste de Procurar Pistas.",
+      "DicaMestre": "Procurar Pistas",
+      "GrauExtraordinario": "Sucesso extraordinário/crítico: entregue a pista completa + uma pista complementar detalhada.",
+      "GrauSucesso": "Sucesso: entregue a pista básica da cena.",
+      "GrauFalha": "Falha: pista incompleta, com custo (tempo, recurso) ou nada nesta rodada.",
+      "GrauDesastre": "Desastre: além de não achar, algo dá errado — pista falsa, alarme ou complicação."
+    }
+  }
+}

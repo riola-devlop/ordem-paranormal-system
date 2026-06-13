@@ -1,0 +1,30 @@
+{{!-- Carrossel de turnos de combate (topo da tela) --}}
+<div class="op-carrossel-inner">
+
+  <div class="op-carrossel-rodada">
+    <i class="fas fa-skull"></i>
+    <span>{{localize "ORDEM.Carrossel.Rodada"}} {{round}}</span>
+  </div>
+
+  {{#if ehMestre}}
+    <a class="op-carrossel-btn" data-action="turno-anterior" title="{{localize 'ORDEM.Carrossel.TurnoAnterior'}}"><i class="fas fa-chevron-left"></i></a>
+  {{/if}}
+
+  <div class="op-carrossel-faixa">
+    {{#each combatentes}}
+      <div class="op-carrossel-card {{#if this.ativo}}ativo{{/if}} {{#if this.derrotado}}derrotado{{/if}}"
+           data-action="focar-token" data-combatant-id="{{this.id}}" title="{{this.nome}}">
+        <img src="{{this.img}}" alt="{{this.nome}}" />
+        <div class="op-carrossel-nome">{{this.nome}}</div>
+        {{#if this.temIniciativa}}<div class="op-carrossel-ini">{{this.iniciativa}}</div>{{/if}}
+        {{#if this.oculto}}<i class="fas fa-eye-slash op-carrossel-oculto"></i>{{/if}}
+      </div>
+    {{/each}}
+  </div>
+
+  {{#if ehMestre}}
+    <a class="op-carrossel-btn" data-action="proximo-turno" title="{{localize 'ORDEM.Carrossel.ProximoTurno'}}"><i class="fas fa-chevron-right"></i></a>
+    <a class="op-carrossel-btn" data-action="rolar-todos" title="{{localize 'ORDEM.Carrossel.RolarTodos'}}"><i class="fas fa-dice-d20"></i></a>
+  {{/if}}
+
+</div>

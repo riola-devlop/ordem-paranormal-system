@@ -1,0 +1,336 @@
+{{!-- Ficha de Criatura (statblock de Ameaça) — layout alinhado à ficha de Agente --}}
+<form class="ordem-agente-sheet ordem-criatura-sheet" autocomplete="off">
+
+  {{!-- ===================== BARRA SUPERIOR ============================ --}}
+  <header class="op-topo">
+    <img class="op-perfil" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
+    <div class="op-topo-campos">
+      <input class="op-nome" type="text" name="name" value="{{actor.name}}" placeholder="{{localize 'ORDEM.Campo.nome'}}" />
+      <div class="op-topo-linha">
+        <div class="op-campo">
+          <label>{{localize "ORDEM.Campo.vd"}}</label>
+          <input type="text" name="system.vd" value="{{system.vd}}" />
+        </div>
+        <div class="op-campo">
+          <label>{{localize "ORDEM.Criatura.TipoSer"}}</label>
+          <select name="system.tipoSer">
+            {{#each tipoSerOptions}}
+              <option value="{{this.value}}" {{#if (ordemEq this.value ../system.tipoSer)}}selected{{/if}}>{{this.label}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="op-campo">
+          <label>{{localize "ORDEM.Criatura.Tamanho"}}</label>
+          <select name="system.tamanho">
+            {{#each tamanhoOptions}}
+              <option value="{{this.value}}" {{#if (ordemEq this.value ../system.tamanho)}}selected{{/if}}>{{this.label}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="op-campo">
+          <label>{{localize "ORDEM.Campo.elemento"}}</label>
+          <select name="system.elemento" title="{{localize 'ORDEM.Criatura.ElementoAjuda'}}">
+            <option value="">—</option>
+            {{#each elementoOptions}}
+              <option value="{{this.value}}" {{#if (ordemEq this.value ../system.elemento)}}selected{{/if}}>{{this.label}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="op-campo">
+          <label>{{localize "ORDEM.Criatura.Descritores"}}</label>
+          <input type="text" name="system.descritores" value="{{system.descritores}}" placeholder="{{localize 'ORDEM.Criatura.DescritoresPlaceholder'}}" />
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="op-corpo">
+
+    {{!-- ============================ COLUNA ESQUERDA ====================== --}}
+    <aside class="op-esquerda">
+
+      {{!-- Atributos clicáveis (pentágono) --}}
+      <div class="op-pentagono">
+        <div class="op-ring"></div>
+        <div class="op-centro">{{localize "ORDEM.Pentagono.Centro"}}</div>
+        {{#each atributosList}}
+          <div class="op-attr pos-{{this.key}}" data-action="rolar-atributo" data-atributo="{{this.key}}"
+               title="{{localize 'ORDEM.Rolar.Atributo'}} ({{this.valor}}d20)">
+            <input class="op-attr-valor" type="number" name="system.atributos.{{this.key}}" value="{{this.valor}}" />
+            <div class="op-attr-nome">{{this.label}}</div>
+            <div class="op-attr-abrev">{{this.abrev}}</div>
+          </div>
+        {{/each}}
+      </div>
+
+      {{!-- Defesa / VD / Deslocamento --}}
+      <div class="op-caixas">
+        <div class="op-caixa">
+          <div class="op-caixa-derivado">{{system.defesa.total}}</div>
+          <label>{{localize "ORDEM.Campo.defesa"}}</label>
+        </div>
+        <div class="op-caixa desloc">
+          <div class="op-desloc-valor">
+            <input type="number" name="system.deslocamento" value="{{system.deslocamento}}" /> m
+          </div>
+          <label>{{localize "ORDEM.Campo.deslocamento"}}</label>
+        </div>
+        <div class="op-caixa">
+          <input type="number" name="system.defesa.valor" value="{{system.defesa.valor}}" min="0" title="{{localize 'ORDEM.Criatura.DefesaFixaAjuda'}}" />
+          <label>{{localize "ORDEM.Criatura.DefesaFixa"}}</label>
+        </div>
+      </div>
+
+      {{!-- VIDA --}}
+      <div class="op-barra-bloco vida">
+        <div class="op-barra-titulo">{{localize "ORDEM.Recurso.pv"}}{{#if derivado.estado.machucado}} <i class="fas fa-droplet" title="{{localize 'ORDEM.Estado.machucado'}}"></i>{{/if}}</div>
+        <div class="op-barra-trilho">
+          <div class="op-barra-fill pv" style="width: {{ordemPct system.recursos.pv.value system.recursos.pv.max}}%"></div>
+          <div class="op-barra-steppers">
+            <a data-action="recurso-step" data-recurso="pv" data-step="min" title="Mínimo">&laquo;</a>
+            <a data-action="recurso-step" data-recurso="pv" data-step="dec">&lsaquo;</a>
+            <span class="op-barra-num">
+              <input type="number" name="system.recursos.pv.value" value="{{system.recursos.pv.value}}" /> /
+              <input type="number" name="system.recursos.pv.max" value="{{system.recursos.pv.max}}" />
+            </span>
+            <a data-action="recurso-step" data-recurso="pv" data-step="inc">&rsaquo;</a>
+            <a data-action="recurso-step" data-recurso="pv" data-step="max" title="Máximo">&raquo;</a>
+          </div>
+        </div>
+      </div>
+
+      {{!-- ESFORÇO (PE) — opcional --}}
+      <div class="op-barra-bloco esforco">
+        <div class="op-barra-titulo">{{localize "ORDEM.Recurso.pe"}}</div>
+        <div class="op-barra-trilho">
+          <div class="op-barra-fill pe" style="width: {{ordemPct system.recursos.pe.value system.recursos.pe.max}}%"></div>
+          <div class="op-barra-steppers">
+            <a data-action="recurso-step" data-recurso="pe" data-step="min" title="Mínimo">&laquo;</a>
+            <a data-action="recurso-step" data-recurso="pe" data-step="dec">&lsaquo;</a>
+            <span class="op-barra-num">
+              <input type="number" name="system.recursos.pe.value" value="{{system.recursos.pe.value}}" /> /
+              <input type="number" name="system.recursos.pe.max" value="{{system.recursos.pe.max}}" />
+            </span>
+            <a data-action="recurso-step" data-recurso="pe" data-step="inc">&rsaquo;</a>
+            <a data-action="recurso-step" data-recurso="pe" data-step="max" title="Máximo">&raquo;</a>
+          </div>
+        </div>
+      </div>
+
+      {{!-- Sentidos e Resistências roláveis (statblock) --}}
+      <div class="op-stat-bloco">
+        <h4>{{localize "ORDEM.Criatura.Sentidos"}}</h4>
+        <div class="op-stat-linha">
+          <a class="op-stat-chip" data-action="rolar-stat" data-chave="sentidos.percepcao" title="{{localize 'ORDEM.Rolar.Pericia'}}">
+            <i class="fas fa-eye"></i> {{localize "ORDEM.Pericia.percepcao"}}
+          </a>
+          <span class="op-stat-edit">
+            <input type="number" name="system.sentidos.percepcao.dados" value="{{system.sentidos.percepcao.dados}}" min="0" />Ⓞ
+            <input type="number" name="system.sentidos.percepcao.bonus" value="{{system.sentidos.percepcao.bonus}}" />
+          </span>
+        </div>
+        <div class="op-stat-linha">
+          <a class="op-stat-chip" data-action="rolar-stat" data-chave="sentidos.iniciativa" title="{{localize 'ORDEM.Rolar.Pericia'}}">
+            <i class="fas fa-bolt"></i> {{localize "ORDEM.Pericia.iniciativa"}}
+          </a>
+          <span class="op-stat-edit">
+            <input type="number" name="system.sentidos.iniciativa.dados" value="{{system.sentidos.iniciativa.dados}}" min="0" />Ⓞ
+            <input type="number" name="system.sentidos.iniciativa.bonus" value="{{system.sentidos.iniciativa.bonus}}" />
+          </span>
+        </div>
+        <input type="text" class="op-stat-extra" name="system.sentidos.extra" value="{{system.sentidos.extra}}" placeholder="{{localize 'ORDEM.Criatura.SentidosExtraPlaceholder'}}" />
+      </div>
+
+      <div class="op-stat-bloco">
+        <h4>{{localize "ORDEM.Criatura.Resistencias"}}</h4>
+        {{#each savesList}}
+          <div class="op-stat-linha">
+            <a class="op-stat-chip" data-action="rolar-stat" data-chave="saves.{{this.key}}" title="{{localize 'ORDEM.Rolar.Pericia'}}">
+              <i class="fas fa-shield-halved"></i> {{this.label}}
+            </a>
+            <span class="op-stat-edit">
+              <input type="number" name="system.saves.{{this.key}}.dados" value="{{this.dados}}" min="0" />Ⓞ
+              <input type="number" name="system.saves.{{this.key}}.bonus" value="{{this.bonus}}" />
+            </span>
+          </div>
+        {{/each}}
+      </div>
+
+    </aside>
+
+    {{!-- ============================ COLUNA DIREITA ====================== --}}
+    <section class="op-direita">
+
+      <nav class="sheet-tabs tabs op-tabs" data-group="primary">
+        <a class="item" data-tab="principal"><i class="fas fa-skull"></i> {{localize "ORDEM.Aba.Principal"}}</a>
+        <a class="item" data-tab="acoes"><i class="fas fa-khanda"></i> {{localize "ORDEM.Aba.Ataques"}}</a>
+        <a class="item" data-tab="paranormal"><i class="fas fa-eye"></i> {{localize "ORDEM.Aba.Paranormal"}}</a>
+      </nav>
+
+      <section class="sheet-body">
+
+        {{!-- ----------------------------- PRINCIPAL ----------------------- --}}
+        <div class="tab" data-group="primary" data-tab="principal">
+          <div class="campos-grid">
+            <div class="form-group">
+              <label>{{localize "ORDEM.Campo.categoria"}}</label>
+              <select name="system.categoria">
+                {{#each categoriaOptions}}
+                  <option value="{{this.value}}" {{#if (ordemEq this.value ../system.categoria)}}selected{{/if}}>{{this.label}}</option>
+                {{/each}}
+              </select>
+            </div>
+            <div class="form-group">
+              <label>{{localize "ORDEM.Campo.nex"}}</label>
+              <input type="number" name="system.nex" value="{{system.nex}}" min="0" max="99" />
+            </div>
+          </div>
+
+          {{!-- Resistências & Danos: resumo + botão que abre o modal de edição --}}
+          <div class="secao-cabecalho">
+            <h3>{{localize "ORDEM.Criatura.ResistDanos"}}</h3>
+            <a class="botao-adicionar" data-action="editar-resist-danos" title="{{localize 'ORDEM.Criatura.ResistDanosAjuda'}}"><i class="fas fa-sliders"></i> {{localize "ORDEM.Criatura.Editar"}}</a>
+          </div>
+          <div class="op-resumo-rd">
+            <div class="op-resumo-linha"><i class="fas fa-shield-halved"></i> <strong>{{localize "ORDEM.Criatura.RD"}}:</strong> {{#if rdResumo}}{{rdResumo}}{{else}}<span class="vazio-inline">—</span>{{/if}}</div>
+            <div class="op-resumo-linha"><i class="fas fa-ban"></i> <strong>{{localize "ORDEM.Campo.imunidades"}}:</strong> {{#if imuneResumo}}{{imuneResumo}}{{else}}<span class="vazio-inline">—</span>{{/if}}</div>
+            <div class="op-resumo-linha"><i class="fas fa-heart-crack"></i> <strong>{{localize "ORDEM.Criatura.Vulnerabilidades"}}:</strong> {{#if vulnResumo}}{{vulnResumo}}{{else}}<span class="vazio-inline">—</span>{{/if}}</div>
+          </div>
+
+          {{!-- Outras perícias: select da perícia + dados/bônus rolável --}}
+          <div class="secao-cabecalho">
+            <h3>{{localize "ORDEM.Criatura.OutrasPericias"}}</h3>
+            <a class="botao-adicionar" data-action="cp-add"><i class="fas fa-plus"></i></a>
+          </div>
+          <ul class="lista-itens criatura-pericias">
+            {{#each periciasLista}}
+              <li class="item-linha cp-linha" data-index="{{@index}}">
+                <a class="botao-atacar" data-action="cp-rolar" data-index="{{@index}}" title="{{localize 'ORDEM.Rolar.Pericia'}}"><i class="fas fa-dice-d20"></i></a>
+                <select class="cp-campo cp-pericia" data-field="pericia">
+                  {{#each ../periciaOptions}}<option value="{{this.value}}" {{#if (ordemEq this.value ../pericia)}}selected{{/if}}>{{this.label}}</option>{{/each}}
+                </select>
+                <span class="cp-teste">
+                  <input class="cp-campo" data-field="dados" type="number" value="{{this.dados}}" min="0" />Ⓞ +
+                  <input class="cp-campo" data-field="bonus" type="text" value="{{this.bonus}}" placeholder="0" title="{{localize 'ORDEM.Mod.ValorAjuda'}}" />
+                </span>
+                <span class="acoes"><a data-action="cp-remove" data-index="{{@index}}"><i class="fas fa-trash"></i></a></span>
+              </li>
+            {{else}}
+              <li class="vazio">{{localize "ORDEM.Criatura.SemPericias"}}</li>
+            {{/each}}
+          </ul>
+
+          {{!-- Habilidades passivas estruturadas --}}
+          <div class="secao-cabecalho">
+            <h3>{{localize "ORDEM.Campo.habilidades"}}</h3>
+            <a class="botao-adicionar" data-action="ch-add"><i class="fas fa-plus"></i></a>
+          </div>
+          <ul class="lista-itens criatura-habs">
+            {{#each habilidadesLista}}
+              <li class="item-linha ch-linha" data-index="{{@index}}">
+                <a class="botao-conjurar" data-action="ch-usar" data-index="{{@index}}" title="{{localize 'ORDEM.Criatura.UsarHabilidade'}}"><i class="fas fa-bolt"></i></a>
+                <input class="ch-campo ch-nome" data-field="nome" type="text" value="{{this.nome}}" placeholder="{{localize 'ORDEM.Campo.nome'}}" />
+                <span class="ch-custo">
+                  <input class="ch-campo" data-field="custoPe" type="number" value="{{this.custoPe}}" min="0" title="{{localize 'ORDEM.Campo.custoPe'}}" /> PE
+                </span>
+                <input class="ch-campo ch-desc" data-field="descricao" type="text" value="{{this.descricao}}" placeholder="{{localize 'ORDEM.Campo.efeito'}}" />
+                <span class="acoes">
+                  <a data-action="ch-remove" data-index="{{@index}}"><i class="fas fa-trash"></i></a>
+                </span>
+              </li>
+            {{else}}
+              <li class="vazio">{{localize "ORDEM.Criatura.SemHabilidades"}}</li>
+            {{/each}}
+          </ul>
+
+          <h3 class="secao-titulo">{{localize "ORDEM.Campo.habilidades"}} ({{localize "ORDEM.Aba.Descricao"}})</h3>
+          {{editor habilidadesHTML target="system.habilidades" button=true editable=editable engine="prosemirror"}}
+        </div>
+
+        {{!-- ----------------------------- AÇÕES --------------------------- --}}
+        <div class="tab" data-group="primary" data-tab="acoes">
+          <div class="secao-cabecalho">
+            <h3>{{localize "ORDEM.Aba.Ataques"}}</h3>
+            <a class="botao-adicionar" data-action="ca-add"><i class="fas fa-plus"></i></a>
+          </div>
+          <ul class="lista-itens criatura-atks">
+            {{#each ataquesLista}}
+              <li class="item-linha ca-linha" data-index="{{@index}}">
+                <a class="botao-atacar" data-action="ca-rolar" data-index="{{@index}}" title="{{localize 'ORDEM.Combate.Atacar'}}"><i class="fas fa-crosshairs"></i></a>
+                <input class="ca-campo ca-nome" data-field="nome" type="text" value="{{this.nome}}" placeholder="{{localize 'ORDEM.Campo.nome'}}" />
+                <select class="ca-campo ca-acao" data-field="acao" title="{{localize 'ORDEM.AcaoTipo.Label'}}">
+                  {{#each ../acaoTipoOptions}}<option value="{{this.value}}" {{#if (ordemEq this.value ../acao)}}selected{{/if}}>{{this.label}}</option>{{/each}}
+                </select>
+                <select class="ca-campo ca-alcance" data-field="alcance" title="{{localize 'ORDEM.Campo.alcance'}}">
+                  {{#each ../alcanceOptions}}<option value="{{this.value}}" {{#if (ordemEq this.value ../alcance)}}selected{{/if}}>{{this.label}}</option>{{/each}}
+                </select>
+                <span class="ca-teste" title="{{localize 'ORDEM.Criatura.TesteAjuda'}}">
+                  <input class="ca-campo" data-field="dados" type="number" value="{{this.dados}}" min="0" />Ⓞ +
+                  <input class="ca-campo" data-field="bonus" type="number" value="{{this.bonus}}" />
+                </span>
+                <span class="ca-mult" title="{{localize 'ORDEM.Criatura.Multiplicador'}}">
+                  ×<input class="ca-campo" data-field="multiplicador" type="number" value="{{this.multiplicador}}" min="1" />
+                </span>
+                <input class="ca-campo ca-dano" data-field="dano" type="text" value="{{this.dano}}" placeholder="1d8+8" title="{{localize 'ORDEM.Campo.dano'}}" />
+                <input class="ca-campo ca-tipo" data-field="tipoDano" type="text" value="{{this.tipoDano}}" placeholder="{{localize 'ORDEM.Campo.tipoDano'}}" />
+                <input class="ca-campo ca-efeito" data-field="efeito" type="text" value="{{this.efeito}}" placeholder="{{localize 'ORDEM.Criatura.EfeitoPlaceholder'}}" />
+                <span class="acoes">
+                  <a data-action="ca-remove" data-index="{{@index}}"><i class="fas fa-trash"></i></a>
+                </span>
+              </li>
+            {{else}}
+              <li class="vazio">{{localize "ORDEM.Criatura.SemAtaques"}}</li>
+            {{/each}}
+          </ul>
+
+          {{!-- Armas embutidas (compatibilidade) --}}
+          <div class="secao-cabecalho">
+            <h3>{{localize "ORDEM.TipoItem.arma"}}</h3>
+            <a class="botao-adicionar" data-action="criar-item" data-tipo="arma"><i class="fas fa-plus"></i></a>
+          </div>
+          <ul class="lista-itens">
+            {{#each armas}}
+              <li class="item-linha" data-item-id="{{this.id}}">
+                <img src="{{this.img}}" />
+                <span class="nome">{{this.name}}</span>
+                <span class="dado">{{this.system.dano}}</span>
+                <span class="acoes">
+                  <a data-action="rolar-dano" title="{{localize 'ORDEM.Dano.Rolar'}}"><i class="fas fa-burst"></i></a>
+                  <a data-action="editar-item"><i class="fas fa-edit"></i></a>
+                  <a data-action="remover-item"><i class="fas fa-trash"></i></a>
+                </span>
+              </li>
+            {{/each}}
+          </ul>
+
+          <h3 class="secao-titulo">{{localize "ORDEM.Campo.ataques"}} ({{localize "ORDEM.Aba.Descricao"}})</h3>
+          {{editor ataquesHTML target="system.ataques" button=true editable=editable engine="prosemirror"}}
+        </div>
+
+        {{!-- ---------------------------- PARANORMAL ----------------------- --}}
+        <div class="tab" data-group="primary" data-tab="paranormal">
+          <div class="op-presenca">
+            <label><i class="fas fa-eye"></i> {{localize "ORDEM.Criatura.Presenca"}}</label>
+            <div class="op-presenca-linha">
+              <span>{{localize "ORDEM.Dialog.CD"}} <input type="number" name="system.presenca.dt" value="{{system.presenca.dt}}" min="0" /></span>
+              <span>{{localize "ORDEM.Criatura.PresencaDano"}} <input type="text" name="system.presenca.dano" value="{{system.presenca.dano}}" placeholder="3d6" /></span>
+              <span>{{localize "ORDEM.Criatura.PresencaImune"}} NEX <input type="number" name="system.presenca.nexImune" value="{{system.presenca.nexImune}}" min="0" max="99" />%</span>
+            </div>
+            <button type="button" data-action="presenca-perturbadora" {{#unless system.presenca.dt}}disabled{{/unless}}>
+              <i class="fas fa-skull"></i> {{localize "ORDEM.Criatura.PresencaBotao"}}
+            </button>
+            <p class="hint">{{localize "ORDEM.Criatura.PresencaAjuda"}}</p>
+          </div>
+
+          <h3 class="secao-titulo"><i class="fas fa-puzzle-piece"></i> {{localize "ORDEM.Criatura.Enigma"}}</h3>
+          <p class="hint">{{localize "ORDEM.Criatura.EnigmaAjuda"}}</p>
+          {{editor enigmaHTML target="system.enigmaMedo" button=true editable=editable engine="prosemirror"}}
+
+          <p class="hint op-origem-paranormal"><i class="fas fa-ghost"></i> {{localize "ORDEM.Criatura.OrigemParanormal"}}</p>
+        </div>
+
+      </section>
+    </section>
+
+  </div>
+</form>

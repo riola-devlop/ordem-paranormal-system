@@ -1,0 +1,61 @@
+{
+  "id": "ordem-paranormal",
+  "title": "Ordem Paranormal RPG",
+  "description": "Sistema brasileiro de RPG de investigação e terror paranormal.",
+  "version": "0.1.0",
+  "compatibility": {
+    "minimum": "12",
+    "verified": "12",
+    "maximum": "12"
+  },
+  "authors": [
+    {
+      "name": "Comunidade Ordem Paranormal (não-oficial)",
+      "flags": {}
+    }
+  ],
+  "esmodules": [
+    "module.js"
+  ],
+  "styles": [
+    "styles/ordem-paranormal.css"
+  ],
+  "languages": [
+    {
+      "lang": "pt-BR",
+      "name": "Português (Brasil)",
+      "path": "lang/pt-BR.json"
+    }
+  ],
+  "packs": [
+    { "name": "poderes",       "label": "Poderes",       "path": "packs/poderes",       "type": "Item",  "system": "ordem-paranormal" },
+    { "name": "rituais",       "label": "Rituais",       "path": "packs/rituais",       "type": "Item",  "system": "ordem-paranormal" },
+    { "name": "armas",         "label": "Armas",         "path": "packs/armas",         "type": "Item",  "system": "ordem-paranormal" },
+    { "name": "protecoes",     "label": "Proteções",     "path": "packs/protecoes",     "type": "Item",  "system": "ordem-paranormal" },
+    { "name": "equipamentos",  "label": "Equipamentos",  "path": "packs/equipamentos",  "type": "Item",  "system": "ordem-paranormal" },
+    { "name": "origens",       "label": "Origens",       "path": "packs/origens",       "type": "Item",  "system": "ordem-paranormal" },
+    { "name": "trilhas",       "label": "Trilhas",       "path": "packs/trilhas",       "type": "Item",  "system": "ordem-paranormal" },
+    { "name": "condicoes",     "label": "Condições",     "path": "packs/condicoes",     "type": "Item",  "system": "ordem-paranormal" },
+    { "name": "criaturas",     "label": "Criaturas",     "path": "packs/criaturas",     "type": "Actor", "system": "ordem-paranormal" }
+  ],
+  "packFolders": [
+    {
+      "name": "Ordem Paranormal",
+      "sorting": "m",
+      "packs": ["poderes", "rituais", "armas", "protecoes", "equipamentos", "origens", "trilhas", "condicoes", "criaturas"]
+    }
+  ],
+  "grid": {
+    "distance": 1.5,
+    "units": "m"
+  },
+  "primaryTokenAttribute": "recursos.pv",
+  "secondaryTokenAttribute": "recursos.san",
+  "url": "https://example.com/ordem-paranormal",
+  "manifest": "",
+  "download": "",
+  "license": "",
+  "readme": "",
+  "bugs": "",
+  "changelog": ""
+}

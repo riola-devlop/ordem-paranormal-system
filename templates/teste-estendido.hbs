@@ -1,0 +1,63 @@
+{{!-- Janela de Teste Estendido --}}
+<div class="ordem-te-app">
+
+  <header class="te-header">
+    <span class="te-titulo">{{titulo}}</span>
+    <span class="te-cd">{{localize "ORDEM.TE.CD"}}: <strong>{{cd}}</strong></span>
+  </header>
+
+  {{#if variacao}}
+    <div class="te-variacao"><i class="fas fa-sliders"></i> {{variacao}}</div>
+  {{/if}}
+
+  <div class="te-barras">
+
+    {{!-- Barra de Sucessos --}}
+    <div class="te-barra-grupo">
+      <span class="te-barra-label">{{localize "ORDEM.TE.Sucessos"}} ({{sucessos}}/{{sucessosNecessarios}})</span>
+      <div class="te-barra">
+        {{#each sucessosDots}}
+          <span class="te-dot {{#if this.cheio}}cheio{{/if}}"></span>
+        {{/each}}
+      </div>
+    </div>
+
+    {{!-- Barra de Falhas --}}
+    <div class="te-barra-grupo">
+      <span class="te-barra-label">{{localize "ORDEM.TE.Falhas"}} ({{falhas}}/3)</span>
+      <div class="te-barra falhas">
+        {{#each falhasDots}}
+          <span class="te-dot {{#if this.cheio}}cheio{{/if}}"></span>
+        {{/each}}
+      </div>
+    </div>
+
+  </div>
+
+  {{#if concluido}}
+    <div class="te-estado {{estadoClasse}}">
+      <i class="fas {{#if venceu}}fa-trophy{{else}}fa-skull{{/if}}"></i>
+      {{estadoLabel}}
+    </div>
+  {{else}}
+    <div class="te-acoes">
+      <button type="button" data-action="te-contribuir">
+        <i class="fas fa-dice-d20"></i> {{localize "ORDEM.TE.Contribuir"}}
+      </button>
+    </div>
+  {{/if}}
+
+  {{#if historico.length}}
+    <details class="te-historico">
+      <summary>{{localize "ORDEM.TE.Historico"}}</summary>
+      {{#each historico}}
+        <div class="te-entrada {{this.resultado}}">
+          <span>{{this.periciaLabel}}</span>
+          <span>{{this.total}} vs {{this.cd}}</span>
+          <span class="te-res-label">{{this.resultadoLabel}}</span>
+        </div>
+      {{/each}}
+    </details>
+  {{/if}}
+
+</div>

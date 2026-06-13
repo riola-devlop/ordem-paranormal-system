@@ -1,0 +1,81 @@
+{{!-- Diálogo de rolagem de teste: escolha de CD, modificadores e dados extras --}}
+<form class="ordem-roll-dialog">
+
+  <p class="roll-info">{{infoLinha}}</p>
+
+  {{#if soTreinada}}
+    {{#unless treinada}}
+      <p class="aviso-treino"><i class="fas fa-triangle-exclamation"></i> {{localize "ORDEM.Dialog.AvisoSoTreinada"}}</p>
+    {{/unless}}
+  {{/if}}
+
+  <div class="form-group">
+    <label for="ordem-cd">{{localize "ORDEM.Dialog.CD"}}</label>
+    <input id="ordem-cd" type="number" name="cd" value="{{cd}}" list="ordem-cd-presets" />
+    <datalist id="ordem-cd-presets">
+      <option value="10">{{localize "ORDEM.CD.facil"}}</option>
+      <option value="15">{{localize "ORDEM.CD.moderado"}}</option>
+      <option value="18">{{localize "ORDEM.CD.dificil"}}</option>
+      <option value="20">{{localize "ORDEM.CD.paranormal"}}</option>
+    </datalist>
+  </div>
+
+  <div class="form-group">
+    <label for="ordem-mod">{{localize "ORDEM.Dialog.ModExtra"}}</label>
+    <input id="ordem-mod" type="text" name="modExtra" value="0" placeholder="{{localize 'ORDEM.Mod.ValorPlaceholder'}}" title="{{localize 'ORDEM.Mod.ValorAjuda'}}" />
+  </div>
+
+  <div class="form-group">
+    <label for="ordem-circ">{{localize "ORDEM.Dialog.Circunstancia"}}</label>
+    <select id="ordem-circ" name="circunstancia">
+      <option value="normal">{{localize "ORDEM.Dialog.Normal"}}</option>
+      <option value="favoravel">{{localize "ORDEM.Dialog.Favoravel"}}</option>
+      <option value="desfavoravel">{{localize "ORDEM.Dialog.Desfavoravel"}}</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="ordem-dados">{{localize "ORDEM.Dialog.DadosExtra"}}</label>
+    <input id="ordem-dados" type="number" name="dadosExtra" value="0" min="-10" />
+    <p class="hint">{{localize "ORDEM.Dialog.DadosExtraHint"}}</p>
+  </div>
+
+  {{#if ehAtaque}}
+    <fieldset class="op-habilidades op-situacao">
+      <legend>{{localize "ORDEM.Situacao.Titulo"}}</legend>
+      <label class="op-hab"><input type="checkbox" name="sitFlanqueando" /> {{localize "ORDEM.Situacao.FlanqueandoOpcao"}}</label>
+      <label class="op-hab"><input type="checkbox" name="sitElevada" /> {{localize "ORDEM.Situacao.ElevadaOpcao"}}</label>
+      <div class="form-group">
+        <label>{{localize "ORDEM.Situacao.CoberturaLabel"}}</label>
+        <select name="sitCobertura">
+          <option value="nenhuma">{{localize "ORDEM.Situacao.Nenhuma"}}</option>
+          <option value="parcial">{{localize "ORDEM.Situacao.CoberturaParcial"}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>{{localize "ORDEM.Situacao.CamuflagemLabel"}}</label>
+        <select name="sitCamuflagem">
+          <option value="nenhuma">{{localize "ORDEM.Situacao.Nenhuma"}}</option>
+          <option value="parcial">{{localize "ORDEM.Situacao.Camuflagem.parcial"}}</option>
+          <option value="total">{{localize "ORDEM.Situacao.Camuflagem.total"}}</option>
+        </select>
+      </div>
+    </fieldset>
+  {{/if}}
+
+  {{#if temHabilidades}}
+    <fieldset class="op-habilidades">
+      <legend>{{localize "ORDEM.Dialog.Habilidades"}} <span class="pe-atual">({{localize "ORDEM.Dialog.PEAtual"}}: {{peAtual}})</span></legend>
+      {{#if habil.ataqueEspecial}}
+        <label class="op-hab"><input type="checkbox" name="usarAtaqueEspecial" /> {{habil.ataqueEspecial.label}}</label>
+      {{/if}}
+      {{#if habil.perito}}
+        <label class="op-hab"><input type="checkbox" name="usarPerito" /> {{habil.perito.label}}</label>
+      {{/if}}
+      {{#if habil.ecletico}}
+        <label class="op-hab"><input type="checkbox" name="usarEcletico" /> {{habil.ecletico.label}}</label>
+      {{/if}}
+    </fieldset>
+  {{/if}}
+
+</form>

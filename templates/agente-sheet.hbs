@@ -1,0 +1,637 @@
+{{!-- Ficha do Agente — Ordem Paranormal RPG (layout inspirado na ficha oficial) --}}
+<form class="ordem-agente-sheet" autocomplete="off">
+
+  {{!-- ===================== BARRA SUPERIOR: ORIGEM / CLASSE ================= --}}
+  <header class="op-topo">
+    <img class="op-perfil" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
+    <div class="op-topo-campos">
+      <input class="op-nome" type="text" name="name" value="{{actor.name}}" placeholder="{{localize 'ORDEM.Campo.nomeAgente'}}" />
+      <div class="op-topo-linha">
+        <div class="op-campo">
+          <label>{{localize "ORDEM.Campo.origem"}}</label>
+          <input type="text" name="system.origem" value="{{system.origem}}" />
+        </div>
+        <div class="op-campo">
+          <label>{{localize "ORDEM.Campo.classe"}}</label>
+          <select name="system.classe">
+            <option value="">—</option>
+            {{#each classeOptions}}
+              <option value="{{this.value}}" {{#if (ordemEq this.value ../system.classe)}}selected{{/if}}>{{this.label}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="op-campo trilha">
+          <label>{{localize "ORDEM.Campo.trilha"}}</label>
+          <input type="text" name="system.trilha" value="{{system.trilha}}" />
+        </div>
+        <div class="op-campo">
+          <label>{{localize "ORDEM.Campo.patente"}}{{#if patenteDesatualizada}} <i class="fas fa-arrow-up patente-sugestao" title="{{patenteSugestaoTitulo}}"></i>{{/if}}</label>
+          <select name="system.patente">
+            {{#each patenteOptions}}
+              <option value="{{this.value}}" {{#if (ordemEq this.value ../system.patente)}}selected{{/if}}>{{this.label}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="op-campo">
+          <label>{{localize "ORDEM.Campo.prestigio"}}</label>
+          <input type="number" name="system.prestigio" value="{{system.prestigio}}" min="0" />
+        </div>
+        {{#if mostraAfinidade}}
+          <div class="op-campo">
+            <label>{{localize "ORDEM.Afinidade.Label"}}</label>
+            <select name="system.afinidade" title="{{localize 'ORDEM.Afinidade.Ajuda'}}">
+              <option value="">—</option>
+              {{#each afinidadeOptions}}
+                <option value="{{this.value}}" {{#if (ordemEq this.value ../system.afinidade)}}selected{{/if}}>{{this.label}}</option>
+              {{/each}}
+            </select>
+          </div>
+        {{/if}}
+      </div>
+    </div>
+  </header>
+
+  <div class="op-corpo">
+
+    {{!-- ============================ COLUNA ESQUERDA ====================== --}}
+    <aside class="op-esquerda">
+
+      {{!-- ----------------------- PENTÁGONO DE ATRIBUTOS ----------------- --}}
+      <div class="op-pentagono">
+        <div class="op-ring"></div>
+        <div class="op-centro">{{localize "ORDEM.Pentagono.Centro"}}</div>
+        {{#each atributosList}}
+          <div class="op-attr pos-{{this.key}} {{#if this.modificado}}modificado{{/if}}" data-action="rolar-atributo" data-atributo="{{this.key}}"
+               title="{{localize 'ORDEM.Rolar.Atributo'}} ({{this.efetivo}}d20)">
+            <input class="op-attr-valor" type="number" name="system.atributos.{{this.key}}" value="{{this.valor}}" />
+            <div class="op-attr-nome">{{this.label}}</div>
+            <div class="op-attr-abrev">{{this.abrev}}{{#if this.modificado}} <span class="op-attr-ef">({{this.efetivo}})</span>{{/if}}</div>
+          </div>
+        {{/each}}
+      </div>
+
+      {{!-- ------------------- NEX / PE-TURNO / DESLOCAMENTO -------------- --}}
+      <div class="op-caixas">
+        <div class="op-caixa nex">
+          <a class="op-subir-nex" data-action="subir-nex" title="{{localize 'ORDEM.NEX.Subir'}}"><i class="fas fa-arrow-up-right-dots"></i></a>
+          <input type="number" name="system.nex" value="{{system.nex}}" min="0" max="99" /><span class="pct">%</span>
+          <label>{{localize "ORDEM.Campo.nex"}}</label>
+        </div>
+        <div class="op-caixa">
+          <div class="op-caixa-derivado" title="{{localize 'ORDEM.NEX.LimitePeAjuda'}}">{{derivado.peRodada}}</div>
+          <label>{{localize "ORDEM.Campo.peRodada"}}</label>
+        </div>
+        <div class="op-caixa desloc">
+          <div class="op-desloc-valor">
+            <input type="number" name="system.deslocamento" value="{{system.deslocamento}}" /> m / {{deslocQuadros}} q
+          </div>
+          <label>{{localize "ORDEM.Campo.deslocamento"}}{{#if derivado.carga.sobrecarregado}} <i class="fas fa-weight-hanging" title="{{localize 'ORDEM.Carga.Sobrecarregado'}}"></i>{{/if}}</label>
+        </div>
+      </div>
+
+      {{!-- --------------------------- BARRAS ---------------------------- --}}
+      {{!-- VIDA --}}
+      <div class="op-barra-bloco vida">
+        <div class="op-barra-titulo">{{localize "ORDEM.Recurso.pv"}}</div>
+        <div class="op-barra-trilho">
+          <div class="op-barra-fill pv" style="width: {{ordemPct system.recursos.pv.value system.recursos.pv.max}}%"></div>
+          <div class="op-barra-steppers">
+            <a data-action="recurso-step" data-recurso="pv" data-step="min" title="Mínimo">&laquo;</a>
+            <a data-action="recurso-step" data-recurso="pv" data-step="dec">&lsaquo;</a>
+            <span class="op-barra-num">
+              <input type="number" name="system.recursos.pv.value" value="{{system.recursos.pv.value}}" /> /
+              <span class="max-derivado" title="{{localize 'ORDEM.Recurso.MaxDerivado'}} ({{localize 'ORDEM.Classe.Sugerido'}}: {{system.recursos.pv.maxCalc}})">{{system.recursos.pv.max}}</span>
+              <input class="bonus-max" type="number" name="system.recursos.pv.bonusMax" value="{{system.recursos.pv.bonusMax}}" title="{{localize 'ORDEM.Recurso.BonusMax'}}" />
+            </span>
+            <a data-action="recurso-step" data-recurso="pv" data-step="inc">&rsaquo;</a>
+            <a data-action="recurso-step" data-recurso="pv" data-step="max" title="Máximo">&raquo;</a>
+          </div>
+        </div>
+      </div>
+
+      {{!-- SANIDADE --}}
+      <div class="op-barra-bloco sanidade">
+        <div class="op-barra-titulo">{{localize "ORDEM.Recurso.san"}}</div>
+        <div class="op-barra-trilho">
+          <div class="op-barra-fill san" style="width: {{ordemPct system.recursos.san.value system.recursos.san.max}}%"></div>
+          <div class="op-barra-steppers">
+            <a data-action="recurso-step" data-recurso="san" data-step="min" title="Mínimo">&laquo;</a>
+            <a data-action="recurso-step" data-recurso="san" data-step="dec">&lsaquo;</a>
+            <span class="op-barra-num">
+              <input type="number" name="system.recursos.san.value" value="{{system.recursos.san.value}}" /> /
+              <span class="max-derivado" title="{{localize 'ORDEM.Recurso.MaxDerivado'}} ({{localize 'ORDEM.Classe.Sugerido'}}: {{system.recursos.san.maxCalc}})">{{system.recursos.san.max}}</span>
+              <input class="bonus-max" type="number" name="system.recursos.san.bonusMax" value="{{system.recursos.san.bonusMax}}" title="{{localize 'ORDEM.Recurso.BonusMax'}}" />
+            </span>
+            <a data-action="recurso-step" data-recurso="san" data-step="inc">&rsaquo;</a>
+            <a data-action="recurso-step" data-recurso="san" data-step="max" title="Máximo">&raquo;</a>
+          </div>
+        </div>
+      </div>
+
+      {{!-- ESFORÇO (PE) --}}
+      <div class="op-barra-bloco esforco">
+        <div class="op-barra-titulo">{{localize "ORDEM.Recurso.pe"}}</div>
+        <div class="op-barra-trilho">
+          <div class="op-barra-fill pe" style="width: {{ordemPct system.recursos.pe.value system.recursos.pe.max}}%"></div>
+          <div class="op-barra-steppers">
+            <a data-action="recurso-step" data-recurso="pe" data-step="min" title="Mínimo">&laquo;</a>
+            <a data-action="recurso-step" data-recurso="pe" data-step="dec">&lsaquo;</a>
+            <span class="op-barra-num">
+              <input type="number" name="system.recursos.pe.value" value="{{system.recursos.pe.value}}" /> /
+              <span class="max-derivado" title="{{localize 'ORDEM.Recurso.MaxDerivado'}} ({{localize 'ORDEM.Classe.Sugerido'}}: {{system.recursos.pe.maxCalc}})">{{system.recursos.pe.max}}</span>
+              <input class="bonus-max" type="number" name="system.recursos.pe.bonusMax" value="{{system.recursos.pe.bonusMax}}" title="{{localize 'ORDEM.Recurso.BonusMax'}}" />
+            </span>
+            <a data-action="recurso-step" data-recurso="pe" data-step="inc">&rsaquo;</a>
+            <a data-action="recurso-step" data-recurso="pe" data-step="max" title="Máximo">&raquo;</a>
+          </div>
+        </div>
+      </div>
+
+      {{!-- ------------------- RECURSOS CUSTOMIZADOS (até 10) ------------- --}}
+      <div class="op-recursos-custom">
+        {{#each recursosCustom}}
+          <div class="op-barra-bloco rc-linha" data-index="{{this.index}}">
+            <div class="op-barra-titulo rc-titulo">
+              <input class="rc-campo rc-nome" data-field="nome" type="text" value="{{this.nome}}" placeholder="{{localize 'ORDEM.Custom.NomeRecurso'}}" />
+              <input class="rc-campo rc-cor" data-field="cor" type="color" value="{{this.cor}}" title="{{localize 'ORDEM.Custom.Cor'}}" />
+              <a class="rc-remover" data-action="rc-remove" data-index="{{this.index}}" title="{{localize 'ORDEM.Custom.Remover'}}"><i class="fas fa-trash"></i></a>
+            </div>
+            <div class="op-barra-trilho">
+              <div class="op-barra-fill" style="width: {{this.pct}}%; background: {{this.cor}};"></div>
+              <div class="op-barra-steppers">
+                <a data-action="rc-step" data-index="{{this.index}}" data-step="min" title="Mínimo">&laquo;</a>
+                <a data-action="rc-step" data-index="{{this.index}}" data-step="dec">&lsaquo;</a>
+                <span class="op-barra-num">
+                  <input class="rc-campo" data-field="value" type="number" value="{{this.value}}" /> /
+                  <input class="rc-campo" data-field="max" type="number" value="{{this.max}}" />
+                </span>
+                <a data-action="rc-step" data-index="{{this.index}}" data-step="inc">&rsaquo;</a>
+                <a data-action="rc-step" data-index="{{this.index}}" data-step="max" title="Máximo">&raquo;</a>
+              </div>
+            </div>
+          </div>
+        {{/each}}
+        {{#if podeAddRecurso}}
+          <a class="botao-adicionar rc-add" data-action="rc-add"><i class="fas fa-plus"></i> {{localize "ORDEM.Custom.AddRecurso"}}</a>
+        {{/if}}
+      </div>
+
+      {{!-- --------------------------- DEFESA ---------------------------- --}}
+      <div class="op-defesa">
+        <div class="op-escudo">
+          <i class="fas fa-shield"></i>
+          <span class="op-escudo-valor">{{system.defesa.total}}</span>
+        </div>
+        <div class="op-defesa-info">
+          <div class="op-defesa-rotulo">{{localize "ORDEM.Campo.defesa"}}</div>
+          <div class="op-defesa-formula">
+            = 10 + AGI +
+            <input type="number" name="system.defesa.equip" value="{{system.defesa.equip}}" title="{{localize 'ORDEM.Campo.equip'}}" />
+            <input type="number" name="system.defesa.outros" value="{{system.defesa.outros}}" title="{{localize 'ORDEM.Campo.outros'}}" />
+            <span class="leg">{{localize "ORDEM.Campo.equip"}} / {{localize "ORDEM.Campo.outros"}}</span>
+          </div>
+        </div>
+        <div class="op-defesa-reacoes">
+          <div class="op-reacao">
+            <input type="number" name="system.defesa.bloqueio" value="{{system.defesa.bloqueio}}" />
+            <label>{{localize "ORDEM.Campo.bloqueio"}}</label>
+          </div>
+          <div class="op-reacao">
+            <input type="number" name="system.defesa.esquiva" value="{{system.defesa.esquiva}}" />
+            <label>{{localize "ORDEM.Campo.esquiva"}}</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="op-protecao">
+        <label>{{localize "ORDEM.Campo.protecao"}}</label>
+        <input type="text" name="system.protecao" value="{{system.protecao}}" />
+      </div>
+
+      {{!-- Derivados: Carga, DT de Rituais e estado --}}
+      <div class="op-derivados">
+        <div class="op-carga {{#if derivado.carga.sobrecarregado}}sobrecarregado{{/if}}">
+          <div class="op-carga-topo">
+            <span><i class="fas fa-weight-hanging"></i> {{localize "ORDEM.Carga.Titulo"}}</span>
+            <span class="op-carga-num">{{derivado.carga.atual}} / {{derivado.carga.limite}}</span>
+          </div>
+          <div class="op-barra-trilho mini"><div class="op-barra-fill carga" style="width: {{derivado.cargaPct}}%"></div></div>
+        </div>
+        <div class="op-dt-rituais" title="10 + NEX + Presença">
+          <label>{{localize "ORDEM.Campo.dtRituais"}}</label>
+          <span class="valor">{{derivado.dtRituais}}</span>
+        </div>
+      </div>
+
+      {{#if derivado.estado.machucado}}<div class="op-estado machucado"><i class="fas fa-droplet"></i> {{localize "ORDEM.Estado.machucado"}}</div>{{/if}}
+      {{#if derivado.estado.perturbado}}<div class="op-estado perturbado"><i class="fas fa-brain"></i> {{localize "ORDEM.Estado.perturbado"}}</div>{{/if}}
+      {{#if derivado.estado.morrendo}}
+        <div class="op-estado morrendo">
+          <i class="fas fa-skull"></i> {{localize "ORDEM.Estado.morrendo"}}
+          <span class="op-estado-contador">{{rodadasMorrendo}}/3</span>
+          <span class="op-estado-acoes">
+            <a data-action="marcar-morrendo" title="{{localize 'ORDEM.Morte.MarcarTurnoAjuda'}}"><i class="fas fa-stopwatch"></i></a>
+            <a data-action="estabilizar" title="{{localize 'ORDEM.Morte.EstabilizarAjuda'}}"><i class="fas fa-kit-medical"></i></a>
+          </span>
+        </div>
+      {{/if}}
+      {{#if derivado.estado.enlouquecendo}}
+        <div class="op-estado enlouquecendo">
+          <i class="fas fa-ghost"></i> {{localize "ORDEM.Estado.enlouquecendo"}}
+          <span class="op-estado-contador">{{rodadasEnlouquecendo}}/3</span>
+          <span class="op-estado-acoes">
+            <a data-action="marcar-enlouquecendo" title="{{localize 'ORDEM.San.MarcarTurnoAjuda'}}"><i class="fas fa-stopwatch"></i></a>
+            <a data-action="acalmar" title="{{localize 'ORDEM.San.AcalmarAjuda'}}"><i class="fas fa-hand-holding-heart"></i></a>
+          </span>
+        </div>
+      {{/if}}
+
+      {{!-- Características de classe / progressão de NEX --}}
+      {{#if progressao.temClasse}}
+        <div class="op-classe-info">
+          <div class="op-classe-cabec">
+            <span><i class="fas fa-id-badge"></i> {{progressao.classeLabel}}</span>
+            <a class="op-btn-nex" data-action="subir-nex"><i class="fas fa-arrow-up-right-dots"></i> {{localize "ORDEM.NEX.Subir"}}</a>
+          </div>
+          {{#if progressao.perito}}
+            <div class="op-hab-ativa"><i class="fas fa-dice"></i> {{localize "ORDEM.Hab.PeritoNome"}}: <strong>{{progressao.perito}}</strong></div>
+          {{/if}}
+          {{#if progressao.ataqueEspecial}}
+            <div class="op-hab-ativa"><i class="fas fa-crosshairs"></i> {{localize "ORDEM.Hab.AtaqueEspecialNome"}}: <strong>{{progressao.ataqueEspecial}}</strong></div>
+          {{/if}}
+          {{#if progressao.proxHab}}
+            <div class="op-prox-nex"><i class="fas fa-star"></i> {{localize "ORDEM.NEX.ProximoMarco"}} ({{progressao.proxNex}}%): {{progressao.proxHab}}</div>
+          {{else}}
+            <div class="op-prox-nex">{{localize "ORDEM.NEX.NoMaximo"}}</div>
+          {{/if}}
+
+          {{#if historicoNex.length}}
+            <details class="op-historico">
+              <summary>{{localize "ORDEM.NEX.Historico"}} ({{historicoNex.length}})</summary>
+              {{#each historicoNex}}
+                <div class="op-hist-linha">
+                  <span class="hist-nex">NEX {{this.nex}}%</span>
+                  <span class="hist-hab" title="{{this.habilidade}}">{{this.habilidade}}</span>
+                  <a class="hist-voltar" data-action="voltar-nex" data-index="{{this.index}}" title="{{localize 'ORDEM.NEX.Voltar'}}"><i class="fas fa-rotate-left"></i></a>
+                </div>
+              {{/each}}
+            </details>
+          {{/if}}
+        </div>
+      {{/if}}
+
+    </aside>
+
+    {{!-- ============================ COLUNA DIREITA ====================== --}}
+    <section class="op-direita">
+
+      <nav class="sheet-tabs tabs op-tabs" data-group="primary">
+        <a class="item" data-tab="pericias">{{localize "ORDEM.Aba.Pericias"}}</a>
+        <a class="item" data-tab="combate">{{localize "ORDEM.Aba.Combate"}}</a>
+        <a class="item" data-tab="habilidades">{{localize "ORDEM.Aba.Habilidades"}}</a>
+        <a class="item" data-tab="inventario">{{localize "ORDEM.Aba.Inventario"}}</a>
+        <a class="item" data-tab="notas">{{localize "ORDEM.Aba.Notas"}}</a>
+      </nav>
+
+      <section class="sheet-body">
+
+        {{!-- --------------------------- PERÍCIAS -------------------------- --}}
+        <div class="tab op-pericias" data-group="primary" data-tab="pericias">
+          <div class="op-pericias-cab">
+            <span class="c-nome">{{localize "ORDEM.Pericia.Nome"}}</span>
+            <span class="c-dados">{{localize "ORDEM.Pericia.Dados"}}</span>
+            <span class="c-bonus">{{localize "ORDEM.Pericia.Bonus"}}</span>
+            <span class="c-treino">{{localize "ORDEM.Pericia.Treino"}}</span>
+            <span class="c-outros">{{localize "ORDEM.Pericia.Outros"}}</span>
+            <span class="c-ajudar" title="{{localize 'ORDEM.Ajuda.ColTitulo'}}">{{localize "ORDEM.Ajuda.ColTitulo"}}</span>
+          </div>
+
+          {{#each periciasList}}
+            <div class="op-pericia {{#if this.treinada}}treinada{{/if}}">
+              <span class="c-nome" data-action="rolar-pericia" data-pericia="{{this.key}}" title="{{localize 'ORDEM.Rolar.Pericia'}} ({{this.dados}}d20)">
+                <i class="fas fa-dice-d20"></i> {{this.label}}{{#if this.soTreinada}}<em class="ast">*</em>{{/if}}
+              </span>
+              <span class="c-dados" title="{{this.dados}}d20">
+                <strong>{{this.dados}}d20</strong>
+                <select name="system.pericias.{{this.key}}.atributo" title="{{localize 'ORDEM.Pericia.AtributoAlt'}}">
+                  {{#each ../atributoOptions}}
+                    <option value="{{this.value}}" {{#if (ordemEq this.value ../atributo)}}selected{{/if}}>{{this.label}}</option>
+                  {{/each}}
+                </select>
+              </span>
+              <span class="c-bonus">{{this.bonusLabel}}</span>
+              <span class="c-treino"><input type="number" name="system.pericias.{{this.key}}.treino" value="{{this.treino}}" title="{{localize 'ORDEM.Pericia.Treino'}}" /></span>
+              <span class="c-outros"><input type="number" name="system.pericias.{{this.key}}.outros" value="{{this.outros}}" title="{{localize 'ORDEM.Pericia.Outros'}}" /></span>
+              <span class="c-ajudar">
+                <button type="button" class="op-btn-ajudar" data-action="rolar-ajuda" data-pericia="{{this.key}}" title="{{localize 'ORDEM.Ajuda.Botao'}}" aria-label="{{localize 'ORDEM.Ajuda.Botao'}}">
+                  <i class="fas fa-hands-helping"></i>
+                </button>
+              </span>
+            </div>
+          {{/each}}
+          <p class="op-legenda">{{localize "ORDEM.Pericia.SoTreinada"}}</p>
+        </div>
+
+        {{!-- ---------------------------- COMBATE -------------------------- --}}
+        <div class="tab op-combate" data-group="primary" data-tab="combate">
+          <div class="op-acoes">
+            <div class="op-acao"><i class="fas fa-hand-fist"></i> {{localize "ORDEM.Combate.Acao"}}</div>
+            <div class="op-acao"><i class="fas fa-shoe-prints"></i> {{localize "ORDEM.Combate.Movimento"}}</div>
+            <div class="op-acao"><i class="fas fa-hand"></i> {{localize "ORDEM.Combate.AcaoMinima"}}</div>
+            <div class="op-acao"><i class="fas fa-reply"></i> {{localize "ORDEM.Combate.Reacao"}}</div>
+            <a class="op-acao op-interludio" data-action="abrir-interludio" title="{{localize 'ORDEM.Interludio.Ajuda'}}">
+              <i class="fas fa-mug-hot"></i> {{localize "ORDEM.Interludio.Botao"}}
+            </a>
+          </div>
+
+          {{!-- Testes de resistência (DT derivada exibida) --}}
+          <div class="op-resistencias">
+            <a class="op-resist" data-action="rolar-resistencia" data-pericia="fortitude">{{localize "ORDEM.Pericia.fortitude"}} <small>DT {{derivado.dtFortitude}}</small></a>
+            <a class="op-resist" data-action="rolar-resistencia" data-pericia="reflexos">{{localize "ORDEM.Pericia.reflexos"}} <small>DT {{derivado.dtReflexos}}</small></a>
+            <a class="op-resist" data-action="rolar-resistencia" data-pericia="vontade">{{localize "ORDEM.Pericia.vontade"}} <small>DT {{derivado.dtVontade}}</small></a>
+          </div>
+
+          {{!-- Manobras de combate (teste de Luta oposto; marque um alvo para oposição automática) --}}
+          <div class="secao-cabecalho">
+            <h3>{{localize "ORDEM.Manobra.Titulo"}}</h3>
+            <small class="hint">{{localize "ORDEM.Manobra.Ajuda"}}</small>
+          </div>
+          <div class="op-manobras">
+            {{#each manobras}}
+              <a class="op-manobra" data-action="rolar-manobra" data-manobra="{{this.key}}" title="{{this.efeito}}">
+                <i class="fas {{this.icone}}"></i> {{this.label}}
+              </a>
+            {{/each}}
+          </div>
+
+          {{!-- Ações especiais de defesa (exigem treinamento) --}}
+          <div class="secao-cabecalho">
+            <h3>{{localize "ORDEM.Defesa.Titulo"}}</h3>
+          </div>
+          <div class="op-manobras op-defesas">
+            <a class="op-manobra {{#unless defesas.bloqueio}}destreinada{{/unless}}" data-action="acao-defesa" data-defesa="bloqueio" title="{{localize 'ORDEM.Defesa.BloqueioAjuda'}}">
+              <i class="fas fa-shield"></i> {{localize "ORDEM.Defesa.Bloqueio"}}
+            </a>
+            <a class="op-manobra {{#unless defesas.esquiva}}destreinada{{/unless}}" data-action="acao-defesa" data-defesa="esquiva" title="{{localize 'ORDEM.Defesa.EsquivaAjuda'}}">
+              <i class="fas fa-person-running"></i> {{localize "ORDEM.Defesa.Esquiva"}}
+            </a>
+            <a class="op-manobra {{#unless defesas.contraataque}}destreinada{{/unless}}" data-action="acao-defesa" data-defesa="contraataque" title="{{localize 'ORDEM.Defesa.ContraAtaqueAjuda'}}">
+              <i class="fas fa-hand-fist"></i> {{localize "ORDEM.Defesa.ContraAtaque"}}
+            </a>
+          </div>
+
+          {{!-- Ações personalizadas (até 10) --}}
+          <div class="secao-cabecalho">
+            <h3>{{localize "ORDEM.Custom.Acoes"}}</h3>
+            {{#if podeAddAcao}}
+              <a class="botao-adicionar" data-action="ac-add"><i class="fas fa-plus"></i></a>
+            {{/if}}
+          </div>
+          <ul class="lista-itens acoes-custom">
+            {{#each acoesCustom}}
+              <li class="item-linha ac-linha" data-index="{{this.index}}">
+                <a class="botao-conjurar" data-action="ac-usar" data-index="{{this.index}}" title="{{localize 'ORDEM.Custom.Usar'}}"><i class="fas fa-bolt"></i></a>
+                <input class="ac-campo ac-nome" data-field="nome" type="text" value="{{this.nome}}" placeholder="{{localize 'ORDEM.Custom.NomeAcao'}}" />
+                <span class="ac-custo">
+                  <input class="ac-campo" data-field="custoPe" type="number" value="{{this.custoPe}}" min="0" title="{{localize 'ORDEM.Campo.custoPe'}}" /> PE
+                </span>
+                <input class="ac-campo ac-desc" data-field="descricao" type="text" value="{{this.descricao}}" placeholder="{{localize 'ORDEM.Aba.Descricao'}}" />
+                <span class="acoes">
+                  <a data-action="ac-remove" data-index="{{this.index}}" title="{{localize 'ORDEM.Custom.Remover'}}"><i class="fas fa-trash"></i></a>
+                </span>
+              </li>
+            {{else}}
+              <li class="vazio">{{localize "ORDEM.Custom.AcoesVazio"}}</li>
+            {{/each}}
+          </ul>
+
+          <div class="secao-cabecalho">
+            <h3>{{localize "ORDEM.Aba.Armas"}}</h3>
+            <a class="botao-adicionar" data-action="criar-item" data-tipo="arma"><i class="fas fa-plus"></i></a>
+          </div>
+          <ul class="lista-itens armas">
+            {{#each armas}}
+              <li class="item-linha op-ataque {{#unless this.system.equipado}}nao-equipado{{/unless}}" data-item-id="{{this.id}}">
+                <img src="{{this.img}}" />
+                <span class="nome">{{this.name}}</span>
+                <span class="tag">{{localize (ordemConcat "ORDEM.CategoriaArma." this.system.tipoArma)}}</span>
+                <span class="dado">{{this.system.dano}}{{#if this.system.municao.max}} · <i class="fas fa-bullseye"></i> {{this.system.municao.value}}/{{this.system.municao.max}}{{/if}}</span>
+                <span class="acoes">
+                  <a class="botao-atacar" data-action="rolar-ataque" title="{{localize 'ORDEM.Combate.Atacar'}}"><i class="fas fa-crosshairs"></i></a>
+                  <a data-action="rolar-dano" title="{{localize 'ORDEM.Dano.Rolar'}}"><i class="fas fa-burst"></i></a>
+                  <a data-action="editar-item"><i class="fas fa-edit"></i></a>
+                  <a data-action="remover-item"><i class="fas fa-trash"></i></a>
+                </span>
+              </li>
+            {{else}}
+              <li class="vazio">{{localize "ORDEM.Vazio.Armas"}}</li>
+            {{/each}}
+          </ul>
+        </div>
+
+        {{!-- ----------------------- HABILIDADES & RITUAIS ----------------- --}}
+        <div class="tab" data-group="primary" data-tab="habilidades">
+          {{!-- Origem e Trilhas --}}
+          <div class="secao-cabecalho">
+            <h3>{{localize "ORDEM.TipoItem.origem"}} / {{localize "ORDEM.Aba.Trilhas"}}</h3>
+            <span>
+              <a class="botao-adicionar" data-action="criar-item" data-tipo="origem"><i class="fas fa-plus"></i> {{localize "ORDEM.TipoItem.origem"}}</a>
+              <a class="botao-adicionar" data-action="criar-item" data-tipo="trilha"><i class="fas fa-plus"></i> {{localize "ORDEM.TipoItem.trilha"}}</a>
+            </span>
+          </div>
+          <ul class="lista-itens origens">
+            {{#each origens}}
+              <li class="item-linha" data-item-id="{{this.id}}">
+                <img src="{{this.img}}" />
+                <span class="nome">{{this.name}}</span>
+                <span class="tag">{{localize "ORDEM.TipoItem.origem"}}</span>
+                <span class="acoes">
+                  <a data-action="usar-item" title="{{localize 'ORDEM.Item.Usar'}}"><i class="fas fa-paper-plane"></i></a>
+                  <a data-action="editar-item"><i class="fas fa-edit"></i></a>
+                  <a data-action="remover-item"><i class="fas fa-trash"></i></a>
+                </span>
+              </li>
+            {{/each}}
+            {{#each trilhas}}
+              <li class="item-linha op-trilha" data-item-id="{{this.id}}">
+                <img src="{{this.img}}" />
+                <span class="nome">{{this.name}}</span>
+                <span class="tag">{{localize "ORDEM.TipoItem.trilha"}}</span>
+                <span class="acoes">
+                  <a data-action="usar-item" title="{{localize 'ORDEM.Item.Usar'}}"><i class="fas fa-paper-plane"></i></a>
+                  <a data-action="editar-item"><i class="fas fa-edit"></i></a>
+                  <a data-action="remover-item"><i class="fas fa-trash"></i></a>
+                </span>
+              </li>
+              {{#each this.habilidadesCalc}}
+                <li class="item-linha op-trilha-hab {{#if this.bloqueada}}bloqueada{{/if}}" data-item-id="{{../id}}">
+                  <span class="th-marco" title="{{localize 'ORDEM.Campo.requisitoNex'}}">{{this.nex}}%</span>
+                  <span class="nome" title="{{this.descricao}}">
+                    {{#if this.bloqueada}}<i class="fas fa-lock"></i>{{/if}} {{this.nome}}
+                  </span>
+                  {{#if this.custoPe}}<span class="dado">{{this.custoPe}} PE</span>{{/if}}
+                  <span class="acoes">
+                    {{#unless this.bloqueada}}
+                      <a data-action="usar-trilha-hab" data-index="{{this.index}}" title="{{localize 'ORDEM.Trilha.Usar'}}"><i class="fas fa-bolt"></i></a>
+                    {{/unless}}
+                  </span>
+                </li>
+              {{/each}}
+            {{/each}}
+          </ul>
+
+          <div class="secao-cabecalho">
+            <h3>{{localize "ORDEM.Aba.PoderesLista"}}</h3>
+            <a class="botao-adicionar" data-action="criar-item" data-tipo="poder"><i class="fas fa-plus"></i></a>
+          </div>
+          <ul class="lista-itens poderes">
+            {{#each poderes}}
+              <li class="item-linha" data-item-id="{{this.id}}">
+                <img src="{{this.img}}" />
+                <span class="nome">{{this.name}}{{#if this.system.paranormal}} <i class="fas fa-eye paranormal" title="{{localize 'ORDEM.Poder.Paranormal'}}"></i>{{/if}}</span>
+                <span class="tag">NEX {{this.system.requisitoNex}}%</span>
+                {{#if this.system.custoPe}}<span class="dado">{{this.system.custoPe}} PE</span>{{/if}}
+                {{#if this.system.usosPorCena}}<span class="dado usos">{{this.system.usosAtuais}}/{{this.system.usosPorCena}}</span>{{/if}}
+                <span class="acoes">
+                  <a class="botao-conjurar" data-action="usar-poder" title="{{localize 'ORDEM.Poder.Usar'}}"><i class="fas fa-bolt"></i></a>
+                  <a data-action="usar-item" title="{{localize 'ORDEM.Item.Usar'}}"><i class="fas fa-paper-plane"></i></a>
+                  <a data-action="editar-item"><i class="fas fa-edit"></i></a>
+                  <a data-action="remover-item"><i class="fas fa-trash"></i></a>
+                </span>
+              </li>
+            {{else}}
+              <li class="vazio">{{localize "ORDEM.Vazio.Poderes"}}</li>
+            {{/each}}
+          </ul>
+
+          <div class="secao-cabecalho">
+            <h3>{{localize "ORDEM.Aba.Rituais"}}</h3>
+            <a class="botao-adicionar" data-action="criar-item" data-tipo="ritual"><i class="fas fa-plus"></i></a>
+          </div>
+          <ul class="lista-itens rituais">
+            {{#each rituais}}
+              <li class="item-linha" data-item-id="{{this.id}}">
+                <img src="{{this.img}}" />
+                <span class="nome">{{this.name}}</span>
+                <span class="tag elemento {{this.system.elemento}}">{{localize (ordemConcat "ORDEM.Elemento." this.system.elemento)}}</span>
+                <span class="dado">{{localize "ORDEM.Campo.circulo"}} {{this.system.circulo}} &middot; {{this.system.custoPe}} PE</span>
+                <span class="acoes">
+                  <a class="botao-conjurar" data-action="conjurar-ritual" title="{{localize 'ORDEM.Ritual.Conjurar'}}"><i class="fas fa-wand-sparkles"></i></a>
+                  <a data-action="usar-item" title="{{localize 'ORDEM.Item.Usar'}}"><i class="fas fa-paper-plane"></i></a>
+                  <a data-action="editar-item"><i class="fas fa-edit"></i></a>
+                  <a data-action="remover-item"><i class="fas fa-trash"></i></a>
+                </span>
+              </li>
+            {{else}}
+              <li class="vazio">{{localize "ORDEM.Vazio.Rituais"}}</li>
+            {{/each}}
+          </ul>
+        </div>
+
+        {{!-- -------------------------- INVENTÁRIO ------------------------- --}}
+        <div class="tab" data-group="primary" data-tab="inventario">
+          <div class="op-inv-resumo {{#if derivado.carga.sobrecarregado}}sobrecarregado{{/if}}">
+            <span><i class="fas fa-weight-hanging"></i> {{localize "ORDEM.Carga.Titulo"}}: <strong>{{derivado.carga.atual}} / {{derivado.carga.limite}}</strong></span>
+            {{#if derivado.patente}}
+              <span><i class="fas fa-id-card"></i> {{localize "ORDEM.Campo.limiteCredito"}}: <strong>{{derivado.patente.credito}}</strong></span>
+              <span class="op-inv-categorias {{#if derivado.patente.excedido}}excedido{{/if}}" title="{{localize 'ORDEM.Patente.LimiteItensAjuda'}}">
+                <i class="fas fa-boxes-stacked"></i> {{localize "ORDEM.Patente.LimiteItens"}}:
+                {{#each categoriasInfo}}
+                  <strong class="cat-badge {{#if this.excedido}}excedido{{/if}}">{{this.cat}}: {{this.usado}}/{{this.max}}</strong>
+                {{/each}}
+              </span>
+            {{/if}}
+          </div>
+
+          {{!-- Proteções --}}
+          <div class="secao-cabecalho">
+            <h3>{{localize "ORDEM.TipoItem.protecao"}}</h3>
+            <a class="botao-adicionar" data-action="criar-item" data-tipo="protecao"><i class="fas fa-plus"></i></a>
+          </div>
+          <ul class="lista-itens protecoes">
+            {{#each protecoes}}
+              <li class="item-linha {{#unless this.system.equipado}}nao-equipado{{/unless}}" data-item-id="{{this.id}}">
+                <input type="checkbox" data-action="toggle-equipado" {{checked this.system.equipado}} title="{{localize 'ORDEM.Campo.equipado'}}" />
+                <img src="{{this.img}}" />
+                <span class="nome">{{this.name}}</span>
+                <span class="tag">+{{this.system.defesaBonus}} {{localize "ORDEM.Campo.defesa"}}</span>
+                <span class="dado">{{this.system.espacos}} {{localize "ORDEM.Campo.espacos"}}</span>
+                <span class="acoes">
+                  <a data-action="editar-item"><i class="fas fa-edit"></i></a>
+                  <a data-action="remover-item"><i class="fas fa-trash"></i></a>
+                </span>
+              </li>
+            {{/each}}
+          </ul>
+
+          {{!-- Itens gerais --}}
+          <div class="secao-cabecalho">
+            <h3>{{localize "ORDEM.Aba.Inventario"}}</h3>
+            <a class="botao-adicionar" data-action="criar-item" data-tipo="equipamento"><i class="fas fa-plus"></i></a>
+          </div>
+          <ul class="lista-itens equipamentos">
+            {{#each equipamentos}}
+              <li class="item-linha" data-item-id="{{this.id}}">
+                <img src="{{this.img}}" />
+                <span class="nome">{{this.name}}</span>
+                <span class="tag">{{this.system.categoria}}</span>
+                <span class="dado">x{{this.system.quantidade}} &middot; {{this.system.espacos}} {{localize "ORDEM.Campo.espacos"}}</span>
+                <span class="acoes">
+                  <a data-action="editar-item"><i class="fas fa-edit"></i></a>
+                  <a data-action="remover-item"><i class="fas fa-trash"></i></a>
+                </span>
+              </li>
+            {{else}}
+              <li class="vazio">{{localize "ORDEM.Vazio.Inventario"}}</li>
+            {{/each}}
+          </ul>
+
+          {{!-- Condições --}}
+          <div class="secao-cabecalho">
+            <h3>{{localize "ORDEM.Aba.Condicoes"}}</h3>
+            <a class="botao-adicionar" data-action="abrir-condicoes" title="{{localize 'ORDEM.Condicao.SeletorAjuda'}}"><i class="fas fa-plus"></i></a>
+          </div>
+          <ul class="lista-itens condicoes">
+            {{#each condicoes}}
+              <li class="item-linha {{#unless this.system.ativo}}nao-equipado{{/unless}}" data-item-id="{{this.id}}">
+                <input type="checkbox" data-action="toggle-condicao" {{checked this.system.ativo}} title="{{localize 'ORDEM.Campo.ativo'}}" />
+                <img src="{{this.img}}" />
+                <span class="nome" title="{{this.system.descricao}}">{{this.name}}</span>
+                <span class="acoes">
+                  <a data-action="editar-item"><i class="fas fa-edit"></i></a>
+                  <a data-action="remover-item"><i class="fas fa-trash"></i></a>
+                </span>
+              </li>
+            {{/each}}
+          </ul>
+        </div>
+
+        {{!-- ----------------------------- NOTAS --------------------------- --}}
+        <div class="tab notas-tab" data-group="primary" data-tab="notas">
+          <div class="detalhes-grid">
+            <div class="campo-texto">
+              <label>{{localize "ORDEM.Detalhe.aparencia"}}</label>
+              <textarea name="system.detalhes.aparencia" rows="2">{{system.detalhes.aparencia}}</textarea>
+            </div>
+            <div class="campo-texto">
+              <label>{{localize "ORDEM.Detalhe.personalidade"}}</label>
+              <textarea name="system.detalhes.personalidade" rows="2">{{system.detalhes.personalidade}}</textarea>
+            </div>
+            <div class="campo-texto">
+              <label>{{localize "ORDEM.Detalhe.objetivo"}}</label>
+              <textarea name="system.detalhes.objetivo" rows="2">{{system.detalhes.objetivo}}</textarea>
+            </div>
+          </div>
+
+          <h3 class="secao-titulo">{{localize "ORDEM.Detalhe.historico"}}</h3>
+          {{editor historicoHTML target="system.detalhes.historico" button=true editable=editable engine="prosemirror"}}
+
+          <h3 class="secao-titulo">{{localize "ORDEM.Campo.notas"}}</h3>
+          {{editor notasHTML target="system.notas" button=true editable=editable engine="prosemirror"}}
+        </div>
+
+      </section>
+    </section>
+
+  </div>
+</form>

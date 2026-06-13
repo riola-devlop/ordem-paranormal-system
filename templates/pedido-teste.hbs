@@ -1,0 +1,46 @@
+{{!-- Card de Pedido de Teste em Grupo --}}
+<div class="ordem-chat-card pedido-teste">
+
+  <header class="card-header">
+    <i class="fas fa-dice-d20"></i>
+    <h3>{{titulo}}</h3>
+    <span class="atributo">{{periciaLabel}} &bull; CD {{cd}}</span>
+  </header>
+
+  <div class="card-content">
+
+    <div class="pt-participantes">
+      {{#each participantes}}
+        <div class="pt-linha {{#if this.rolou}}rolou{{/if}}" data-actor-id="{{this.actorId}}">
+          <img class="pt-avatar" src="{{this.img}}" alt="{{this.nome}}" />
+          <span class="pt-nome">{{this.nome}}</span>
+          <span class="pt-status">
+            {{#if this.rolou}}
+              <span class="pt-resultado {{#if this.sucesso}}sucesso{{else}}falha{{/if}}">
+                <i class="fas {{#if this.sucesso}}fa-check{{else}}fa-times{{/if}}"></i>
+                {{this.total}}
+              </span>
+            {{else}}
+              <span class="pt-aguardando">
+                <button type="button" class="ordem-card-botao pt-rolar-btn"
+                  data-action="pt-rolar"
+                  data-actor-id="{{this.actorId}}"
+                  data-message-id="{{../messageId}}">
+                  <i class="fas fa-dice-d20"></i> {{localize "ORDEM.PT.BotaoRolar"}}
+                </button>
+              </span>
+            {{/if}}
+          </span>
+        </div>
+      {{/each}}
+    </div>
+
+    <div class="pt-resumo">
+      <span class="pt-res-item"><i class="fas fa-users"></i> {{rolaram}}/{{total}}</span>
+      <span class="pt-res-item sucesso"><i class="fas fa-check"></i> {{sucessos}}</span>
+      <span class="pt-res-item falha"><i class="fas fa-times"></i> {{falhas}}</span>
+    </div>
+
+  </div>
+
+</div>

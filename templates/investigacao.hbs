@@ -1,0 +1,59 @@
+{{!-- Janela de Cena de Investigação --}}
+<div class="ordem-inv-app">
+
+  <header class="inv-header">
+    <span class="inv-titulo">{{titulo}}</span>
+    <span class="inv-rodada">{{localize "ORDEM.Inv.Rodada"}} <strong>{{rodada}}</strong></span>
+  </header>
+
+  {{#if resumo}}
+    <div class="inv-resumo"><i class="fas fa-scroll"></i> {{resumo}}</div>
+  {{/if}}
+
+  {{#if objetivo}}
+    <div class="inv-objetivo"><strong>{{localize "ORDEM.Inv.Objetivo"}}:</strong> {{objetivo}}</div>
+  {{/if}}
+
+  {{#if perguntas}}
+    <div class="inv-perguntas">
+      <strong>{{localize "ORDEM.Inv.Perguntas"}}:</strong>
+      <p>{{perguntas}}</p>
+    </div>
+  {{/if}}
+
+  <div class="inv-pistas">
+    <div class="inv-pistas-cab">
+      <i class="fas fa-search"></i> {{localize "ORDEM.Inv.Pistas"}}
+      <button type="button" class="op-btn-sm" data-action="inv-add-pista" title="{{localize 'ORDEM.Inv.AddPista'}}">
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
+    {{#each pistas}}
+      <div class="inv-pista" data-index="{{this.index}}">
+        <span class="inv-pista-tipo {{this.tipo}}"><i class="fas {{this.icone}}"></i></span>
+        <input type="text" class="inv-pista-texto" data-index="{{this.index}}" value="{{this.texto}}" placeholder="{{localize 'ORDEM.Inv.PistaPlaceholder'}}" />
+        <button type="button" class="op-btn-sm" data-action="inv-remove-pista" data-index="{{this.index}}">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    {{else}}
+      <p class="inv-vazio">{{localize "ORDEM.Inv.SemPistas"}}</p>
+    {{/each}}
+  </div>
+
+  <div class="inv-acoes">
+    <button type="button" data-action="inv-procurar">
+      <i class="fas fa-magnifying-glass"></i> {{localize "ORDEM.Inv.Procurar"}}
+    </button>
+    <button type="button" data-action="inv-facilitar">
+      <i class="fas fa-lightbulb"></i> {{localize "ORDEM.Inv.Facilitar"}}
+    </button>
+    <button type="button" data-action="inv-ajudar">
+      <i class="fas fa-hand-holding-heart"></i> {{localize "ORDEM.Inv.Ajudar"}}
+    </button>
+    <button type="button" data-action="inv-proxima-rodada" class="inv-btn-rodada">
+      <i class="fas fa-forward-step"></i> {{localize "ORDEM.Inv.ProximaRodada"}}
+    </button>
+  </div>
+
+</div>

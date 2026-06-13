@@ -1,0 +1,92 @@
+{{!-- Modal de Subir NEX: mostra tudo que muda na ficha e permite aplicar --}}
+<form class="ordem-nex-modal">
+
+  <p class="nex-cabec">
+    {{classeLabel}} — NEX {{nexAtual}}% <i class="fas fa-arrow-right"></i> <strong>{{novoNex}}%</strong>
+  </p>
+
+  <h4>{{localize "ORDEM.NEX.Ganhos"}}</h4>
+  <ul class="nex-ganhos">
+    <li><i class="fas fa-heart"></i> +{{ganho.pv}} {{localize "ORDEM.Recurso.pv"}}
+        <span class="novo">→ {{localize "ORDEM.NEX.NovoMax"}} {{novoMax.pv}}</span></li>
+    <li><i class="fas fa-bolt"></i> +{{ganho.pe}} {{localize "ORDEM.Recurso.pe"}}
+        <span class="novo">→ {{novoMax.pe}}</span></li>
+    <li><i class="fas fa-brain"></i> +{{ganho.san}} {{localize "ORDEM.Recurso.san"}}
+        <span class="novo">→ {{novoMax.san}}</span></li>
+    <li><i class="fas fa-bolt-lightning"></i> {{localize "ORDEM.Campo.peRodada"}}:
+        <span class="novo">{{novoLimitePe}}</span></li>
+  </ul>
+
+  <h4>{{localize "ORDEM.NEX.Desbloqueia"}}</h4>
+  <p class="nex-hab"><i class="fas fa-star"></i> {{habilidade}}</p>
+
+  {{#if aumentoAtributo}}
+    <div class="form-group nex-escolha">
+      <label><i class="fas fa-arrow-up"></i> {{localize "ORDEM.NEX.AumentoAtributo"}}</label>
+      <select name="atributoEscolhido">
+        <option value="">—</option>
+        {{#each atributoOptions}}
+          <option value="{{this.value}}">{{this.label}} (+1)</option>
+        {{/each}}
+      </select>
+    </div>
+  {{/if}}
+
+  {{#if grauTreinamento}}
+    <div class="form-group nex-escolha">
+      <label><i class="fas fa-graduation-cap"></i> {{localize "ORDEM.NEX.GrauTreinamento"}}</label>
+      {{#if periciasTreinaveis.length}}
+        <select name="periciaTreinamento">
+          <option value="">—</option>
+          {{#each periciasTreinaveis}}
+            <option value="{{this.value}}">{{this.label}}</option>
+          {{/each}}
+        </select>
+      {{else}}
+        <p class="hint">{{localize "ORDEM.NEX.SemPericiasTreinaveis"}}</p>
+      {{/if}}
+    </div>
+  {{/if}}
+
+  {{#if ganhaPoder}}
+    <div class="form-group nex-escolha">
+      <label><i class="fas fa-bolt"></i> {{localize "ORDEM.NEX.PoderClasse"}}</label>
+      {{#if poderesDisponiveis.length}}
+        <select name="poderEscolhido">
+          <option value="">{{localize "ORDEM.NEX.EscolherDepois"}}</option>
+          {{#each poderesDisponiveis}}
+            <option value="{{this.value}}">{{this.label}}</option>
+          {{/each}}
+        </select>
+      {{else}}
+        <p class="hint">{{localize "ORDEM.NEX.SemPoderesMundo"}}</p>
+      {{/if}}
+    </div>
+  {{/if}}
+
+  {{#if habTrilha}}
+    <div class="nex-escolha nex-trilha-info">
+      <label><i class="fas fa-route"></i> {{localize "ORDEM.NEX.HabTrilha"}}</label>
+      {{#if temTrilha}}
+        {{#if habsTrilhaNovas.length}}
+          <p class="nex-hab">{{trilhaNome}}: <strong>{{#each habsTrilhaNovas}}{{this}}{{#unless @last}} · {{/unless}}{{/each}}</strong></p>
+        {{else}}
+          <p class="hint">{{localize "ORDEM.NEX.TrilhaSemHabNoMarco"}} ({{trilhaNome}})</p>
+        {{/if}}
+      {{else}}
+        <p class="hint">{{localize "ORDEM.NEX.SemTrilha"}}</p>
+      {{/if}}
+    </div>
+  {{/if}}
+
+  {{#if versatilidade}}
+    <p class="nex-aviso"><i class="fas fa-wand-sparkles"></i> {{localize "ORDEM.NEX.Versatilidade"}}</p>
+  {{/if}}
+
+  {{#if primeiro}}
+    <p class="nex-aviso">{{localize "ORDEM.NEX.PrimeiroAviso"}}</p>
+  {{/if}}
+
+  <p class="nex-lembrete">{{localize "ORDEM.NEX.Lembrete"}}</p>
+
+</form>

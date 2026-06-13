@@ -1,0 +1,2033 @@
+/* ==========================================================================
+   ORDEM PARANORMAL RPG — Estilo (tema escuro, investigação noir + horror)
+   Paleta: preto / cinza escuro / vinho / detalhes em dourado
+   ========================================================================== */
+
+.ordem-paranormal {
+  --op-preto:      #0d0d0f;
+  --op-cinza-esc:  #16161a;
+  --op-cinza:      #232329;
+  --op-cinza-claro:#34343d;
+  --op-vinho:      #5c1018;
+  --op-vinho-claro:#8a1f29;
+  --op-vermelho:   #c0303a;
+  --op-dourado:    #c9a24b;
+  --op-dourado-claro:#e6c878;
+  --op-texto:      #f5f5f5;
+  --op-texto-fraco:#c4c4c4;
+  --op-borda:      #3a2c2e;
+  --op-pv:         #c0202b;
+  --op-pe:         #d98a1f;
+  --op-san:        #7b2fbe;
+
+  /* Roxo "Ordem Paranormal" — acento principal da ficha digital */
+  --op-roxo:       #6a2da8;
+  --op-roxo-claro: #9b59d0;
+
+  --op-fonte: "Signika", "Segoe UI", sans-serif;
+}
+
+/* -------------------------------------------------------------------------- */
+/*  JANELA / BASE                                                              */
+/* -------------------------------------------------------------------------- */
+
+/* Fundo preto e texto branco em TODAS as janelas do sistema (fichas e diálogos). */
+.ordem-paranormal .window-content {
+  background: #08080a;
+  color: var(--op-texto);
+  font-family: var(--op-fonte);
+}
+
+.ordem-paranormal.sheet .window-content {
+  background: linear-gradient(160deg, var(--op-preto), var(--op-cinza-esc) 60%);
+  color: var(--op-texto);
+  font-family: var(--op-fonte);
+  padding: 8px 10px;
+}
+
+/* Cabeçalho da janela e botões de diálogo no tema escuro. */
+.ordem-paranormal .window-header {
+  background: #05050a;
+  border-bottom: 1px solid var(--op-vinho);
+}
+.ordem-paranormal .window-header .window-title { color: var(--op-texto); }
+
+.ordem-paranormal .dialog-buttons button {
+  background: #14141a;
+  color: var(--op-texto);
+  border: 1px solid var(--op-borda);
+}
+.ordem-paranormal .dialog-buttons button:hover {
+  border-color: var(--op-dourado);
+  color: #fff;
+  box-shadow: 0 0 6px rgba(201, 162, 75, 0.35);
+}
+
+/* Texto branco em todo o conteúdo do sistema. */
+.ordem-paranormal .window-content,
+.ordem-paranormal .dialog-content,
+.ordem-paranormal input,
+.ordem-paranormal select,
+.ordem-paranormal textarea {
+  color: var(--op-texto);
+}
+
+.ordem-paranormal input,
+.ordem-paranormal select,
+.ordem-paranormal textarea {
+  background: #111114;
+  color: var(--op-texto);
+  border: 1px solid var(--op-borda);
+  border-radius: 3px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ordem-paranormal input::placeholder,
+.ordem-paranormal textarea::placeholder { color: #7a7a7a; }
+
+.ordem-paranormal input:focus,
+.ordem-paranormal select:focus,
+.ordem-paranormal textarea:focus {
+  border-color: var(--op-dourado);
+  box-shadow: 0 0 6px rgba(201, 162, 75, 0.4);
+  outline: none;
+}
+
+.ordem-paranormal select option {
+  background: var(--op-cinza);
+}
+
+.ordem-paranormal h3 {
+  color: var(--op-dourado);
+  border-bottom: 1px solid var(--op-vinho);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin: 6px 0 4px;
+  padding-bottom: 2px;
+}
+
+.ordem-paranormal a {
+  color: var(--op-dourado-claro);
+}
+
+.ordem-paranormal .secao-titulo {
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+/* -------------------------------------------------------------------------- */
+/*  CABEÇALHO DAS FICHAS DE ATOR                                               */
+/* -------------------------------------------------------------------------- */
+
+.ordem-paranormal .agente-header,
+.ordem-paranormal .criatura-header {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--op-vinho);
+  margin-bottom: 8px;
+}
+
+.ordem-paranormal .perfil {
+  flex: 0 0 84px;
+  width: 84px;
+  height: 84px;
+  object-fit: cover;
+  border: 2px solid var(--op-dourado);
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+  background: #000;
+}
+
+.ordem-paranormal .cabecalho-campos {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ordem-paranormal .cabecalho-campos .nome {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--op-dourado-claro);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--op-borda);
+}
+
+.ordem-paranormal .identidade,
+.ordem-paranormal .linha-meta {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.ordem-paranormal .identidade .campo,
+.ordem-paranormal .linha-meta .campo {
+  display: flex;
+  flex-direction: column;
+}
+
+.ordem-paranormal .campo label,
+.ordem-paranormal .form-group label,
+.ordem-paranormal .recurso .rotulo,
+.ordem-paranormal .mini label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--op-texto-fraco);
+}
+
+/* ----- NEX ----- */
+.ordem-paranormal .nex-bloco {
+  flex: 0 0 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 6px;
+  border: 1px solid var(--op-dourado);
+  border-radius: 4px;
+  background: rgba(92, 16, 24, 0.25);
+}
+
+.ordem-paranormal .nex-bloco label {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--op-dourado);
+  font-weight: 700;
+}
+
+.ordem-paranormal .nex-valor {
+  display: flex;
+  align-items: baseline;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--op-dourado-claro);
+}
+
+.ordem-paranormal .nex-valor input {
+  width: 48px;
+  text-align: right;
+  font-size: 22px;
+  font-weight: 700;
+  background: transparent;
+  border: none;
+  color: var(--op-dourado-claro);
+}
+
+.ordem-paranormal .nex-valor .pct { font-size: 14px; }
+
+.ordem-paranormal .nex-barra {
+  width: 100%;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 3px 0;
+}
+
+.ordem-paranormal .nex-barra .preenchimento {
+  height: 100%;
+  background: linear-gradient(90deg, var(--op-vinho), var(--op-dourado));
+}
+
+.ordem-paranormal .nex-marco {
+  font-size: 9px;
+  color: var(--op-texto-fraco);
+}
+
+/* -------------------------------------------------------------------------- */
+/*  RECURSOS (PV / PE / SAN / DEFESA)                                          */
+/* -------------------------------------------------------------------------- */
+
+.ordem-paranormal .recursos {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.ordem-paranormal .recurso {
+  background: var(--op-cinza-esc);
+  border: 1px solid var(--op-borda);
+  border-radius: 4px;
+  padding: 4px 6px;
+}
+
+.ordem-paranormal .recurso .rotulo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+}
+
+.ordem-paranormal .recurso .par {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.ordem-paranormal .recurso .par input {
+  width: 46px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  background: transparent;
+  border: none;
+}
+
+.ordem-paranormal .barra {
+  height: 8px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+}
+
+.ordem-paranormal .barra .preenchimento { height: 100%; transition: width 0.25s ease; }
+.ordem-paranormal .preenchimento.pv  { background: linear-gradient(90deg, #5c1018, var(--op-pv)); }
+.ordem-paranormal .preenchimento.pe  { background: linear-gradient(90deg, #5c3a10, var(--op-pe)); }
+.ordem-paranormal .preenchimento.san { background: linear-gradient(90deg, #2e1d52, var(--op-san)); }
+
+.ordem-paranormal .recurso.secundarios {
+  display: flex;
+  justify-content: space-around;
+  gap: 4px;
+}
+
+.ordem-paranormal .mini {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.ordem-paranormal .valor-grande {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--op-dourado-claro);
+}
+
+.ordem-paranormal .defesa-detalhe {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 9px;
+  color: var(--op-texto-fraco);
+}
+
+.ordem-paranormal .defesa-detalhe input,
+.ordem-paranormal .mini input {
+  width: 38px;
+  text-align: center;
+}
+
+/* -------------------------------------------------------------------------- */
+/*  ATRIBUTOS                                                                  */
+/* -------------------------------------------------------------------------- */
+
+.ordem-paranormal .atributos {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.ordem-paranormal .atributo {
+  position: relative;
+  background: radial-gradient(circle at 50% 0%, rgba(92, 16, 24, 0.4), var(--op-cinza-esc));
+  border: 1px solid var(--op-borda);
+  border-radius: 6px;
+  padding: 6px 4px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.ordem-paranormal .atributo:hover {
+  transform: translateY(-2px);
+  border-color: var(--op-dourado);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+.ordem-paranormal .atributo .abrev {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--op-dourado);
+}
+
+.ordem-paranormal .atributo .valor {
+  width: 100%;
+  font-size: 30px;
+  font-weight: 700;
+  text-align: center;
+  background: transparent;
+  border: none;
+  color: var(--op-texto);
+}
+
+.ordem-paranormal .atributo .nome {
+  font-size: 9px;
+  text-transform: uppercase;
+  color: var(--op-texto-fraco);
+}
+
+.ordem-paranormal .atributo .dado-icone {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 11px;
+  color: var(--op-vinho-claro);
+  opacity: 0.6;
+}
+.ordem-paranormal .atributo:hover .dado-icone { color: var(--op-dourado); opacity: 1; }
+
+/* Criatura: linha de atributos compacta */
+.ordem-paranormal .atributos-linha {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin: 8px 0;
+}
+.ordem-paranormal .atributos-linha .atributo { padding: 4px; cursor: pointer; }
+.ordem-paranormal .atributos-linha .atributo input { width: 40px; }
+
+/* -------------------------------------------------------------------------- */
+/*  ABAS                                                                       */
+/* -------------------------------------------------------------------------- */
+
+.ordem-paranormal .sheet-tabs {
+  border-top: 1px solid var(--op-vinho);
+  border-bottom: 1px solid var(--op-vinho);
+  margin-bottom: 6px;
+}
+
+.ordem-paranormal .sheet-tabs .item {
+  font-size: 12px;
+  color: var(--op-texto-fraco);
+  padding: 4px 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ordem-paranormal .sheet-tabs .item.active {
+  color: #fff;
+  text-shadow: 0 0 10px rgba(155, 89, 208, 0.8);
+  border-bottom: 2px solid var(--op-roxo-claro);
+}
+
+.ordem-paranormal .sheet-body { overflow-y: auto; }
+
+/* -------------------------------------------------------------------------- */
+/*  PERÍCIAS                                                                   */
+/* -------------------------------------------------------------------------- */
+
+.ordem-paranormal .pericias-cabecalho,
+.ordem-paranormal .pericia-linha {
+  display: grid;
+  grid-template-columns: 32px 1fr 64px 60px 48px 32px;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 4px;
+}
+
+.ordem-paranormal .pericias-cabecalho {
+  font-size: 9px;
+  text-transform: uppercase;
+  color: var(--op-texto-fraco);
+  border-bottom: 1px solid var(--op-borda);
+}
+
+.ordem-paranormal .pericia-linha {
+  border-bottom: 1px solid rgba(58, 44, 46, 0.4);
+}
+.ordem-paranormal .pericia-linha:nth-child(even) { background: rgba(255, 255, 255, 0.02); }
+.ordem-paranormal .pericia-linha:hover { background: rgba(92, 16, 24, 0.18); }
+
+.ordem-paranormal .pericia-linha.treinada .col-nome { color: var(--op-dourado-claro); font-weight: 600; }
+.ordem-paranormal .pericia-linha .so-treinada { color: var(--op-vermelho); margin-left: 2px; }
+
+.ordem-paranormal .col-attr select { font-size: 10px; padding: 1px; }
+.ordem-paranormal .col-bonus input { width: 100%; text-align: center; }
+.ordem-paranormal .col-total { text-align: center; font-weight: 700; color: var(--op-dourado); }
+
+.ordem-paranormal .col-rolar a,
+.ordem-paranormal .item-linha .acoes a {
+  color: var(--op-texto-fraco);
+  cursor: pointer;
+  transition: color 0.12s ease, transform 0.12s ease;
+}
+.ordem-paranormal .col-rolar a:hover { color: var(--op-vermelho); transform: scale(1.25); }
+
+/* -------------------------------------------------------------------------- */
+/*  ECONOMIA DE AÇÕES (COMBATE)                                                */
+/* -------------------------------------------------------------------------- */
+
+.ordem-paranormal .acoes-rodada {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.ordem-paranormal .acoes-rodada .acao {
+  background: var(--op-cinza-esc);
+  border: 1px solid var(--op-borda);
+  border-left: 3px solid var(--op-vinho);
+  border-radius: 3px;
+  padding: 6px;
+  font-size: 11px;
+  text-align: center;
+  color: var(--op-texto);
+}
+.ordem-paranormal .acoes-rodada .acao i { color: var(--op-dourado); margin-right: 4px; }
+
+/* -------------------------------------------------------------------------- */
+/*  LISTAS DE ITENS                                                            */
+/* -------------------------------------------------------------------------- */
+
+.ordem-paranormal .secao-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.ordem-paranormal .botao-adicionar {
+  font-size: 11px;
+  color: var(--op-dourado);
+  border: 1px solid var(--op-dourado);
+  border-radius: 3px;
+  padding: 1px 8px;
+  cursor: pointer;
+}
+.ordem-paranormal .botao-adicionar:hover { background: var(--op-vinho); color: var(--op-dourado-claro); }
+
+.ordem-paranormal .lista-itens { list-style: none; margin: 4px 0; padding: 0; }
+
+.ordem-paranormal .item-linha {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  border: 1px solid var(--op-borda);
+  border-radius: 3px;
+  margin-bottom: 4px;
+  background: var(--op-cinza-esc);
+}
+.ordem-paranormal .item-linha:hover { border-color: var(--op-vinho-claro); }
+
+.ordem-paranormal .item-linha img {
+  width: 28px;
+  height: 28px;
+  object-fit: cover;
+  border: 1px solid var(--op-borda);
+  border-radius: 3px;
+}
+
+.ordem-paranormal .item-linha .nome { flex: 1; font-weight: 600; }
+
+.ordem-paranormal .item-linha .tag {
+  font-size: 9px;
+  text-transform: uppercase;
+  color: var(--op-texto-fraco);
+  border: 1px solid var(--op-borda);
+  border-radius: 10px;
+  padding: 1px 6px;
+}
+
+.ordem-paranormal .item-linha .dado {
+  font-family: monospace;
+  color: var(--op-dourado-claro);
+  font-size: 12px;
+}
+
+.ordem-paranormal .item-linha .acoes { display: flex; gap: 6px; }
+.ordem-paranormal .item-linha .acoes a:hover { color: var(--op-dourado); }
+
+.ordem-paranormal .lista-itens .vazio {
+  text-align: center;
+  font-style: italic;
+  color: var(--op-texto-fraco);
+  padding: 8px;
+}
+
+/* Cor dos rótulos de elementos de ritual */
+.ordem-paranormal .tag.elemento.conhecimento { border-color: #d8c84a; color: #d8c84a; }
+.ordem-paranormal .tag.elemento.energia      { border-color: #4ac0d8; color: #4ac0d8; }
+.ordem-paranormal .tag.elemento.morte        { border-color: #9aa0a6; color: #9aa0a6; }
+.ordem-paranormal .tag.elemento.sangue       { border-color: var(--op-vermelho); color: var(--op-vermelho); }
+.ordem-paranormal .tag.elemento.medo         { border-color: #7a3ea8; color: #b47fe0; }
+
+/* -------------------------------------------------------------------------- */
+/*  NOTAS / DETALHES                                                           */
+/* -------------------------------------------------------------------------- */
+
+.ordem-paranormal .detalhes-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.ordem-paranormal .campo-texto { display: flex; flex-direction: column; }
+.ordem-paranormal .campo-texto label { font-size: 10px; text-transform: uppercase; color: var(--op-texto-fraco); }
+.ordem-paranormal textarea { resize: vertical; min-height: 40px; }
+.ordem-paranormal .editor { min-height: 120px; border: 1px solid var(--op-borda); border-radius: 3px; }
+
+/* -------------------------------------------------------------------------- */
+/*  FICHA DE ITEM                                                              */
+/* -------------------------------------------------------------------------- */
+
+.ordem-paranormal .item-header {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  border-bottom: 2px solid var(--op-vinho);
+  padding-bottom: 6px;
+  margin-bottom: 6px;
+}
+.ordem-paranormal .item-img {
+  width: 56px; height: 56px;
+  border: 2px solid var(--op-dourado);
+  border-radius: 4px;
+}
+.ordem-paranormal .item-titulo { flex: 1; }
+.ordem-paranormal .item-titulo input { font-size: 18px; font-weight: 700; color: var(--op-dourado-claro); width: 100%; border: none; background: transparent; }
+.ordem-paranormal .tipo-rotulo { font-size: 10px; text-transform: uppercase; color: var(--op-texto-fraco); letter-spacing: 1px; }
+
+.ordem-paranormal .campos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.ordem-paranormal .form-group { display: flex; flex-direction: column; }
+.ordem-paranormal .form-group.span2 { grid-column: span 2; }
+.ordem-paranormal .form-group .hint { font-size: 9px; color: var(--op-texto-fraco); margin: 2px 0 0; }
+
+.ordem-paranormal .dano-linha { display: flex; gap: 4px; align-items: center; }
+.ordem-paranormal .botao-mini.rolar {
+  border: 1px solid var(--op-vinho-claro);
+  border-radius: 3px;
+  padding: 2px 8px;
+  color: var(--op-vermelho);
+  cursor: pointer;
+}
+.ordem-paranormal .botao-mini.rolar:hover { background: var(--op-vinho); color: var(--op-dourado-claro); }
+
+/* -------------------------------------------------------------------------- */
+/*  DIÁLOGO DE ROLAGEM                                                         */
+/* -------------------------------------------------------------------------- */
+
+.ordem-paranormal .ordem-roll-dialog .roll-info {
+  background: rgba(92, 16, 24, 0.25);
+  border-left: 3px solid var(--op-dourado);
+  padding: 6px 8px;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+.ordem-paranormal .ordem-roll-dialog .aviso-treino {
+  color: var(--op-vermelho);
+  font-size: 11px;
+}
+.ordem-paranormal .ordem-roll-dialog .form-group { margin-bottom: 8px; }
+.ordem-paranormal .ordem-roll-dialog .hint { font-size: 10px; color: var(--op-texto-fraco); }
+
+/* -------------------------------------------------------------------------- */
+/*  CARDS DE CHAT                                                              */
+/* -------------------------------------------------------------------------- */
+
+.ordem-chat-card {
+  border: 1px solid var(--op-borda, #3a2c2e);
+  border-radius: 5px;
+  background: linear-gradient(160deg, #16161a, #0d0d0f);
+  color: #d9d4cc;
+  overflow: hidden;
+  font-family: "Signika", "Segoe UI", sans-serif;
+}
+
+.ordem-chat-card .card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(90deg, #5c1018, #16161a);
+  padding: 5px 8px;
+  border-bottom: 1px solid #c9a24b;
+}
+.ordem-chat-card .card-header img { width: 30px; height: 30px; border: 1px solid #c9a24b; border-radius: 3px; }
+.ordem-chat-card .card-header i { color: #e6c878; }
+.ordem-chat-card .card-header h3 { flex: 1; margin: 0; border: none; color: #e6c878; font-size: 14px; }
+.ordem-chat-card .card-header .atributo { font-size: 10px; color: #c9a24b; text-transform: uppercase; }
+
+.ordem-chat-card .card-content { padding: 8px; }
+
+.ordem-chat-card .dados-lancados {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+
+.ordem-die {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 4px;
+  border: 1px solid #3a2c2e;
+  border-radius: 4px;
+  background: #232329;
+  font-weight: 700;
+  color: #8e8a82;
+}
+.ordem-die.mantido {
+  border-color: #c9a24b;
+  color: #e6c878;
+  background: #2a2418;
+  box-shadow: 0 0 6px rgba(201, 162, 75, 0.4);
+}
+.ordem-die.max { color: #6ee07a; border-color: #6ee07a; }
+.ordem-die.min { color: #c0303a; border-color: #c0303a; }
+.ordem-die.dano { background: #2a1416; color: #e6c878; }
+
+.ordem-chat-card .conta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 16px;
+}
+.ordem-chat-card .conta .escolhido { color: #e6c878; font-weight: 700; }
+.ordem-chat-card .conta .op { color: #8e8a82; }
+.ordem-chat-card .conta .total { font-size: 22px; font-weight: 700; color: #fff; }
+.ordem-chat-card .conta .dano-total { color: #c0303a; }
+.ordem-chat-card .conta .formula { font-family: monospace; color: #8e8a82; }
+
+.ordem-chat-card .cd-linha { text-align: center; font-size: 12px; color: #b8b2a8; margin-top: 4px; }
+
+.ordem-chat-card .card-footer {
+  text-align: center;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 5px;
+  font-size: 13px;
+}
+.ordem-chat-card .card-footer.sucesso  { background: rgba(40, 120, 50, 0.35); color: #7ee089; }
+.ordem-chat-card .card-footer.falha    { background: rgba(120, 40, 40, 0.30); color: #d68a8a; }
+.ordem-chat-card .card-footer.critico  { background: linear-gradient(90deg, #1d5c28, #2f8f3f); color: #d8ffd8; }
+.ordem-chat-card .card-footer.desastre { background: linear-gradient(90deg, #5c1018, #c0303a); color: #ffe0e0; }
+
+.ordem-chat-card .meta { font-size: 11px; color: #c9a24b; margin-bottom: 4px; }
+.ordem-chat-card .descricao { font-size: 12px; }
+
+/* ==========================================================================
+   FICHA DO AGENTE — LAYOUT "ORDEM PARANORMAL" (preto / roxo / vermelho / âmbar)
+   ========================================================================== */
+
+.ordem-paranormal.op-theme .window-content {
+  background:
+    radial-gradient(circle at 30% 0%, rgba(106, 45, 168, 0.10), transparent 60%),
+    #08080a;
+}
+
+.ordem-agente-sheet { color: var(--op-texto); display: flex; flex-direction: column; height: 100%; }
+.ordem-agente-sheet input,
+.ordem-agente-sheet select,
+.ordem-agente-sheet textarea { background: rgba(255, 255, 255, 0.03); }
+
+/* --------------------------- BARRA SUPERIOR ------------------------------- */
+.ordem-agente-sheet .op-topo {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--op-roxo);
+}
+.ordem-agente-sheet .op-perfil {
+  width: 56px; height: 56px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--op-roxo-claro);
+  box-shadow: 0 0 12px rgba(155, 89, 208, 0.4);
+}
+.ordem-agente-sheet .op-topo-campos { flex: 1; }
+.ordem-agente-sheet .op-nome {
+  width: 100%;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  border: none;
+  border-bottom: 1px solid var(--op-borda);
+  background: transparent;
+}
+.ordem-agente-sheet .op-topo-linha {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin-top: 4px;
+}
+.ordem-agente-sheet .op-campo { display: flex; flex-direction: column; }
+.ordem-agente-sheet .op-campo label {
+  font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: var(--op-roxo-claro);
+}
+
+/* ------------------------------ CORPO 2 COLUNAS -------------------------- */
+.ordem-agente-sheet .op-corpo {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+}
+.ordem-agente-sheet .op-esquerda { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; padding-right: 4px; }
+.ordem-agente-sheet .op-direita  { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+
+/* ----------------------------- PENTÁGONO -------------------------------- */
+.ordem-agente-sheet .op-pentagono {
+  position: relative;
+  width: 290px;
+  height: 250px;
+  margin: 0 auto;
+}
+.ordem-agente-sheet .op-ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 168px; height: 168px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
+  border: 2px solid rgba(155, 89, 208, 0.35);
+  box-shadow:
+    0 0 0 6px rgba(0,0,0,0.6),
+    0 0 0 7px rgba(155, 89, 208, 0.18),
+    inset 0 0 24px rgba(106, 45, 168, 0.25);
+}
+.ordem-agente-sheet .op-ring::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border-radius: 50%;
+  border: 1px dashed rgba(201, 162, 75, 0.30);
+}
+.ordem-agente-sheet .op-centro {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 11px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: rgba(230, 200, 120, 0.6);
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.ordem-agente-sheet .op-attr {
+  position: absolute;
+  width: 78px; height: 78px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 30%, #1b1620, #0a0a0c 75%);
+  border: 2px solid var(--op-borda);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+.ordem-agente-sheet .op-attr:hover {
+  transform: scale(1.06);
+  border-color: var(--op-roxo-claro);
+  box-shadow: 0 0 16px rgba(155, 89, 208, 0.55);
+}
+.ordem-agente-sheet .op-attr .op-attr-valor {
+  width: 100%;
+  text-align: center;
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+  background: transparent;
+  border: none;
+  line-height: 1;
+}
+.ordem-agente-sheet .op-attr .op-attr-nome {
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--op-texto-fraco);
+}
+.ordem-agente-sheet .op-attr .op-attr-abrev {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--op-roxo-claro);
+}
+/* Posições do pentágono (vértice para cima) */
+.ordem-agente-sheet .op-attr.pos-agi { top: 0;    left: 50%; transform: translateX(-50%); }
+.ordem-agente-sheet .op-attr.pos-agi:hover { transform: translateX(-50%) scale(1.06); }
+.ordem-agente-sheet .op-attr.pos-for { top: 34%;  left: 2px; }
+.ordem-agente-sheet .op-attr.pos-int { top: 34%;  right: 2px; }
+.ordem-agente-sheet .op-attr.pos-pre { bottom: 0; left: 16%; }
+.ordem-agente-sheet .op-attr.pos-vig { bottom: 0; right: 16%; }
+
+/* ----------------------- CAIXAS NEX / PE / DESLOC ----------------------- */
+.ordem-agente-sheet .op-caixas {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.3fr;
+  gap: 6px;
+}
+.ordem-agente-sheet .op-caixa {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 4px;
+  padding: 4px 2px;
+  background: rgba(0,0,0,0.35);
+}
+.ordem-agente-sheet .op-caixa label {
+  font-size: 8px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--op-texto-fraco);
+}
+.ordem-agente-sheet .op-caixa input {
+  width: 46px; text-align: center; font-size: 16px; font-weight: 700;
+  background: transparent; border: none; color: #fff;
+}
+.ordem-agente-sheet .op-caixa.nex { border-color: var(--op-roxo-claro); }
+.ordem-agente-sheet .op-caixa.nex input { width: 42px; color: var(--op-roxo-claro); }
+.ordem-agente-sheet .op-caixa.nex { flex-direction: row; justify-content: center; flex-wrap: wrap; }
+.ordem-agente-sheet .op-caixa.nex .pct { font-size: 14px; font-weight: 700; color: var(--op-roxo-claro); }
+.ordem-agente-sheet .op-caixa.nex label { width: 100%; text-align: center; }
+.ordem-agente-sheet .op-desloc-valor { font-size: 12px; font-weight: 700; color: #fff; white-space: nowrap; }
+.ordem-agente-sheet .op-desloc-valor input { width: 32px; font-size: 14px; }
+
+/* ------------------------------- BARRAS --------------------------------- */
+.ordem-agente-sheet .op-barra-bloco { margin-top: 2px; }
+.ordem-agente-sheet .op-barra-titulo {
+  font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px;
+  text-align: center; color: var(--op-texto-fraco); margin-bottom: 2px;
+}
+.ordem-agente-sheet .op-barra-trilho {
+  position: relative;
+  height: 26px;
+  border-radius: 4px;
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(0,0,0,0.7);
+  overflow: hidden;
+}
+.ordem-agente-sheet .op-barra-fill {
+  position: absolute; top: 0; left: 0; height: 100%;
+  transition: width 0.25s ease;
+}
+.ordem-agente-sheet .op-barra-fill.pv  { background: linear-gradient(90deg, #7a0d16, var(--op-pv)); }
+.ordem-agente-sheet .op-barra-fill.san { background: linear-gradient(90deg, #3a1670, var(--op-san)); }
+.ordem-agente-sheet .op-barra-fill.pe  { background: linear-gradient(90deg, #7a4d0d, var(--op-pe)); }
+.ordem-agente-sheet .op-barra-steppers {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  color: #fff; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.9);
+}
+.ordem-agente-sheet .op-barra-steppers a {
+  color: rgba(255,255,255,0.75);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 2px;
+  transition: color 0.1s ease, transform 0.1s ease;
+}
+.ordem-agente-sheet .op-barra-steppers a:hover { color: #fff; transform: scale(1.3); }
+.ordem-agente-sheet .op-barra-num { display: flex; align-items: center; gap: 2px; font-size: 14px; }
+.ordem-agente-sheet .op-barra-num input {
+  width: 38px; text-align: center; font-weight: 700; color: #fff;
+  background: transparent; border: none;
+}
+.ordem-agente-sheet .op-barra-num .max-derivado { font-weight: 700; color: #fff; min-width: 24px; text-align: center; }
+.ordem-agente-sheet .op-barra-num .bonus-max {
+  width: 30px; font-size: 11px; color: var(--op-dourado);
+  border: 1px dashed var(--op-borda); border-radius: 3px; margin-left: 2px;
+}
+
+/* ------------------------------- DEFESA --------------------------------- */
+.ordem-agente-sheet .op-defesa {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 6px;
+  border: 1px solid var(--op-borda);
+  border-radius: 4px;
+  background: rgba(0,0,0,0.3);
+}
+.ordem-agente-sheet .op-escudo { position: relative; width: 54px; height: 54px; text-align: center; }
+.ordem-agente-sheet .op-escudo i {
+  font-size: 52px;
+  color: #14141a;
+  -webkit-text-stroke: 1px var(--op-roxo-claro);
+}
+.ordem-agente-sheet .op-escudo-valor {
+  position: absolute; top: 46%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 22px; font-weight: 700; color: #fff;
+}
+.ordem-agente-sheet .op-defesa-rotulo {
+  font-size: 11px; font-weight: 700; letter-spacing: 1px; color: var(--op-roxo-claro);
+  text-transform: uppercase;
+}
+.ordem-agente-sheet .op-defesa-formula { font-size: 10px; color: var(--op-texto-fraco); display: flex; align-items: center; gap: 3px; flex-wrap: wrap; }
+.ordem-agente-sheet .op-defesa-formula input { width: 32px; text-align: center; }
+.ordem-agente-sheet .op-defesa-formula .leg { font-size: 8px; width: 100%; }
+.ordem-agente-sheet .op-defesa-reacoes { display: flex; gap: 6px; }
+.ordem-agente-sheet .op-reacao { display: flex; flex-direction: column-reverse; align-items: center; }
+.ordem-agente-sheet .op-reacao label { font-size: 8px; text-transform: uppercase; color: var(--op-texto-fraco); }
+.ordem-agente-sheet .op-reacao input { width: 40px; text-align: center; font-size: 15px; font-weight: 700; color: #fff; background: transparent; border: 1px solid var(--op-borda); border-radius: 3px; }
+
+.ordem-agente-sheet .op-protecao { display: flex; flex-direction: column; }
+.ordem-agente-sheet .op-protecao label { font-size: 9px; text-transform: uppercase; color: var(--op-roxo-claro); }
+
+/* -------------------------- COLUNA DIREITA / TABS ----------------------- */
+.ordem-agente-sheet .op-tabs { justify-content: flex-start; gap: 4px; }
+.ordem-agente-sheet .op-direita .sheet-body { flex: 1; overflow-y: auto; padding-right: 4px; }
+
+/* ----------------------------- PERÍCIAS --------------------------------- */
+.ordem-agente-sheet .op-pericias-cab,
+.ordem-agente-sheet .op-pericia {
+  display: grid;
+  grid-template-columns: 1fr 70px 44px 50px 50px;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px;
+}
+.ordem-agente-sheet .op-pericias-cab {
+  font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--op-roxo-claro);
+  border-bottom: 1px solid var(--op-roxo);
+  position: sticky; top: 0; background: #08080a; z-index: 2;
+}
+.ordem-agente-sheet .op-pericias-cab span,
+.ordem-agente-sheet .op-pericia .c-dados,
+.ordem-agente-sheet .op-pericia .c-bonus,
+.ordem-agente-sheet .op-pericia .c-treino,
+.ordem-agente-sheet .op-pericia .c-outros { text-align: center; }
+.ordem-agente-sheet .op-pericias-cab .c-nome { text-align: left; }
+
+.ordem-agente-sheet .op-pericia { border-bottom: 1px solid rgba(255,255,255,0.04); }
+.ordem-agente-sheet .op-pericia:hover { background: rgba(106, 45, 168, 0.15); }
+
+.ordem-agente-sheet .op-pericia .c-nome {
+  display: flex; align-items: center; gap: 6px;
+  color: var(--op-texto-fraco);
+  cursor: pointer;
+  font-weight: 600;
+}
+.ordem-agente-sheet .op-pericia .c-nome i { font-size: 11px; color: rgba(155, 89, 208, 0.5); }
+.ordem-agente-sheet .op-pericia .c-nome:hover { color: #fff; }
+.ordem-agente-sheet .op-pericia .c-nome:hover i { color: var(--op-vermelho); }
+.ordem-agente-sheet .op-pericia .c-nome .ast { color: var(--op-vermelho); font-style: normal; }
+
+/* Perícia treinada: destaque (mais clara) */
+.ordem-agente-sheet .op-pericia.treinada .c-nome { color: #fff; }
+.ordem-agente-sheet .op-pericia.treinada .c-nome i { color: var(--op-roxo-claro); }
+
+.ordem-agente-sheet .op-pericia .c-dados { font-size: 11px; color: var(--op-texto-fraco); }
+.ordem-agente-sheet .op-pericia .c-dados select {
+  background: transparent; border: none; color: var(--op-roxo-claro);
+  font-weight: 700; font-size: 11px; padding: 0; width: 38px; text-align: center;
+}
+.ordem-agente-sheet .op-pericia .c-bonus { font-weight: 700; color: var(--op-dourado); }
+.ordem-agente-sheet .op-pericia .c-treino input,
+.ordem-agente-sheet .op-pericia .c-outros input {
+  width: 100%; text-align: center; font-weight: 700;
+  background: rgba(0,0,0,0.3); border: 1px solid var(--op-borda); border-radius: 3px;
+}
+.ordem-agente-sheet .op-legenda { font-size: 9px; color: var(--op-texto-fraco); margin-top: 6px; font-style: italic; }
+
+/* ----------------------------- COMBATE --------------------------------- */
+.ordem-agente-sheet .op-acoes {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 8px;
+}
+.ordem-agente-sheet .op-acao {
+  background: rgba(0,0,0,0.35);
+  border: 1px solid var(--op-borda);
+  border-left: 3px solid var(--op-roxo);
+  border-radius: 3px;
+  padding: 6px; font-size: 11px; text-align: center;
+}
+.ordem-agente-sheet .op-acao i { color: var(--op-roxo-claro); margin-right: 4px; }
+.ordem-agente-sheet .op-ataque { border-left: 3px solid var(--op-roxo); }
+.ordem-agente-sheet .op-ataque .dado { color: var(--op-roxo-claro); }
+
+/* --------------------- BOTÃO SUBIR NEX (caixa NEX) ---------------------- */
+.ordem-agente-sheet .op-caixa.nex { position: relative; }
+.ordem-agente-sheet .op-subir-nex {
+  position: absolute; top: 2px; right: 3px;
+  font-size: 11px; color: var(--op-roxo-claro); cursor: pointer;
+}
+.ordem-agente-sheet .op-subir-nex:hover { color: #fff; text-shadow: 0 0 8px var(--op-roxo-claro); }
+
+/* ----------------------- PAINEL DE CLASSE / NEX ------------------------- */
+.ordem-agente-sheet .op-classe-info {
+  margin-top: 4px;
+  padding: 6px 8px;
+  border: 1px solid var(--op-roxo);
+  border-radius: 4px;
+  background: rgba(106, 45, 168, 0.12);
+  font-size: 11px;
+}
+.ordem-agente-sheet .op-classe-cabec {
+  display: flex; align-items: center; justify-content: space-between;
+  font-weight: 700; color: var(--op-roxo-claro);
+  border-bottom: 1px solid rgba(155, 89, 208, 0.3);
+  padding-bottom: 3px; margin-bottom: 4px;
+}
+.ordem-agente-sheet .op-btn-nex {
+  font-size: 10px; color: var(--op-dourado); cursor: pointer;
+  border: 1px solid var(--op-dourado); border-radius: 3px; padding: 1px 6px;
+}
+.ordem-agente-sheet .op-btn-nex:hover { background: var(--op-roxo); color: #fff; border-color: var(--op-roxo-claro); }
+.ordem-agente-sheet .op-hab-ativa { color: var(--op-texto); margin: 2px 0; }
+.ordem-agente-sheet .op-hab-ativa i { color: var(--op-roxo-claro); width: 14px; }
+.ordem-agente-sheet .op-hab-ativa strong { color: var(--op-dourado-claro); }
+.ordem-agente-sheet .op-prox-nex { margin-top: 4px; font-size: 10px; color: var(--op-texto-fraco); font-style: italic; }
+.ordem-agente-sheet .op-prox-nex i { color: var(--op-dourado); }
+
+/* -------------------- HABILIDADES NO DIÁLOGO DE ROLAGEM ----------------- */
+.ordem-paranormal .op-habilidades {
+  border: 1px solid var(--op-roxo);
+  border-radius: 4px;
+  padding: 4px 8px 6px;
+  margin-top: 6px;
+}
+.ordem-paranormal .op-habilidades legend {
+  font-size: 11px; color: var(--op-roxo-claro); padding: 0 4px; font-weight: 700;
+}
+.ordem-paranormal .op-habilidades .pe-atual { color: var(--op-pe); font-weight: 400; }
+.ordem-paranormal .op-hab {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; padding: 2px 0; cursor: pointer;
+}
+.ordem-paranormal .op-hab input { width: auto; }
+
+/* -------------------- DIÁLOGO DE SUBIR NEX (LEVEL UP) ------------------- */
+.ordem-paranormal .ordem-nex-dialog .nex-cabec {
+  font-size: 15px; text-align: center; color: var(--op-dourado-claro);
+  border-bottom: 1px solid var(--op-roxo); padding-bottom: 6px; margin-bottom: 6px;
+}
+.ordem-paranormal .ordem-nex-dialog .nex-cabec i { color: var(--op-roxo-claro); }
+.ordem-paranormal .ordem-nex-dialog .nex-ganhos {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; justify-content: space-around; gap: 6px;
+}
+.ordem-paranormal .ordem-nex-dialog .nex-ganhos li {
+  background: rgba(0,0,0,0.35); border: 1px solid var(--op-borda);
+  border-radius: 4px; padding: 4px 8px; font-weight: 700;
+}
+.ordem-paranormal .ordem-nex-dialog .nex-ganhos i { margin-right: 4px; }
+.ordem-paranormal .ordem-nex-dialog .nex-ganhos li:nth-child(1) i { color: var(--op-pv); }
+.ordem-paranormal .ordem-nex-dialog .nex-ganhos li:nth-child(2) i { color: var(--op-pe); }
+.ordem-paranormal .ordem-nex-dialog .nex-ganhos li:nth-child(3) i { color: var(--op-san); }
+.ordem-paranormal .ordem-nex-dialog .nex-hab { margin-top: 8px; text-align: center; }
+.ordem-paranormal .ordem-nex-dialog .nex-hab i { color: var(--op-dourado); }
+.ordem-paranormal .ordem-nex-dialog .nex-aviso { font-size: 10px; color: var(--op-texto-fraco); font-style: italic; text-align: center; margin-top: 4px; }
+
+/* ------------------- ADIÇÕES AOS CARDS DE CHAT ------------------------- */
+.ordem-die.perito { background: #2a1a40; color: #c9a6f0; border-color: var(--op-roxo-claro); }
+.ordem-chat-card .hab-linha { margin-top: 5px; font-size: 11px; text-align: center; color: #c9a6f0; }
+.ordem-chat-card .hab-linha i { color: var(--op-dourado); }
+.ordem-chat-card .pe-gasto { color: #e0a020; font-weight: 700; }
+.ordem-chat-card.nex .card-header { background: linear-gradient(90deg, #3a1670, #16161a); }
+.ordem-chat-card.nex .nex-ganhos-card { display: flex; justify-content: center; gap: 6px; margin: 4px 0 6px; }
+.ordem-chat-card.nex .descricao { text-align: center; color: #e6c878; }
+.ordem-chat-card.nex .descricao i { color: var(--op-dourado); }
+
+/* ==========================================================================
+   LÓGICA COMPLETA DA FICHA — derivados, combate, modificadores, NEX modal
+   ========================================================================== */
+
+/* Caixa de valor derivado (PE/turno) */
+.ordem-agente-sheet .op-caixa-derivado {
+  font-size: 16px; font-weight: 700; color: var(--op-pe); text-align: center;
+}
+
+/* Painel de derivados (carga + DT de rituais) */
+.ordem-agente-sheet .op-derivados { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 4px; align-items: center; }
+.ordem-agente-sheet .op-carga { flex: 1; }
+.ordem-agente-sheet .op-carga-topo { display: flex; justify-content: space-between; font-size: 10px; color: var(--op-texto-fraco); text-transform: uppercase; }
+.ordem-agente-sheet .op-carga.sobrecarregado .op-carga-num { color: var(--op-vermelho); font-weight: 700; }
+.ordem-agente-sheet .op-barra-trilho.mini { height: 8px; }
+.ordem-agente-sheet .op-barra-fill.carga { background: linear-gradient(90deg, #4a4a20, var(--op-dourado)); }
+.ordem-agente-sheet .op-carga.sobrecarregado .op-barra-fill.carga { background: linear-gradient(90deg, #5c1018, var(--op-vermelho)); }
+.ordem-agente-sheet .op-dt-rituais { text-align: center; border: 1px solid var(--op-roxo); border-radius: 4px; padding: 2px 8px; background: rgba(106,45,168,0.15); }
+.ordem-agente-sheet .op-dt-rituais label { display: block; font-size: 8px; text-transform: uppercase; color: var(--op-roxo-claro); }
+.ordem-agente-sheet .op-dt-rituais .valor { font-size: 18px; font-weight: 700; color: #fff; }
+
+/* Indicadores de estado */
+.ordem-agente-sheet .op-estado {
+  display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700;
+  padding: 3px 8px; border-radius: 3px; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.ordem-agente-sheet .op-estado.machucado { background: rgba(192,32,43,0.20); color: #e08a8a; }
+.ordem-agente-sheet .op-estado.perturbado { background: rgba(123,47,190,0.20); color: #c9a6f0; }
+.ordem-agente-sheet .op-estado.morrendo { background: var(--op-vinho); color: #ffd0d0; }
+.ordem-agente-sheet .op-estado.enlouquecendo { background: #3a1670; color: #e0c8ff; }
+
+/* Histórico de NEX */
+.ordem-agente-sheet .op-historico { margin-top: 6px; font-size: 11px; }
+.ordem-agente-sheet .op-historico summary { cursor: pointer; color: var(--op-dourado); font-weight: 700; }
+.ordem-agente-sheet .op-hist-linha { display: grid; grid-template-columns: 60px 1fr 20px; align-items: center; gap: 4px; padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.ordem-agente-sheet .op-hist-linha .hist-nex { color: var(--op-roxo-claro); font-weight: 700; }
+.ordem-agente-sheet .op-hist-linha .hist-hab { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--op-texto-fraco); }
+.ordem-agente-sheet .op-hist-linha .hist-voltar { color: var(--op-vermelho); cursor: pointer; }
+.ordem-agente-sheet .op-hist-linha .hist-voltar:hover { color: #fff; }
+
+/* Atributos: indicador de modificado */
+.ordem-agente-sheet .op-attr.modificado { border-color: var(--op-dourado); box-shadow: 0 0 8px rgba(201,162,75,0.4); }
+.ordem-agente-sheet .op-attr-ef { color: var(--op-dourado); font-weight: 700; }
+
+/* Testes de resistência (combate) */
+.ordem-agente-sheet .op-resistencias { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px; }
+.ordem-agente-sheet .op-resist {
+  text-align: center; padding: 5px; border: 1px solid var(--op-borda); border-radius: 3px;
+  background: rgba(0,0,0,0.3); cursor: pointer; font-size: 11px; text-transform: uppercase; color: var(--op-texto);
+}
+.ordem-agente-sheet .op-resist:hover { border-color: var(--op-roxo-claro); background: rgba(106,45,168,0.2); }
+.ordem-agente-sheet .op-resist small { display: block; color: var(--op-dourado); font-weight: 700; }
+
+/* Botões de ataque / conjurar nas listas */
+.ordem-agente-sheet .botao-atacar:hover { color: var(--op-vermelho); }
+.ordem-agente-sheet .botao-conjurar:hover { color: var(--op-roxo-claro); }
+.ordem-agente-sheet .item-linha.nao-equipado { opacity: 0.55; }
+
+/* Resumo de inventário (carga/crédito) */
+.ordem-agente-sheet .op-inv-resumo { display: flex; justify-content: space-between; gap: 8px; padding: 4px 8px; margin-bottom: 6px; border: 1px solid var(--op-borda); border-radius: 4px; font-size: 11px; }
+.ordem-agente-sheet .op-inv-resumo.sobrecarregado { border-color: var(--op-vermelho); color: #e08a8a; }
+
+/* Checkbox inline (fichas de item) */
+.ordem-paranormal .check-inline { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.ordem-paranormal .check-inline input { width: auto; }
+
+/* Editor de modificadores (ficha de item) */
+.ordem-paranormal .mod-lista { display: flex; flex-direction: column; gap: 4px; margin: 6px 0; }
+.ordem-paranormal .mod-linha { display: grid; grid-template-columns: 1fr 56px 1fr 24px 24px; gap: 4px; align-items: center; }
+.ordem-paranormal .mod-linha .mod-valor { text-align: center; }
+.ordem-paranormal .mod-remover { color: var(--op-vermelho); cursor: pointer; text-align: center; }
+.ordem-paranormal .mod-remover:hover { color: #fff; }
+
+/* Modal de Subir NEX */
+.ordem-paranormal .ordem-nex-modal h4 { color: var(--op-roxo-claro); border-bottom: 1px solid var(--op-roxo); margin: 8px 0 4px; font-size: 12px; text-transform: uppercase; }
+.ordem-paranormal .ordem-nex-modal .nex-cabec { font-size: 15px; text-align: center; color: var(--op-dourado-claro); }
+.ordem-paranormal .ordem-nex-modal .nex-ganhos { list-style: none; padding: 0; margin: 0; }
+.ordem-paranormal .ordem-nex-modal .nex-ganhos li { padding: 2px 0; }
+.ordem-paranormal .ordem-nex-modal .nex-ganhos .novo { color: var(--op-dourado); font-weight: 700; margin-left: 4px; }
+.ordem-paranormal .ordem-nex-modal .nex-escolha { margin: 8px 0; }
+.ordem-paranormal .ordem-nex-modal .nex-lembrete,
+.ordem-paranormal .ordem-nex-modal .nex-aviso { font-size: 10px; color: var(--op-texto-fraco); font-style: italic; }
+
+/* Card de ritual + custo do paranormal + botões de card */
+.ordem-chat-card.ritual .ritual-custo { margin: 6px 0; padding: 5px; border-radius: 3px; font-size: 11px; }
+.ordem-chat-card.ritual .ritual-custo.falha { background: rgba(192,32,43,0.2); color: #e0a0a0; }
+.ordem-chat-card.ritual .ritual-custo.ok { background: rgba(40,120,50,0.2); color: #8fd89a; }
+.ordem-chat-card .card-botoes { display: flex; gap: 6px; margin-top: 6px; }
+.ordem-chat-card .ordem-card-botao {
+  flex: 1; background: var(--op-vinho); color: var(--op-dourado-claro); border: 1px solid var(--op-dourado);
+  border-radius: 3px; padding: 4px 8px; cursor: pointer; font-size: 12px; font-weight: 700;
+}
+.ordem-chat-card .ordem-card-botao:hover { background: var(--op-vinho-claro); }
+.ordem-chat-card .ordem-card-botao:disabled { opacity: 0.5; cursor: default; }
+.ordem-chat-card .hab-linha.aviso { color: var(--op-vermelho); }
+
+/* ==========================================================================
+   RECURSOS & AÇÕES CUSTOMIZADOS + CARROSSEL DE COMBATE
+   ========================================================================== */
+
+/* ----- Recursos customizados (coluna esquerda) ----- */
+.ordem-agente-sheet .op-recursos-custom { display: flex; flex-direction: column; gap: 4px; }
+.ordem-agente-sheet .rc-titulo {
+  display: flex; align-items: center; gap: 4px;
+  text-align: left; text-transform: none;
+}
+.ordem-agente-sheet .rc-nome {
+  flex: 1; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;
+  background: transparent; border: none; border-bottom: 1px dashed var(--op-borda);
+  color: var(--op-texto-fraco); padding: 0 2px;
+}
+.ordem-agente-sheet .rc-cor {
+  width: 22px; height: 16px; padding: 0; border: 1px solid var(--op-borda);
+  background: transparent; cursor: pointer;
+}
+.ordem-agente-sheet .rc-remover { color: var(--op-texto-fraco); font-size: 10px; cursor: pointer; }
+.ordem-agente-sheet .rc-remover:hover { color: var(--op-vermelho); }
+.ordem-agente-sheet .rc-add { align-self: center; margin-top: 2px; }
+
+/* ----- Ações customizadas (aba Combate) ----- */
+.ordem-agente-sheet .acoes-custom .ac-linha {
+  display: flex; align-items: center; gap: 6px;
+}
+.ordem-agente-sheet .ac-linha .botao-conjurar {
+  flex: 0 0 auto; color: var(--op-dourado); cursor: pointer; font-size: 14px; padding: 0 4px;
+}
+.ordem-agente-sheet .ac-linha .botao-conjurar:hover { color: #fff; text-shadow: 0 0 8px var(--op-dourado); }
+.ordem-agente-sheet .ac-linha .ac-nome { flex: 0 0 130px; font-weight: 600; }
+.ordem-agente-sheet .ac-linha .ac-custo { display: flex; align-items: center; gap: 2px; font-size: 11px; color: var(--op-pe); white-space: nowrap; }
+.ordem-agente-sheet .ac-linha .ac-custo input { width: 36px; text-align: center; }
+.ordem-agente-sheet .ac-linha .ac-desc { flex: 1; font-size: 11px; color: var(--op-texto-fraco); }
+
+/* ----- Carrossel de turnos (topo da tela) ----- */
+#ordem-carrossel {
+  position: fixed;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60; /* acima do canvas, abaixo de janelas (~100) */
+  pointer-events: none;
+}
+#ordem-carrossel .op-carrossel-inner {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(8, 8, 10, 0.92);
+  border: 1px solid var(--op-roxo);
+  border-radius: 8px;
+  padding: 4px 10px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.7), 0 0 12px rgba(106, 45, 168, 0.25);
+  pointer-events: all;
+  max-width: 70vw;
+}
+#ordem-carrossel .op-carrossel-rodada {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--op-roxo-claro); white-space: nowrap;
+  border-right: 1px solid var(--op-borda); padding-right: 8px;
+}
+#ordem-carrossel .op-carrossel-faixa {
+  display: flex; gap: 6px;
+  overflow-x: auto; scrollbar-width: thin;
+  padding: 2px;
+}
+#ordem-carrossel .op-carrossel-faixa::-webkit-scrollbar { height: 5px; }
+#ordem-carrossel .op-carrossel-faixa::-webkit-scrollbar-thumb {
+  background: var(--op-roxo); border-radius: 3px;
+}
+#ordem-carrossel .op-carrossel-faixa::-webkit-scrollbar-track { background: rgba(0,0,0,0.4); }
+#ordem-carrossel .op-carrossel-card {
+  position: relative;
+  flex: 0 0 auto;
+  width: 52px;
+  text-align: center;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: transform 0.12s ease, opacity 0.12s ease;
+}
+#ordem-carrossel .op-carrossel-card:hover { opacity: 1; transform: translateY(-2px); }
+#ordem-carrossel .op-carrossel-card img {
+  width: 40px; height: 40px; object-fit: cover;
+  border: 2px solid var(--op-borda); border-radius: 50%;
+  background: #000;
+}
+#ordem-carrossel .op-carrossel-card.ativo { opacity: 1; }
+#ordem-carrossel .op-carrossel-card.ativo img {
+  border-color: var(--op-dourado);
+  box-shadow: 0 0 12px rgba(201, 162, 75, 0.8);
+}
+#ordem-carrossel .op-carrossel-card.derrotado img { filter: grayscale(1) brightness(0.5); }
+#ordem-carrossel .op-carrossel-nome {
+  font-size: 8px; color: var(--op-texto);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+#ordem-carrossel .op-carrossel-card.ativo .op-carrossel-nome { color: var(--op-dourado-claro); font-weight: 700; }
+#ordem-carrossel .op-carrossel-ini {
+  position: absolute; top: -2px; right: 0;
+  min-width: 16px; padding: 0 3px;
+  font-size: 9px; font-weight: 700;
+  background: var(--op-roxo); color: #fff;
+  border-radius: 8px; border: 1px solid rgba(0, 0, 0, 0.6);
+}
+#ordem-carrossel .op-carrossel-oculto {
+  position: absolute; bottom: 12px; left: 2px;
+  font-size: 9px; color: var(--op-texto-fraco);
+}
+#ordem-carrossel .op-carrossel-btn {
+  flex: 0 0 auto;
+  color: var(--op-texto-fraco); cursor: pointer;
+  font-size: 13px; padding: 4px 6px;
+  border: 1px solid transparent; border-radius: 4px;
+}
+#ordem-carrossel .op-carrossel-btn:hover {
+  color: #fff; border-color: var(--op-roxo-claro);
+  background: rgba(106, 45, 168, 0.25);
+}
+
+/* ==========================================================================
+   EXPANSÃO: graus de sucesso, condições, morte/sanidade, manobras,
+   trilhas, rituais completos, criaturas e patentes
+   ========================================================================== */
+
+/* --- Grau de sucesso: Sucesso Extraordinário --- */
+.ordem-chat-card .card-footer.extraordinario {
+  background: linear-gradient(90deg, #1f6b35, #c9a24b);
+  color: #fff; font-weight: 700;
+}
+.ordem-chat-card .card-footer.neutro {
+  background: rgba(255, 255, 255, 0.06); color: var(--op-texto);
+}
+
+/* --- Notas de situação / manobra nos cards --- */
+.ordem-chat-card .hab-linha.situacoes { color: var(--op-dourado-claro); }
+.ordem-chat-card .hab-linha.manobra { color: var(--op-texto); }
+.ordem-chat-card .ritual-meta {
+  font-size: 11px; color: var(--op-texto-fraco);
+  margin: 2px 0 4px;
+}
+.ordem-chat-card .ritual-resist {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  margin: 4px 0; padding: 4px 6px;
+  background: rgba(106, 45, 168, 0.15);
+  border-left: 2px solid var(--op-roxo-claro);
+  font-size: 12px;
+}
+.ordem-chat-card .card-botoes.gm-only { margin-top: 4px; }
+
+/* --- Cards de evento (condições, morte, sanidade, defesa) --- */
+.ordem-chat-card.evento .card-header { padding: 4px 8px; }
+.ordem-chat-card.evento.morte .card-header { color: #e25555; }
+.ordem-chat-card.evento.condicao .card-header { color: var(--op-dourado-claro); }
+.ordem-chat-card.evento.sucesso .card-header { color: #4caf50; }
+.ordem-chat-card.evento.aviso .card-header { color: #e2a855; }
+
+/* --- Diálogo de ritual --- */
+.op-ritual-dialog .ritual-nota { font-size: 12px; margin: 2px 0; }
+.op-ritual-dialog .ritual-nota.ok { color: #4caf50; }
+.op-ritual-dialog .ritual-nota.aviso { color: #e2a855; }
+.op-ritual-dialog .op-apr-opcao {
+  display: block; margin: 4px 0; font-size: 12px; cursor: pointer;
+}
+.op-ritual-dialog .op-apr-opcao .hint {
+  display: block; margin-left: 20px;
+  color: var(--op-texto-fraco); font-size: 11px;
+}
+
+/* --- Seletor de condições oficiais --- */
+.op-cond-dialog .op-cond-grade {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
+  max-height: 380px; overflow-y: auto; padding: 4px;
+}
+.op-cond-dialog .op-cond-opcao {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 6px; font-size: 11px; line-height: 1.2;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px; color: var(--op-texto); cursor: pointer;
+  text-align: left;
+}
+.op-cond-dialog .op-cond-opcao:hover {
+  border-color: var(--op-dourado); background: rgba(201, 162, 75, 0.12);
+}
+.op-cond-dialog .op-cond-opcao.tem {
+  border-color: var(--op-roxo-claro); background: rgba(106, 45, 168, 0.2);
+}
+.op-cond-dialog .op-cond-opcao img {
+  width: 20px; height: 20px; border: none;
+  filter: invert(0.85);
+}
+
+/* --- Estado morrendo/enlouquecendo com ações na ficha --- */
+.op-estado .op-estado-contador {
+  margin-left: auto; font-weight: 700; font-size: 11px;
+}
+.op-estado .op-estado-acoes { display: inline-flex; gap: 6px; margin-left: 6px; }
+.op-estado .op-estado-acoes a { cursor: pointer; }
+.op-estado .op-estado-acoes a:hover { color: #fff; }
+
+/* --- Manobras e ações de defesa (aba Combate) --- */
+.op-manobras {
+  display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0 8px;
+}
+.op-manobras .op-manobra {
+  flex: 1 1 30%;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  padding: 5px 6px; font-size: 11px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px; color: var(--op-texto); cursor: pointer;
+}
+.op-manobras .op-manobra:hover {
+  border-color: var(--op-dourado); color: var(--op-dourado-claro);
+}
+.op-manobras .op-manobra.destreinada { opacity: 0.45; }
+
+/* --- Trilhas: habilidades por NEX --- */
+.op-trilha-hab { padding-left: 18px; font-size: 12px; }
+.op-trilha-hab .th-marco {
+  flex: 0 0 34px; text-align: center;
+  font-size: 10px; font-weight: 700; color: var(--op-dourado-claro);
+  border: 1px solid rgba(201, 162, 75, 0.4); border-radius: 3px;
+}
+.op-trilha-hab.bloqueada { opacity: 0.45; }
+.op-trilha-hab.bloqueada .th-marco { color: var(--op-texto-fraco); border-color: rgba(255,255,255,0.2); }
+
+/* --- Editores de listas (trilha habilidades / aprimoramentos) --- */
+.th-linha, .apr-linha {
+  display: grid; gap: 4px; align-items: center;
+  grid-template-columns: 56px 1fr 56px 24px;
+  margin: 4px 0; padding: 4px;
+  background: rgba(255, 255, 255, 0.03); border-radius: 4px;
+}
+.th-linha .th-desc, .apr-linha .apr-desc { grid-column: 1 / -1; }
+.apr-linha { grid-template-columns: 1fr 56px 24px; }
+.mod-linha .mod-nex { width: 52px; }
+
+/* --- Poderes: usos e marcador paranormal --- */
+.lista-itens .dado.usos { color: var(--op-roxo-claro); font-weight: 700; }
+.lista-itens .nome .paranormal { color: var(--op-roxo-claro); font-size: 10px; }
+
+/* --- Inventário: categorias por patente --- */
+.op-inv-categorias .cat-badge {
+  display: inline-block; margin-left: 4px; padding: 0 5px;
+  font-size: 10px; border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.op-inv-categorias .cat-badge.excedido {
+  color: #e25555; border-color: #e25555; font-weight: 700;
+}
+.patente-sugestao { color: var(--op-dourado-claro); }
+
+/* --- Criatura: ataques/habilidades estruturados e presença --- */
+.ca-linha, .ch-linha { display: flex; gap: 4px; align-items: center; }
+.ca-linha .ca-nome, .ch-linha .ch-nome { flex: 1 1 120px; }
+.ca-linha .ca-teste { display: inline-flex; align-items: center; gap: 2px; font-size: 11px; white-space: nowrap; }
+.ca-linha .ca-teste input { width: 40px; }
+.ca-linha .ca-dano { flex: 0 0 70px; }
+.ca-linha .ca-tipo { flex: 0 0 80px; }
+.ca-linha .ca-efeito, .ch-linha .ch-desc { flex: 2 1 120px; }
+.ch-linha .ch-custo { display: inline-flex; align-items: center; gap: 2px; font-size: 11px; white-space: nowrap; }
+.ch-linha .ch-custo input { width: 40px; }
+.op-presenca {
+  padding: 6px 8px; margin-bottom: 8px;
+  background: rgba(106, 45, 168, 0.12);
+  border: 1px solid rgba(106, 45, 168, 0.4); border-radius: 4px;
+}
+.op-presenca .op-presenca-linha {
+  display: flex; align-items: center; gap: 6px; margin: 4px 0;
+}
+.op-presenca input { width: 56px; }
+.recursos-rapidos .recurso.pe .preenchimento.pe { background: var(--op-roxo, #6a2da8); }
+
+/* --- Pedido de teste oculto --- */
+.ordem-chat-card.pedido-teste.oculto .card-header { color: var(--op-texto-fraco); }
+
+/* --- Diálogo de teste: seção de situação --- */
+.op-situacao .form-group { margin: 4px 0; }
+
+/* ==========================================================================
+   REFINO MINIMALISTA DA FICHA DO AGENTE + MODAIS
+   ========================================================================== */
+
+.ordem-paranormal.op-theme .window-content {
+  background: #09090b;
+}
+
+.ordem-agente-sheet {
+  gap: 8px;
+  font-size: 12px;
+}
+
+.ordem-agente-sheet input,
+.ordem-agente-sheet select,
+.ordem-agente-sheet textarea {
+  min-height: 24px;
+  border-color: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.ordem-agente-sheet input:hover,
+.ordem-agente-sheet select:hover,
+.ordem-agente-sheet textarea:hover {
+  border-color: rgba(155, 89, 208, 0.45);
+}
+
+.ordem-agente-sheet .op-topo {
+  gap: 12px;
+  padding-bottom: 10px;
+  margin-bottom: 0;
+  border-bottom-color: rgba(155, 89, 208, 0.35);
+}
+
+.ordem-agente-sheet .op-perfil {
+  width: 52px;
+  height: 52px;
+  border-width: 1px;
+  box-shadow: none;
+}
+
+.ordem-agente-sheet .op-nome {
+  height: 28px;
+  font-size: 17px;
+  letter-spacing: 0;
+}
+
+.ordem-agente-sheet .op-campo label,
+.ordem-agente-sheet .op-caixa label,
+.ordem-agente-sheet .op-barra-titulo,
+.ordem-agente-sheet .op-defesa-rotulo,
+.ordem-agente-sheet .op-protecao label {
+  letter-spacing: 0.7px;
+}
+
+.ordem-agente-sheet .op-corpo {
+  gap: 14px;
+}
+
+.ordem-agente-sheet .op-caixa,
+.ordem-agente-sheet .op-defesa,
+.ordem-agente-sheet .op-classe-info,
+.ordem-agente-sheet .op-inv-resumo,
+.ordem-agente-sheet .item-linha {
+  border-color: rgba(255, 255, 255, 0.11);
+  background: rgba(255, 255, 255, 0.025);
+  box-shadow: none;
+}
+
+.ordem-agente-sheet .op-barra-trilho {
+  height: 24px;
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.38);
+}
+
+.ordem-agente-sheet .op-barra-steppers {
+  gap: 5px;
+  text-shadow: none;
+}
+
+.ordem-agente-sheet .op-barra-steppers a {
+  width: 18px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.ordem-agente-sheet .op-tabs {
+  gap: 2px;
+  border-color: rgba(255, 255, 255, 0.10);
+  margin-bottom: 8px;
+}
+
+.ordem-agente-sheet .op-tabs .item {
+  padding: 7px 10px;
+  border-bottom: 2px solid transparent;
+  color: rgba(245, 245, 245, 0.62);
+  text-shadow: none;
+}
+
+.ordem-agente-sheet .op-tabs .item.active {
+  color: #fff;
+  border-bottom-color: var(--op-roxo-claro);
+  text-shadow: none;
+}
+
+.ordem-agente-sheet .op-pericias-cab,
+.ordem-agente-sheet .op-pericia {
+  grid-template-columns: minmax(150px, 1fr) 84px 52px 46px 46px 34px;
+  gap: 6px;
+  padding: 4px 6px;
+}
+
+.ordem-agente-sheet .op-pericias-cab {
+  top: -1px;
+  color: rgba(201, 166, 240, 0.9);
+  border-bottom-color: rgba(155, 89, 208, 0.28);
+  background: #09090b;
+}
+
+.ordem-agente-sheet .op-pericias-cab .c-ajudar {
+  font-size: 0;
+}
+
+.ordem-agente-sheet .op-pericias-cab .c-ajudar::before {
+  content: "\f4c4";
+  font-family: "Font Awesome 6 Free", "Font Awesome 5 Free";
+  font-weight: 900;
+  font-size: 11px;
+}
+
+.ordem-agente-sheet .op-pericia {
+  min-height: 34px;
+  border-bottom-color: rgba(255, 255, 255, 0.055);
+}
+
+.ordem-agente-sheet .op-pericia:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ordem-agente-sheet .op-pericia .c-nome {
+  min-width: 0;
+  color: rgba(245, 245, 245, 0.78);
+}
+
+.ordem-agente-sheet .op-pericia .c-nome i {
+  color: rgba(155, 89, 208, 0.55);
+}
+
+.ordem-agente-sheet .op-pericia.treinada .c-nome {
+  color: #fff;
+}
+
+.ordem-agente-sheet .op-pericia .c-dados {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: rgba(245, 245, 245, 0.66);
+}
+
+.ordem-agente-sheet .op-pericia .c-dados strong {
+  min-width: 36px;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.ordem-agente-sheet .op-pericia .c-dados select {
+  width: 36px;
+  height: 22px;
+  min-height: 22px;
+  border: 1px solid rgba(155, 89, 208, 0.28);
+  border-radius: 4px;
+  background: rgba(155, 89, 208, 0.08);
+}
+
+.ordem-agente-sheet .op-pericia .c-bonus {
+  color: var(--op-dourado-claro);
+  font-variant-numeric: tabular-nums;
+}
+
+.ordem-agente-sheet .op-pericia .c-treino input,
+.ordem-agente-sheet .op-pericia .c-outros input {
+  height: 24px;
+  min-height: 24px;
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.20);
+}
+
+.ordem-agente-sheet .op-pericia .c-ajudar {
+  display: flex;
+  justify-content: center;
+}
+
+.ordem-agente-sheet .op-btn-ajudar {
+  width: 26px;
+  height: 26px;
+  min-height: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(155, 89, 208, 0.38);
+  border-radius: 4px;
+  background: rgba(155, 89, 208, 0.08);
+  color: rgba(245, 245, 245, 0.78);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.ordem-agente-sheet .op-btn-ajudar:hover {
+  border-color: var(--op-dourado);
+  background: rgba(201, 162, 75, 0.12);
+  color: #fff;
+  box-shadow: none;
+}
+
+.ordem-agente-sheet .lista-itens .item-linha {
+  min-height: 34px;
+  gap: 7px;
+  padding: 5px 7px;
+}
+
+.ordem-agente-sheet .item-linha .nome,
+.ordem-agente-sheet .item-linha .tag,
+.ordem-agente-sheet .item-linha .dado {
+  min-width: 0;
+}
+
+.ordem-agente-sheet .item-linha .nome {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ordem-agente-sheet .item-linha .tag,
+.ordem-agente-sheet .item-linha .dado {
+  white-space: nowrap;
+}
+
+.ordem-agente-sheet .item-linha .acoes a {
+  width: 18px;
+  text-align: center;
+}
+
+.ordem-paranormal.dialog .window-content {
+  background: #09090b;
+  color: var(--op-texto);
+  padding: 12px;
+}
+
+.ordem-paranormal.dialog .dialog-content {
+  margin-bottom: 10px;
+}
+
+.ordem-paranormal.dialog .dialog-buttons {
+  gap: 8px;
+}
+
+.ordem-paranormal.dialog .dialog-buttons button {
+  min-height: 30px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: var(--op-texto);
+}
+
+.ordem-paranormal.dialog .dialog-buttons button:hover {
+  border-color: var(--op-roxo-claro);
+  background: rgba(155, 89, 208, 0.14);
+  box-shadow: none;
+}
+
+.ordem-paranormal .ordem-roll-dialog .roll-info,
+.ordem-paranormal .ordem-nex-modal .nex-cabec {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border: 1px solid rgba(155, 89, 208, 0.22);
+  border-left: 3px solid var(--op-roxo-claro);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.035);
+  color: rgba(245, 245, 245, 0.86);
+  text-align: left;
+}
+
+.ordem-paranormal .ordem-roll-dialog .form-group,
+.ordem-paranormal .ordem-nex-modal .form-group {
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.ordem-paranormal .ordem-roll-dialog label,
+.ordem-paranormal .ordem-nex-modal label {
+  color: rgba(245, 245, 245, 0.70);
+  font-size: 10px;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+
+.ordem-paranormal .ordem-roll-dialog input,
+.ordem-paranormal .ordem-roll-dialog select,
+.ordem-paranormal .ordem-nex-modal input,
+.ordem-paranormal .ordem-nex-modal select {
+  min-height: 30px;
+  border-radius: 4px;
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.ordem-paranormal .ordem-roll-dialog .hint,
+.ordem-paranormal .ordem-nex-modal .hint,
+.ordem-paranormal .ordem-nex-modal .nex-lembrete,
+.ordem-paranormal .ordem-nex-modal .nex-aviso {
+  color: rgba(245, 245, 245, 0.58);
+  font-size: 11px;
+  font-style: normal;
+}
+
+.ordem-paranormal .ordem-nex-modal h4 {
+  margin: 12px 0 6px;
+  padding-bottom: 4px;
+  border-bottom-color: rgba(155, 89, 208, 0.24);
+  color: rgba(201, 166, 240, 0.95);
+  font-size: 11px;
+  letter-spacing: 0.7px;
+}
+
+.ordem-paranormal .ordem-nex-modal .nex-ganhos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.ordem-paranormal .ordem-nex-modal .nex-ganhos li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 5px 7px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.ordem-paranormal .ordem-nex-modal .nex-ganhos .novo {
+  margin-left: auto;
+  color: var(--op-dourado-claro);
+  white-space: nowrap;
+}
+
+.ordem-paranormal .ordem-nex-modal .nex-hab {
+  margin: 6px 0;
+  color: rgba(245, 245, 245, 0.84);
+  text-align: left;
+}
+
+.ordem-paranormal .op-habilidades,
+.op-ritual-dialog .op-apr-opcao,
+.op-cond-dialog .op-cond-opcao {
+  border-color: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.ordem-paranormal .op-habilidades legend {
+  color: rgba(201, 166, 240, 0.95);
+}
+
+.op-cond-dialog .op-cond-grade {
+  gap: 6px;
+}
+
+.op-cond-dialog .op-cond-opcao {
+  min-height: 34px;
+  padding: 6px 7px;
+}
+
+/* ==========================================================================
+   EXPORTAR / IMPORTAR FICHAS (JSON local e GitHub)
+   ========================================================================== */
+
+/* Botão de importar na aba de Atores */
+.op-importar-fichas {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; margin-top: 4px; padding: 5px 8px;
+  font-size: 12px; cursor: pointer;
+  background: rgba(106, 45, 168, 0.2);
+  border: 1px solid var(--op-roxo-claro, #8a4fd0);
+  border-radius: 4px; color: var(--op-texto, #e8e3f0);
+}
+.op-importar-fichas:hover {
+  background: rgba(106, 45, 168, 0.35);
+  border-color: var(--op-dourado, #c9a24b);
+}
+
+/* Diálogo de importação */
+.op-import .op-import-ou {
+  text-align: center; margin: 8px 0; font-size: 11px;
+  color: var(--op-texto-fraco, #9a8fb0); letter-spacing: 1px;
+}
+.op-import input[type="file"] {
+  width: 100%; font-size: 11px; color: var(--op-texto, #e8e3f0);
+}
+.op-import .hint { font-size: 11px; color: var(--op-texto-fraco, #9a8fb0); }
+
+/* ==========================================================================
+   FICHA DE CRIATURA (statblock) — alinhada ao tema do Agente
+   ========================================================================== */
+
+/* Blocos de statblock (Sentidos / Resistências) na coluna esquerda */
+.ordem-criatura-sheet .op-stat-bloco {
+  margin-top: 8px; padding: 6px 8px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px;
+}
+.ordem-criatura-sheet .op-stat-bloco h4 {
+  margin: 0 0 4px; font-size: 11px; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--op-dourado-claro, #d8b86a);
+}
+.ordem-criatura-sheet .op-stat-linha {
+  display: flex; align-items: center; gap: 6px; margin: 3px 0;
+}
+.ordem-criatura-sheet .op-stat-chip {
+  flex: 1 1 auto; display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 6px; font-size: 12px; cursor: pointer;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 4px;
+  color: var(--op-texto, #e8e3f0);
+}
+.ordem-criatura-sheet .op-stat-chip:hover {
+  border-color: var(--op-dourado, #c9a24b); color: var(--op-dourado-claro, #d8b86a);
+}
+.ordem-criatura-sheet .op-stat-edit { flex: 0 0 auto; font-size: 11px; white-space: nowrap; }
+.ordem-criatura-sheet .op-stat-edit input { width: 38px; }
+.ordem-criatura-sheet .op-stat-extra { width: 100%; margin-top: 4px; font-size: 11px; }
+
+/* Linha de ataques estruturados de criatura (selects de ação/alcance) */
+.ordem-criatura-sheet .ca-linha { flex-wrap: wrap; }
+.ordem-criatura-sheet .ca-linha .ca-acao,
+.ordem-criatura-sheet .ca-linha .ca-alcance { flex: 0 0 auto; font-size: 11px; }
+.ordem-criatura-sheet .ca-linha .ca-mult { font-size: 11px; white-space: nowrap; }
+.ordem-criatura-sheet .ca-linha .ca-mult input { width: 34px; }
+
+.ordem-criatura-sheet .op-origem-paranormal {
+  margin-top: 10px; padding: 6px 8px;
+  background: rgba(106, 45, 168, 0.12);
+  border-left: 2px solid var(--op-roxo-claro, #8a4fd0); border-radius: 4px;
+}
+
+/* Preview da fórmula de dano no botão do card */
+.ordem-chat-card .dano-preview { opacity: 0.8; font-size: 11px; }
+
+/* RD / perícias estruturadas e multi-selects da criatura */
+.ordem-criatura-sheet .rd-linha { display: flex; align-items: center; gap: 6px; }
+.ordem-criatura-sheet .rd-linha .rd-tipo { flex: 1 1 auto; font-size: 11px; }
+.ordem-criatura-sheet .rd-linha .rd-valor { font-size: 11px; white-space: nowrap; }
+.ordem-criatura-sheet .rd-linha .rd-valor input { width: 48px; }
+.ordem-criatura-sheet .cp-linha { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.ordem-criatura-sheet .cp-linha .cp-pericia { flex: 1 1 140px; font-size: 12px; }
+.ordem-criatura-sheet .cp-linha .cp-teste { font-size: 11px; white-space: nowrap; }
+.ordem-criatura-sheet .cp-linha .cp-teste input { width: 44px; }
+.ordem-criatura-sheet select.op-multi {
+  width: 100%; min-height: 92px; font-size: 11px;
+  background: rgba(0, 0, 0, 0.3); color: var(--op-texto, #e8e3f0);
+  border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 4px;
+}
+.ordem-criatura-sheet select.op-multi option { padding: 2px 4px; }
+.ordem-criatura-sheet select.op-multi option:checked {
+  background: var(--op-roxo, #6a2da8); color: #fff;
+}
+
+/* Botão "Criar Item" na aba de Itens */
+.op-criar-item {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; margin-top: 4px; padding: 5px 8px;
+  font-size: 12px; cursor: pointer;
+  background: rgba(106, 45, 168, 0.2);
+  border: 1px solid var(--op-roxo-claro, #8a4fd0);
+  border-radius: 4px; color: var(--op-texto, #e8e3f0);
+}
+.op-criar-item:hover { background: rgba(106, 45, 168, 0.35); border-color: var(--op-dourado, #c9a24b); }
+
+/* Resumo de Resistências & Danos na ficha de criatura */
+.ordem-criatura-sheet .op-resumo-rd {
+  padding: 6px 8px; margin-bottom: 8px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px;
+  font-size: 12px;
+}
+.ordem-criatura-sheet .op-resumo-rd .op-resumo-linha { margin: 2px 0; }
+.ordem-criatura-sheet .op-resumo-rd .vazio-inline { color: var(--op-texto-fraco, #9a8fb0); }
+
+/* Modal de Resistências & Danos */
+.ordem-resist-danos fieldset {
+  margin: 6px 0; padding: 6px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 6px;
+}
+.ordem-resist-danos legend { padding: 0 6px; color: var(--op-dourado-claro, #d8b86a); font-size: 12px; }
+.ordem-resist-danos .rd-linha { display: flex; align-items: center; gap: 6px; margin: 4px 0; }
+.ordem-resist-danos .rd-linha .rd-tipo { flex: 1 1 auto; }
+.ordem-resist-danos .rd-linha .rd-val { width: 56px; }
+.ordem-resist-danos .op-checks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px 10px; }
+.ordem-resist-danos .op-check { display: flex; align-items: center; gap: 5px; font-size: 12px; }
+.ordem-resist-danos .botao-adicionar { display: inline-block; margin-top: 4px; cursor: pointer; font-size: 12px; }
+
+/* Assistente de criação de item */
+.op-criador .campos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; }
+.op-criador .campos-grid .span2 { grid-column: 1 / -1; }
+.op-criador .form-group label { font-size: 11px; color: var(--op-texto-fraco, #9a8fb0); }
