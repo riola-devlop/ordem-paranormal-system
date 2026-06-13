@@ -340,7 +340,9 @@
       "Movimento": "Movimento",
       "AcaoMinima": "Ação Mínima",
       "Reacao": "Reação",
-      "Atacar": "Atacar (teste vs Defesa do alvo)"
+      "Atacar": "Atacar (teste vs Defesa do alvo)",
+      "AcoesBotao": "Manobras & Defesa",
+      "AcoesTitulo": "Ações de combate"
     },
 
     "NEX": {
@@ -479,6 +481,7 @@
 
     "Defesa": {
       "Titulo": "Ações especiais de defesa",
+      "Ajuda": "Reações que exigem treino. Use antes da rolagem de ataque do inimigo; apenas uma por rodada.",
       "Bloqueio": "Bloqueio",
       "Esquiva": "Esquiva",
       "ContraAtaque": "Contra-ataque",
@@ -892,6 +895,9 @@
       "PericiaLabel": "Perícia",
       "CDLabel": "CD",
       "TokensLabel": "Participantes (tokens na cena)",
+      "ColToken": "Token",
+      "ColTipo": "Tipo",
+      "SelTodos": "Selecionar todos",
       "SemTokens": "Nenhum token disponível na cena.",
       "SemTokensSelecionados": "Selecione ao menos um participante.",
       "Solicitar": "Solicitar",

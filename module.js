@@ -1822,6 +1822,68 @@ export async function acaoDefesa(actor, tipo) {
   });
 }
 
+/**
+ * Modal de AÇÕES DE COMBATE: reúne as manobras (teste de Luta oposto) e as
+ * ações especiais de defesa em um único diálogo, mantendo a aba Combate limpa.
+ * Clicar numa ação executa-a e fecha o modal.
+ */
+export async function abrirAcoesCombate(actor) {
+  if (!actor) return ui.notifications.warn(game.i18n.localize("ORDEM.Aviso.SemAtor"));
+
+  const manobrasHtml = Object.entries(ORDEM.manobras).map(([key, m]) =>
+    `<button type="button" class="op-acao-btn" data-tipo="manobra" data-chave="${key}"
+       title="${game.i18n.localize(`ORDEM.Manobra.Efeito.${key}`)}">
+      <i class="fas ${m.icone}"></i> ${game.i18n.localize(`ORDEM.Manobra.${key}`)}
+    </button>`).join("");
+
+  const defs = { bloqueio: "fortitude", esquiva: "reflexos", contraataque: "luta" };
+  const defIcone = { bloqueio: "fa-shield", esquiva: "fa-person-running", contraataque: "fa-hand-fist" };
+  const defLabel = { bloqueio: "Bloqueio", esquiva: "Esquiva", contraataque: "ContraAtaque" };
+  const defesasHtml = Object.entries(defs).map(([tipo, per]) => {
+    const treinada = (Number(actor.system.pericias?.[per]?.treino) || 0) > 0;
+    return `<button type="button" class="op-acao-btn ${treinada ? "" : "destreinada"}" data-tipo="defesa" data-chave="${tipo}"
+       title="${game.i18n.localize(`ORDEM.Defesa.${defLabel[tipo]}Ajuda`)}">
+      <i class="fas ${defIcone[tipo]}"></i> ${game.i18n.localize(`ORDEM.Defesa.${defLabel[tipo]}`)}
+    </button>`;
+  }).join("");
+
+  const conteudo = `<div class="op-acoes-combate">
+    <section>
+      <h4><i class="fas fa-hand-fist"></i> ${game.i18n.localize("ORDEM.Manobra.Titulo")}</h4>
+      <p class="hint">${game.i18n.localize("ORDEM.Manobra.Ajuda")}</p>
+      <div class="op-acao-grade">${manobrasHtml}</div>
+    </section>
+    <section>
+      <h4><i class="fas fa-shield-halved"></i> ${game.i18n.localize("ORDEM.Defesa.Titulo")}</h4>
+      <p class="hint">${game.i18n.localize("ORDEM.Defesa.Ajuda")}</p>
+      <div class="op-acao-grade">${defesasHtml}</div>
+    </section>
+  </div>`;
+
+  const dlg = new Dialog({
+    title: game.i18n.localize("ORDEM.Combate.AcoesTitulo"),
+    content: conteudo,
+    buttons: {
+      fechar: {
+        icon: '<i class="fas fa-times"></i>',
+        label: game.i18n.localize("ORDEM.Dialog.Cancelar")
+      }
+    },
+    default: "fechar",
+    render: html => {
+      html[0].querySelectorAll(".op-acao-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const { tipo, chave } = btn.dataset;
+          dlg.close();
+          if (tipo === "manobra") rolarManobra(actor, chave);
+          else acaoDefesa(actor, chave);
+        });
+      });
+    }
+  }, { classes: ["ordem-paranormal", "op-theme", "dialog", "op-acoes-combate-dialog"], width: 460 });
+  dlg.render(true);
+}
+
 /* -------------------------------------------------------------------------- */
 /*  CRIATURAS — TESTES, ATAQUES, HABILIDADES E PRESENÇA PERTURBADORA           */
 /* -------------------------------------------------------------------------- */
@@ -3789,16 +3851,29 @@ async function _testeOculto({ titulo, periciaKey, cd, tokens }) {
 export async function abrirPedirTeste() {
   if (!game.user.isGM) return ui.notifications.warn(game.i18n.localize("ORDEM.Aviso.SemPermissao"));
 
-  // Lista de tokens disponíveis na cena.
+  // Lista de tokens disponíveis na cena (tabela).
   const tokens = (canvas?.tokens?.placeables ?? []).filter(t => t.actor);
-  const tokenOptions = tokens.map(t => {
+  const tokenRows = tokens.map(t => {
     const checked = t.actor.type === "agente" ? "checked" : "";
-    return `<label class="pt-token-opcao">
-      <input type="checkbox" name="token" value="${t.id}" ${checked} />
-      <img src="${t.document.texture?.src ?? t.actor.img}" alt="${t.name}" />
-      <span>${t.name}</span>
-    </label>`;
-  }).join("") || `<p>${game.i18n.localize("ORDEM.PT.SemTokens")}</p>`;
+    const img = t.document.texture?.src ?? t.actor.img ?? "icons/svg/mystery-man.svg";
+    const tipo = game.i18n.localize(`TYPES.Actor.${t.actor.type}`);
+    return `<tr class="pt-token-linha">
+      <td class="pt-col-check"><input type="checkbox" name="token" value="${t.id}" ${checked} /></td>
+      <td class="pt-col-nome"><img src="${img}" alt="" /> <span>${t.name}</span></td>
+      <td class="pt-col-tipo">${tipo}</td>
+    </tr>`;
+  }).join("");
+
+  const tokenTabela = tokens.length
+    ? `<table class="pt-tokens-tabela">
+        <thead><tr>
+          <th class="pt-col-check"><input type="checkbox" class="pt-sel-todos" checked title="${game.i18n.localize("ORDEM.PT.SelTodos")}" /></th>
+          <th class="pt-col-nome">${game.i18n.localize("ORDEM.PT.ColToken")}</th>
+          <th class="pt-col-tipo">${game.i18n.localize("ORDEM.PT.ColTipo")}</th>
+        </tr></thead>
+        <tbody>${tokenRows}</tbody>
+      </table>`
+    : `<p class="vazio">${game.i18n.localize("ORDEM.PT.SemTokens")}</p>`;
 
   const periciaOptions = Object.keys(ORDEM.pericias).map(k =>
     `<option value="${k}">${game.i18n.localize(`ORDEM.Pericia.${k}`)}</option>`
@@ -3822,7 +3897,7 @@ export async function abrirPedirTeste() {
     </label>
     <fieldset class="pt-tokens">
       <legend>${game.i18n.localize("ORDEM.PT.TokensLabel")}</legend>
-      <div class="pt-tokens-lista">${tokenOptions}</div>
+      ${tokenTabela}
     </fieldset>
   </form>`;
 
@@ -3862,8 +3937,19 @@ export async function abrirPedirTeste() {
           callback: () => resolve(null)
         }
       },
-      default: "solicitar"
-    }, { classes: ["ordem-paranormal", "dialog"], width: 420 }).render(true);
+      default: "solicitar",
+      render: html => {
+        const root = html[0];
+        const todos = root.querySelector(".pt-sel-todos");
+        const checks = () => [...root.querySelectorAll("[name='token']")];
+        // "Selecionar todos" marca/desmarca todas as linhas.
+        todos?.addEventListener("change", () => checks().forEach(c => { c.checked = todos.checked; }));
+        // Mantém o "todos" coerente com as marcações individuais.
+        checks().forEach(c => c.addEventListener("change", () => {
+          if (todos) todos.checked = checks().every(x => x.checked);
+        }));
+      }
+    }, { classes: ["ordem-paranormal", "dialog"], width: 440 }).render(true);
   });
 }
 
@@ -4352,6 +4438,7 @@ Hooks.once("init", function () {
     // Combate avançado
     rolarManobra,
     acaoDefesa,
+    abrirAcoesCombate,
     // Criaturas
     rolarTesteCriatura,
     rolarAtaqueCriatura,

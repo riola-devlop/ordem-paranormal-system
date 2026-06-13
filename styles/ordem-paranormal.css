@@ -2064,3 +2064,123 @@
 
 /* Opção "Reter" no diálogo de conjuração */
 .op-ritual-dialog .op-reter { display: block; margin-top: 6px; }
+
+/* ==========================================================================
+   PEDIR TESTE — tabela de participantes
+   ========================================================================== */
+.pt-tokens { border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 4px 6px; }
+.pt-tokens legend { padding: 0 6px; font-size: 12px; color: var(--op-dourado-claro, #d8b86a); }
+
+.pt-tokens-tabela {
+  width: 100%; border-collapse: collapse;
+  display: block; max-height: 240px; overflow-y: auto;
+}
+.pt-tokens-tabela thead th {
+  position: sticky; top: 0;
+  background: var(--op-painel, #1a1320);
+  font-size: 11px; text-transform: uppercase; letter-spacing: .5px;
+  color: var(--op-texto-fraco, #9a8fb0);
+  text-align: left; padding: 4px 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+.pt-tokens-tabela tbody td {
+  padding: 3px 6px; border-bottom: 1px solid rgba(255,255,255,0.06);
+  vertical-align: middle;
+}
+.pt-tokens-tabela tbody tr:hover { background: rgba(106, 45, 168, 0.15); }
+
+.pt-tokens-tabela .pt-col-check { width: 28px; text-align: center; }
+.pt-tokens-tabela .pt-col-tipo  { width: 84px; font-size: 11px; color: var(--op-texto-fraco, #9a8fb0); }
+
+.pt-tokens-tabela .pt-col-nome { display: flex; align-items: center; gap: 8px; }
+.pt-tokens-tabela .pt-col-nome img {
+  width: 28px; height: 28px; flex: 0 0 28px;
+  object-fit: cover; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2);
+}
+.pt-tokens-tabela .pt-col-nome span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ==========================================================================
+   ABA DE COMBATE — botão de ações + modal de Manobras/Defesa
+   ========================================================================== */
+.op-combate-botoes { margin: 10px 0; }
+.op-combate-botoes button {
+  width: 100%; padding: 8px; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  font-size: 13px; font-weight: 600;
+  background: rgba(106, 45, 168, 0.18);
+  border: 1px solid var(--op-roxo-claro, #8a4fd0); border-radius: 6px;
+  color: var(--op-texto, #e8e3f0);
+}
+.op-combate-botoes button:hover { background: rgba(106, 45, 168, 0.35); border-color: var(--op-dourado, #c9a24b); }
+
+.op-acoes-combate section { margin-bottom: 12px; }
+.op-acoes-combate h4 {
+  margin: 0 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .5px;
+  color: var(--op-dourado-claro, #d8b86a); border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 3px;
+}
+.op-acoes-combate .hint { font-size: 11px; color: var(--op-texto-fraco, #9a8fb0); margin: 2px 0 6px; }
+.op-acoes-combate .op-acao-grade { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.op-acoes-combate .op-acao-btn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 8px 6px; font-size: 12px; cursor: pointer;
+  background: rgba(255,255,255,0.05); color: var(--op-texto, #e8e3f0);
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 5px;
+}
+.op-acoes-combate .op-acao-btn:hover { border-color: var(--op-dourado, #c9a24b); color: var(--op-dourado-claro, #d8b86a); }
+.op-acoes-combate .op-acao-btn.destreinada { opacity: .45; }
+
+/* ==========================================================================
+   ABA DE MODIFICADORES (ficha de item) — visual mais limpo
+   ========================================================================== */
+.ordem-item-sheet .mod-lista { gap: 6px; margin: 8px 0; }
+.ordem-item-sheet .mod-linha {
+  padding: 6px; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px;
+  background: rgba(0,0,0,0.22); align-items: center;
+}
+.ordem-item-sheet .mod-linha select,
+.ordem-item-sheet .mod-linha input[type="text"],
+.ordem-item-sheet .mod-linha input[type="number"] {
+  width: 100%; box-sizing: border-box;
+  background: rgba(0,0,0,0.35); color: var(--op-texto, #e8e3f0);
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; padding: 3px 5px; font-size: 12px;
+}
+.ordem-item-sheet .mod-linha .mod-valor { text-align: center; font-weight: 600; color: var(--op-dourado-claro, #d8b86a); }
+.ordem-item-sheet .mod-ativo { display: flex; align-items: center; justify-content: center; }
+.ordem-item-sheet .mod-remover {
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid transparent; border-radius: 4px;
+}
+.ordem-item-sheet .mod-lista .vazio,
+.ordem-item-sheet .tab[data-tab="modificadores"] > .hint {
+  font-size: 12px; color: var(--op-texto-fraco, #9a8fb0);
+}
+.ordem-item-sheet .tab[data-tab="modificadores"] > .hint {
+  display: block; padding: 6px 8px; margin-bottom: 6px;
+  background: rgba(106,45,168,0.10); border-left: 2px solid var(--op-roxo-claro, #8a4fd0); border-radius: 4px;
+}
+.ordem-item-sheet .mod-lista .vazio {
+  text-align: center; padding: 10px; border: 1px dashed rgba(255,255,255,0.15); border-radius: 6px;
+}
+
+/* ==========================================================================
+   ABA DE NOTAS (ficha do Agente) — editores e campos maiores
+   ========================================================================== */
+.ordem-agente-sheet .notas-tab .detalhes-grid { gap: 10px; margin-bottom: 10px; }
+.ordem-agente-sheet .notas-tab .detalhes-grid .campo-texto:last-child { grid-column: 1 / -1; }
+.ordem-agente-sheet .notas-tab .campo-texto label {
+  margin-bottom: 3px; letter-spacing: .5px; color: var(--op-dourado-claro, #d8b86a);
+}
+.ordem-agente-sheet .notas-tab textarea {
+  background: rgba(0,0,0,0.28); color: var(--op-texto, #e8e3f0);
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 5px; padding: 6px; font-size: 12px;
+}
+.ordem-agente-sheet .notas-tab .secao-titulo {
+  margin-top: 12px; padding-bottom: 4px; border-bottom: 1px solid rgba(201,162,75,0.35);
+  color: var(--op-dourado-claro, #d8b86a);
+}
+.ordem-agente-sheet .notas-tab .editor {
+  min-height: 180px; background: rgba(0,0,0,0.22);
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 6px;
+}
+.ordem-agente-sheet .notas-tab .editor .editor-content { padding: 6px 8px; }
+.ordem-agente-sheet .notas-tab .editor.prosemirror menu { border-radius: 6px 6px 0 0; }

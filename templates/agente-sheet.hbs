@@ -375,33 +375,11 @@
             <a class="op-resist" data-action="rolar-resistencia" data-pericia="vontade">{{localize "ORDEM.Pericia.vontade"}} <small>DT {{derivado.dtVontade}}</small></a>
           </div>
 
-          {{!-- Manobras de combate (teste de Luta oposto; marque um alvo para oposição automática) --}}
-          <div class="secao-cabecalho">
-            <h3>{{localize "ORDEM.Manobra.Titulo"}}</h3>
-            <small class="hint">{{localize "ORDEM.Manobra.Ajuda"}}</small>
-          </div>
-          <div class="op-manobras">
-            {{#each manobras}}
-              <a class="op-manobra" data-action="rolar-manobra" data-manobra="{{this.key}}" title="{{this.efeito}}">
-                <i class="fas {{this.icone}}"></i> {{this.label}}
-              </a>
-            {{/each}}
-          </div>
-
-          {{!-- Ações especiais de defesa (exigem treinamento) --}}
-          <div class="secao-cabecalho">
-            <h3>{{localize "ORDEM.Defesa.Titulo"}}</h3>
-          </div>
-          <div class="op-manobras op-defesas">
-            <a class="op-manobra {{#unless defesas.bloqueio}}destreinada{{/unless}}" data-action="acao-defesa" data-defesa="bloqueio" title="{{localize 'ORDEM.Defesa.BloqueioAjuda'}}">
-              <i class="fas fa-shield"></i> {{localize "ORDEM.Defesa.Bloqueio"}}
-            </a>
-            <a class="op-manobra {{#unless defesas.esquiva}}destreinada{{/unless}}" data-action="acao-defesa" data-defesa="esquiva" title="{{localize 'ORDEM.Defesa.EsquivaAjuda'}}">
-              <i class="fas fa-person-running"></i> {{localize "ORDEM.Defesa.Esquiva"}}
-            </a>
-            <a class="op-manobra {{#unless defesas.contraataque}}destreinada{{/unless}}" data-action="acao-defesa" data-defesa="contraataque" title="{{localize 'ORDEM.Defesa.ContraAtaqueAjuda'}}">
-              <i class="fas fa-hand-fist"></i> {{localize "ORDEM.Defesa.ContraAtaque"}}
-            </a>
+          {{!-- Manobras e ações de defesa (abrem em modal para não poluir a aba) --}}
+          <div class="op-combate-botoes">
+            <button type="button" data-action="abrir-acoes-combate">
+              <i class="fas fa-hand-fist"></i> {{localize "ORDEM.Combate.AcoesBotao"}}
+            </button>
           </div>
 
           {{!-- Ações personalizadas (até 10) --}}

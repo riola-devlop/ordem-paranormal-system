@@ -7,7 +7,7 @@
 import {
   ORDEM, rolarTeste, rolarDano, rolarAtaque, rolarResistencia, rolarAjuda,
   conjurarRitual, subirNex, voltarNex,
-  usarPoder, usarHabilidadeTrilha, rolarManobra, acaoDefesa,
+  usarPoder, usarHabilidadeTrilha, abrirAcoesCombate,
   abrirSeletorCondicao, marcarTurnoMorrendo, estabilizar,
   marcarTurnoEnlouquecendo, acalmar, abrirInterludio, exportarAgente,
   progredirXP, liberarRitual
@@ -327,14 +327,10 @@ export class OrdemAgentSheet extends ActorSheet {
       return abrirInterludio(this.actor);
     });
 
-    // Manobras de combate e ações especiais de defesa.
-    html.find("[data-action='rolar-manobra']").on("click", (ev) => {
+    // Manobras de combate e ações especiais de defesa (modal).
+    html.find("[data-action='abrir-acoes-combate']").on("click", (ev) => {
       ev.preventDefault();
-      return rolarManobra(this.actor, ev.currentTarget.dataset.manobra);
-    });
-    html.find("[data-action='acao-defesa']").on("click", (ev) => {
-      ev.preventDefault();
-      return acaoDefesa(this.actor, ev.currentTarget.dataset.defesa);
+      return abrirAcoesCombate(this.actor);
     });
 
     // Usar poder (gasta PE, controla usos por cena).
