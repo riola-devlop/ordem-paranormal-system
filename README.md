@@ -158,7 +158,17 @@ Botão **Criar Item** no topo da aba **Itens**: escolha o tipo (arma, proteção
 
 ### Compêndios "Ordem Paranormal"
 
-Na aba **Compêndios**, a pasta **Ordem Paranormal** agrupa: Poderes, Rituais, Armas, Proteções, Equipamentos, Origens, Trilhas, Condições (Itens) e Criaturas (Atores). Começam vazios — **arraste** itens/atores criados para dentro deles e o conteúdo fica reutilizável em qualquer mundo.
+Na aba **Compêndios**, a pasta **Ordem Paranormal** agrupa: Poderes, Rituais, Armas, Proteções, Equipamentos, Origens, Trilhas, Condições (Itens), **Criaturas** e **Agentes** (Atores). Começam vazios — **arraste** itens/atores criados para dentro deles e o conteúdo fica reutilizável em qualquer mundo.
+
+### Compartilhar conteúdo via GitHub (Compêndios ↔ JSON)
+
+Botão **"Conteúdo Ordem (GitHub)"** no rodapé da aba **Compêndios** (só Mestre). Permite que Mestres e criadores compartilhem **tudo** (itens e atores) entre si:
+
+- **Exportar**: escolha um compêndio (ou **Todos**) → baixa um JSON (`ordem-<pack>.json` ou `ordem-conteudo.json`) com todos os documentos. Faça commit no seu repositório GitHub.
+- **Importar**: cole um **link do GitHub** (arquivo cru, `/blob/`, pasta `/tree/...` ou repositório) **ou** selecione arquivos `.json`. Cada documento é **roteado automaticamente** para o compêndio certo pelo tipo (poder→Poderes, criatura→Criaturas, etc.).
+- **Conflitos**: se um documento de mesmo nome já existir, o sistema **pergunta** o que fazer — **Atualizar** (substitui), **Pular** ou **Criar novo** (cópia) — aplicado ao lote.
+
+Fluxo de colaboração: exporte um compêndio → commit do JSON no GitHub → outros importam pelo link e recebem tudo nos compêndios correspondentes (com atualização incremental ao reimportar).
 
 ### Exportar / Importar fichas (JSON e GitHub)
 
@@ -286,6 +296,12 @@ game.ordem.abrirInterludio(actor);
 game.ordem.abrirCriadorItem();
 game.ordem.exportarAgente(actor);
 game.ordem.importarFichas();
+
+// Compartilhar conteúdo (compêndios ↔ GitHub)
+game.ordem.abrirGerenciadorConteudo();              // hub exportar/importar
+game.ordem.exportarCompendio("ordem-paranormal.poderes");
+game.ordem.exportarTodosCompendios();               // baixa ordem-conteudo.json
+game.ordem.importarParaCompendios(arrayDeJsons);    // roteia por tipo
 
 // Rituais e progressão
 game.ordem.conjurarRitual(actor, itemRitual);

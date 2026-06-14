@@ -9,7 +9,11 @@
       <div class="op-topo-linha">
         <div class="op-campo">
           <label>{{localize "ORDEM.Campo.origem"}}</label>
-          <input type="text" name="system.origem" value="{{system.origem}}" />
+          {{#if origemItemId}}
+            <span class="op-selo-item" data-action="editar-item" data-item-id="{{origemItemId}}" title="{{localize 'ORDEM.Item.Usar'}}">{{origemLabel}}</span>
+          {{else}}
+            <span class="op-selo-item vazio">{{#if origemLabel}}{{origemLabel}}{{else}}—{{/if}}</span>
+          {{/if}}
         </div>
         <div class="op-campo">
           <label>{{localize "ORDEM.Campo.classe"}}</label>
@@ -22,7 +26,11 @@
         </div>
         <div class="op-campo trilha">
           <label>{{localize "ORDEM.Campo.trilha"}}</label>
-          <input type="text" name="system.trilha" value="{{system.trilha}}" />
+          {{#if trilhaItemId}}
+            <span class="op-selo-item" data-action="editar-item" data-item-id="{{trilhaItemId}}" title="{{localize 'ORDEM.Item.Usar'}}">{{trilhaLabel}}</span>
+          {{else}}
+            <span class="op-selo-item vazio">{{#if trilhaLabel}}{{trilhaLabel}}{{else}}—{{/if}}</span>
+          {{/if}}
         </div>
         <div class="op-campo">
           <label>{{localize "ORDEM.Campo.patente"}}{{#if patenteDesatualizada}} <i class="fas fa-arrow-up patente-sugestao" title="{{patenteSugestaoTitulo}}"></i>{{/if}}</label>
@@ -82,12 +90,20 @@
       <div class="op-caixas">
         <div class="op-caixa nex">
           <a class="op-subir-nex" data-action="subir-nex" title="{{localize 'ORDEM.NEX.Subir'}}"><i class="fas fa-arrow-up-right-dots"></i></a>
-          <input type="number" name="system.nex" value="{{system.nex}}" min="0" max="99" /><span class="pct">%</span>
+          {{#if isGM}}
+            <input type="number" name="system.nex" value="{{system.nex}}" min="0" max="99" title="{{localize 'ORDEM.NEX.OverrideGM'}}" /><span class="pct">%</span>
+          {{else}}
+            <span class="op-nex-valor" title="{{localize 'ORDEM.NEX.Travado'}}">{{system.nex}}</span><span class="pct">%</span>
+          {{/if}}
           <label>{{localize "ORDEM.Campo.nex"}}</label>
         </div>
         <div class="op-caixa">
           <div class="op-caixa-derivado" title="{{localize 'ORDEM.NEX.LimitePeAjuda'}}">{{derivado.peRodada}}</div>
           <label>{{localize "ORDEM.Campo.peRodada"}}</label>
+        </div>
+        <div class="op-caixa op-iniciativa">
+          <a class="op-caixa-derivado" data-action="rolar-iniciativa" title="{{localize 'ORDEM.Iniciativa.Botao'}}"><i class="fas fa-flag-checkered"></i></a>
+          <label>{{localize "ORDEM.Pericia.iniciativa"}}</label>
         </div>
         <div class="op-caixa desloc">
           <div class="op-desloc-valor">
@@ -100,7 +116,13 @@
       {{!-- --------------------------- BARRAS ---------------------------- --}}
       {{!-- VIDA --}}
       <div class="op-barra-bloco vida">
-        <div class="op-barra-titulo">{{localize "ORDEM.Recurso.pv"}}</div>
+        <div class="op-barra-titulo">
+          <span>{{localize "ORDEM.Recurso.pv"}}</span>
+          <span class="op-barra-acoes">
+            <a data-action="dano-rapido" data-recurso="pv" title="{{localize 'ORDEM.Recurso.Dano'}}"><i class="fas fa-heart-crack"></i></a>
+            <a data-action="cura-rapida" data-recurso="pv" title="{{localize 'ORDEM.Recurso.Cura'}}"><i class="fas fa-kit-medical"></i></a>
+          </span>
+        </div>
         <div class="op-barra-trilho">
           <div class="op-barra-fill pv" style="width: {{ordemPct system.recursos.pv.value system.recursos.pv.max}}%"></div>
           <div class="op-barra-steppers">
@@ -119,7 +141,13 @@
 
       {{!-- SANIDADE --}}
       <div class="op-barra-bloco sanidade">
-        <div class="op-barra-titulo">{{localize "ORDEM.Recurso.san"}}</div>
+        <div class="op-barra-titulo">
+          <span>{{localize "ORDEM.Recurso.san"}}</span>
+          <span class="op-barra-acoes">
+            <a data-action="dano-rapido" data-recurso="san" title="{{localize 'ORDEM.Recurso.Dano'}}"><i class="fas fa-brain"></i></a>
+            <a data-action="cura-rapida" data-recurso="san" title="{{localize 'ORDEM.Recurso.Cura'}}"><i class="fas fa-spa"></i></a>
+          </span>
+        </div>
         <div class="op-barra-trilho">
           <div class="op-barra-fill san" style="width: {{ordemPct system.recursos.san.value system.recursos.san.max}}%"></div>
           <div class="op-barra-steppers">
@@ -229,6 +257,18 @@
           <label>{{localize "ORDEM.Campo.dtRituais"}}</label>
           <span class="valor">{{derivado.dtRituais}}</span>
         </div>
+      </div>
+
+      {{!-- Condições ativas (visão rápida em jogo) --}}
+      <div class="op-condicoes-selos">
+        <span class="op-condicoes-titulo"><i class="fas fa-person-circle-exclamation"></i> {{localize "ORDEM.Condicao.AtivasTitulo"}}</span>
+        {{#each condicoesAtivas}}
+          <span class="op-cond-selo" data-item-id="{{this.id}}" title="{{this.descricao}}">
+            <img src="{{this.img}}" alt="" /> {{this.nome}}
+            <a class="op-cond-x" data-action="remover-condicao" data-item-id="{{this.id}}" title="{{localize 'ORDEM.Custom.Remover'}}"><i class="fas fa-xmark"></i></a>
+          </span>
+        {{/each}}
+        <a class="op-cond-add" data-action="abrir-condicoes" title="{{localize 'ORDEM.Condicao.SeletorAjuda'}}"><i class="fas fa-plus"></i></a>
       </div>
 
       {{#if derivado.estado.machucado}}<div class="op-estado machucado"><i class="fas fa-droplet"></i> {{localize "ORDEM.Estado.machucado"}}</div>{{/if}}
@@ -344,7 +384,13 @@
                 </select>
               </span>
               <span class="c-bonus">{{this.bonusLabel}}</span>
-              <span class="c-treino"><input type="number" name="system.pericias.{{this.key}}.treino" value="{{this.treino}}" title="{{localize 'ORDEM.Pericia.Treino'}}" /></span>
+              <span class="c-treino">
+                <select name="system.pericias.{{this.key}}.treino" title="{{localize 'ORDEM.Pericia.Treino'}}">
+                  {{#each ../treinamentoOptions}}
+                    <option value="{{this.value}}" {{#if (ordemEq this.value ../treino)}}selected{{/if}}>{{this.label}}</option>
+                  {{/each}}
+                </select>
+              </span>
               <span class="c-outros"><input type="number" name="system.pericias.{{this.key}}.outros" value="{{this.outros}}" title="{{localize 'ORDEM.Pericia.Outros'}}" /></span>
               <span class="c-ajudar">
                 <button type="button" class="op-btn-ajudar" data-action="rolar-ajuda" data-pericia="{{this.key}}" title="{{localize 'ORDEM.Ajuda.Botao'}}" aria-label="{{localize 'ORDEM.Ajuda.Botao'}}">
@@ -471,10 +517,13 @@
                   <span class="nome" title="{{this.descricao}}">
                     {{#if this.bloqueada}}<i class="fas fa-lock"></i>{{/if}} {{this.nome}}
                   </span>
+                  <span class="tag {{this.tipo}}">{{localize (ordemConcat "ORDEM.TipoPoder." this.tipo)}}</span>
                   {{#if this.custoPe}}<span class="dado">{{this.custoPe}} PE</span>{{/if}}
                   <span class="acoes">
                     {{#unless this.bloqueada}}
-                      <a data-action="usar-trilha-hab" data-index="{{this.index}}" title="{{localize 'ORDEM.Trilha.Usar'}}"><i class="fas fa-bolt"></i></a>
+                      {{#if this.ativo}}
+                        <a data-action="usar-trilha-hab" data-index="{{this.index}}" title="{{localize 'ORDEM.Trilha.Usar'}}"><i class="fas fa-bolt"></i></a>
+                      {{/if}}
                     {{/unless}}
                   </span>
                 </li>

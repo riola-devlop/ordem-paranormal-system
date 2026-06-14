@@ -7,10 +7,11 @@
 import {
   ORDEM, rolarTeste, rolarDano, rolarAtaque, rolarResistencia, rolarAjuda,
   conjurarRitual, subirNex, voltarNex,
-  usarPoder, usarHabilidadeTrilha, abrirAcoesCombate,
-  abrirSeletorCondicao, marcarTurnoMorrendo, estabilizar,
+  usarPoder, usarHabilidadeTrilha, abrirAcoesCombate, rolarIniciativaAtor,
+  abrirSeletorCondicao, removerCondicao, marcarTurnoMorrendo, estabilizar,
   marcarTurnoEnlouquecendo, acalmar, abrirInterludio, exportarAgente,
-  progredirXP, liberarRitual
+  progredirXP, liberarRitual,
+  aplicarDano, curar, aplicarDanoMental, recuperarSanidade
 } from "../module.js";
 import { MODOS, modoDoAtor, usaXP, permiteReterRitual } from "../regras.js";
 
@@ -23,7 +24,7 @@ export class OrdemAgentSheet extends ActorSheet {
       width: 900,
       height: 880,
       tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "pericias" }],
-      scrollY: [".sheet-body", ".op-pericias"]
+      scrollY: [".op-esquerda", ".op-direita .sheet-body"]
     });
   }
 
@@ -56,6 +57,7 @@ export class OrdemAgentSheet extends ActorSheet {
 
     context.system = sys;
     context.ORDEM = ORDEM;
+    context.isGM = game.user.isGM;
 
     // ---- Atributos (lista com rótulo, valor base e efetivo) ----
     context.atributosList = Object.keys(ORDEM.atributos).map(key => {
@@ -100,6 +102,12 @@ export class OrdemAgentSheet extends ActorSheet {
       label: game.i18n.localize(ORDEM.atributosAbrev[key])
     }));
 
+    // Graus de treinamento (0/5/10/15) — perícia treina de 5 em 5 (Livro de Regras).
+    context.treinamentoOptions = Object.entries(ORDEM.bonusTreinamento).map(([k, v]) => ({
+      value: v,
+      label: v ? `${game.i18n.localize(`ORDEM.Treinamento.${k}`)} (+${v})` : game.i18n.localize(`ORDEM.Treinamento.${k}`)
+    }));
+
     // ---- Itens agrupados por tipo ----
     context.armas         = actorData.items.filter(i => i.type === "arma");
     context.poderes       = actorData.items.filter(i => i.type === "poder");
@@ -108,6 +116,16 @@ export class OrdemAgentSheet extends ActorSheet {
     context.protecoes     = actorData.items.filter(i => i.type === "protecao");
     context.origens       = actorData.items.filter(i => i.type === "origem");
     context.condicoes     = actorData.items.filter(i => i.type === "condicao");
+
+    // ---- Origem / Trilha: rótulos derivados dos ITENS (estabilização) ----
+    const origemItem = context.origens[0];
+    context.origemLabel = origemItem?.name || sys.origem || "";
+    context.origemItemId = origemItem?.id || "";
+
+    // ---- Condições ATIVAS (selos no topo para visão rápida em jogo) ----
+    context.condicoesAtivas = context.condicoes
+      .filter(i => i.system.ativo !== false)
+      .map(i => ({ id: i.id, nome: i.name, img: i.img, descricao: i.system.descricao || "" }));
 
     // Trilhas: habilidades calculadas (desbloqueadas vs bloqueadas por NEX).
     const nexAtor = Number(sys.nex) || 0;
@@ -120,11 +138,18 @@ export class OrdemAgentSheet extends ActorSheet {
         index: idx,
         nex: h.nex,
         nome: h.nome || "—",
+        tipo: h.tipo || "passivo",
+        ativo: (h.tipo || "passivo") === "ativo",
         custoPe: Number(h.custoPe) || 0,
         descricao: h.descricao ?? "",
         bloqueada: Number(h.nex) > nexAtor
       })).sort((a, b) => a.nex - b.nex)
     }));
+
+    // Rótulo da Trilha derivado do item (estabilização: evita texto solto).
+    const trilhaItem = context.trilhas[0];
+    context.trilhaLabel = trilhaItem?.name || sys.trilha || "";
+    context.trilhaItemId = trilhaItem?.id || "";
 
     // ---- Valores derivados do motor (carga, DTs, estado, patente) ----
     context.derivado = {
@@ -325,6 +350,37 @@ export class OrdemAgentSheet extends ActorSheet {
     html.find("[data-action='abrir-interludio']").on("click", (ev) => {
       ev.preventDefault();
       return abrirInterludio(this.actor);
+    });
+
+    // Rolar Iniciativa direto da ficha.
+    html.find("[data-action='rolar-iniciativa']").on("click", (ev) => {
+      ev.preventDefault();
+      return rolarIniciativaAtor(this.actor);
+    });
+
+    // Dano/Cura rápido nas barras (roteia pelas regras: morrendo/enlouquecendo).
+    html.find("[data-action='dano-rapido']").on("click", async (ev) => {
+      ev.preventDefault();
+      const rec = ev.currentTarget.dataset.recurso;
+      const v = await this._promptNumero(game.i18n.localize("ORDEM.Recurso.DanoTitulo"), game.i18n.localize("ORDEM.Recurso.DanoLabel"));
+      if (!v) return;
+      return rec === "san" ? aplicarDanoMental(this.actor, v) : aplicarDano(this.actor, v);
+    });
+    html.find("[data-action='cura-rapida']").on("click", async (ev) => {
+      ev.preventDefault();
+      const rec = ev.currentTarget.dataset.recurso;
+      const v = await this._promptNumero(game.i18n.localize("ORDEM.Recurso.CuraTitulo"), game.i18n.localize("ORDEM.Recurso.CuraLabel"));
+      if (!v) return;
+      return rec === "san" ? recuperarSanidade(this.actor, v) : curar(this.actor, v);
+    });
+
+    // Selos de condição: remover (×).
+    html.find("[data-action='remover-condicao']").on("click", async (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const item = this.actor.items.get(ev.currentTarget.dataset.itemId);
+      if (item?.system?.chave) return removerCondicao(this.actor, item.system.chave);
+      return item?.delete();
     });
 
     // Manobras de combate e ações especiais de defesa (modal).

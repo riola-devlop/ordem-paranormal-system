@@ -72,6 +72,9 @@
               <div class="th-linha" data-index="{{@index}}">
                 <input class="th-campo th-nex" data-field="nex" type="number" value="{{this.nex}}" min="5" max="99" step="5" title="{{localize 'ORDEM.Campo.requisitoNex'}}" />
                 <input class="th-campo th-nome" data-field="nome" type="text" value="{{this.nome}}" placeholder="{{localize 'ORDEM.Campo.nome'}}" />
+                <select class="th-campo th-tipo" data-field="tipo" title="{{localize 'ORDEM.Campo.tipo'}}">
+                  {{#each ../tipoPoderOptions}}<option value="{{this.value}}" {{#if (ordemEq this.value ../tipo)}}selected{{/if}}>{{this.label}}</option>{{/each}}
+                </select>
                 <input class="th-campo th-custo" data-field="custoPe" type="number" value="{{this.custoPe}}" min="0" title="{{localize 'ORDEM.Campo.custoPe'}}" />
                 <a class="mod-remover" data-action="th-remove" data-index="{{@index}}"><i class="fas fa-trash"></i></a>
                 <textarea class="th-campo th-desc" data-field="descricao" rows="2" placeholder="{{localize 'ORDEM.Campo.efeito'}}">{{this.descricao}}</textarea>
@@ -336,6 +339,7 @@
                 <input class="mod-campo mod-nex" data-field="nex" type="number" value="{{this.nex}}" min="0" max="99" step="5" placeholder="NEX" title="{{localize 'ORDEM.Trilha.ModNexAjuda'}}" />
               {{/if}}
               <input class="mod-campo mod-rotulo" data-field="rotulo" type="text" value="{{this.rotulo}}" placeholder="{{localize 'ORDEM.Mod.Rotulo'}}" />
+              <input class="mod-campo mod-duracao" data-field="duracao" type="number" value="{{this.duracao}}" min="0" placeholder="∞" title="{{localize 'ORDEM.Mod.DuracaoAjuda'}}" />
               <label class="mod-ativo" title="{{localize 'ORDEM.Mod.Ativo'}}"><input class="mod-campo" data-field="ativo" type="checkbox" {{checked this.ativo}} /></label>
               <a class="mod-remover" data-action="mod-remove" data-index="{{@index}}"><i class="fas fa-trash"></i></a>
             </div>

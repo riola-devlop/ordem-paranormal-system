@@ -125,11 +125,15 @@ export class OrdemItemSheet extends ItemSheet {
     const lista = [];
     this.element.find(".mod-linha").each((i, el) => {
       const row = $(el);
+      const duracao = Number(row.find("[data-field='duracao']").val()) || 0;
       const mod = {
         // Valor é uma fórmula (texto): aceita inteiros, atributos e dados.
         alvo: row.find("[data-field='alvo']").val() || "",
         valor: (row.find("[data-field='valor']").val() ?? "").trim(),
         rotulo: row.find("[data-field='rotulo']").val() || "",
+        // Duração em turnos (0 = permanente enquanto ativo). Editar reinicia a contagem.
+        duracao,
+        restante: duracao,
         ativo: row.find("[data-field='ativo']").is(":checked")
       };
       // Trilhas: NEX mínimo opcional para o modificador valer (desbloqueio).
@@ -144,7 +148,7 @@ export class OrdemItemSheet extends ItemSheet {
   async _onModAdd(event) {
     event.preventDefault();
     const lista = foundry.utils.deepClone(this.item.system.modificadores ?? []);
-    lista.push({ alvo: "defesa", valor: "", ativo: true, rotulo: "" });
+    lista.push({ alvo: "defesa", valor: "", ativo: true, rotulo: "", duracao: 0, restante: 0 });
     return this.item.update({ "system.modificadores": lista });
   }
 
@@ -165,7 +169,7 @@ export class OrdemItemSheet extends ItemSheet {
     // Sugere o próximo marco padrão de trilha (10 / 40 / 65 / 99).
     const marcos = [10, 40, 65, 99];
     const nex = marcos[Math.min(lista.length, marcos.length - 1)];
-    lista.push({ nex, nome: "", custoPe: 0, descricao: "" });
+    lista.push({ nex, nome: "", tipo: "passivo", custoPe: 0, descricao: "" });
     return this.item.update({ "system.habilidades": lista });
   }
 
@@ -184,6 +188,7 @@ export class OrdemItemSheet extends ItemSheet {
       lista.push({
         nex: Number(row.find("[data-field='nex']").val()) || 0,
         nome: row.find("[data-field='nome']").val() || "",
+        tipo: row.find("[data-field='tipo']").val() || "passivo",
         custoPe: Number(row.find("[data-field='custoPe']").val()) || 0,
         descricao: row.find("[data-field='descricao']").val() || ""
       });

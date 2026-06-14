@@ -468,6 +468,8 @@ class OrdemActor extends Actor {
         if (!m || m.ativo === false || !m.alvo) continue;
         // Modificadores de trilha podem exigir NEX mínimo (desbloqueio por marco).
         if (it.type === "trilha" && Number(m.nex) > 0 && nexAtor < Number(m.nex)) continue;
+        // Duração em turnos: expira quando o tempo restante chega a 0.
+        if (Number(m.duracao) > 0 && Number(m.restante) <= 0) continue;
         // O valor pode ser uma fórmula (ex.: "FOR", "1d6+2", "NEX/5").
         out[m.alvo] = (out[m.alvo] || 0) + avaliarFormulaPassiva(m.valor, this);
       }
@@ -1195,6 +1197,50 @@ export async function rolarResistencia(actor, periciaKey) {
 /*  CONDIÇÕES OFICIAIS                                                         */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * Decrementa a duração (em turnos) dos modificadores temporários de um ator e
+ * desativa os que expiraram. Chamado no início do turno do ator em combate.
+ * Modificadores com `duracao` 0 são permanentes (enquanto o item está ativo).
+ * @private
+ */
+async function _tickModificadores(actor) {
+  if (!actor) return;
+  const expirados = [];
+  const updates = [];
+
+  for (const it of actor.items) {
+    const mods = it.system?.modificadores;
+    if (!Array.isArray(mods) || !mods.length) continue;
+    let mudou = false;
+
+    const novos = mods.map(m => {
+      if (!m || m.ativo === false) return m;
+      const dur = Number(m.duracao) || 0;
+      if (dur <= 0) return m;                 // permanente
+      let restante = Number(m.restante);
+      if (!Number.isFinite(restante) || restante > dur) restante = dur;
+      restante -= 1;
+      mudou = true;
+      if (restante <= 0) {
+        expirados.push({ item: it, rotulo: m.rotulo || m.alvo });
+        return { ...m, restante: 0, ativo: false };
+      }
+      return { ...m, restante };
+    });
+
+    if (mudou) updates.push(it.update({ "system.modificadores": novos }));
+  }
+
+  if (updates.length) await Promise.all(updates);
+  for (const e of expirados) {
+    await _cardEvento(actor, {
+      icone: "fa-hourglass-end", classe: "condicao fim",
+      titulo: game.i18n.format("ORDEM.Mod.Expirou", { nome: e.item.name }),
+      texto: game.i18n.format("ORDEM.Mod.ExpirouTexto", { rotulo: e.rotulo })
+    });
+  }
+}
+
 /** Card simples de chat para eventos de condição/estado. @private */
 async function _cardEvento(actor, { icone = "fa-circle-info", titulo, texto, classe = "" }) {
   return ChatMessage.create({
@@ -1884,6 +1930,42 @@ export async function abrirAcoesCombate(actor) {
   dlg.render(true);
 }
 
+/**
+ * Rola a iniciativa do ator direto da ficha: garante um combate ativo e o
+ * combatente do token do ator na cena, depois rola usando a fórmula do sistema
+ * (perícia Iniciativa / statblock). Requer um token do ator na cena ativa.
+ *
+ * @param {OrdemActor} actor
+ */
+export async function rolarIniciativaAtor(actor) {
+  if (!actor) return ui.notifications.warn(game.i18n.localize("ORDEM.Aviso.SemAtor"));
+
+  const token = actor.getActiveTokens?.()[0] ?? actor.token?.object ?? null;
+  let combat = game.combat;
+
+  // Sem combate ativo: o Mestre cria um na cena atual.
+  if (!combat) {
+    if (!game.user.isGM) return ui.notifications.warn(game.i18n.localize("ORDEM.Iniciativa.SemCombate"));
+    if (!canvas?.scene) return ui.notifications.warn(game.i18n.localize("ORDEM.Iniciativa.SemCena"));
+    combat = await Combat.create({ scene: canvas.scene.id });
+    await combat.activate?.();
+  }
+
+  // Encontra (ou cria) o combatente do ator.
+  let comb = combat.combatants.find(c => c.actorId === actor.id);
+  if (!comb) {
+    if (!token) return ui.notifications.warn(game.i18n.localize("ORDEM.Iniciativa.SemToken"));
+    const criados = await combat.createEmbeddedDocuments("Combatant", [{
+      tokenId: token.id, sceneId: token.scene?.id ?? canvas.scene.id, actorId: actor.id
+    }]);
+    comb = criados[0];
+  }
+  if (!comb) return;
+
+  await combat.rollInitiative([comb.id]);
+  ui.notifications.info(game.i18n.format("ORDEM.Iniciativa.Rolada", { nome: actor.name }));
+}
+
 /* -------------------------------------------------------------------------- */
 /*  CRIATURAS — TESTES, ATAQUES, HABILIDADES E PRESENÇA PERTURBADORA           */
 /* -------------------------------------------------------------------------- */
@@ -2512,7 +2594,8 @@ export async function rolarAjuda(actor, periciaKey) {
  *  1. Diálogo com os dados do ritual, APRIMORAMENTOS selecionáveis (+PE) e
  *     notas de afinidade/opressão elemental contra o alvo marcado;
  *  2. Desconta o PE total (base + aprimoramentos, com modificador de custo);
- *  3. "O Custo do Paranormal" (Ocultismo vs DT 15 + PE GASTO; Medo é isento);
+ *  3. "O Custo do Paranormal" (Ocultismo vs DT 15 + PE GASTO) ou, para Medo,
+ *     "Invocando o Medo" (sem teste, mas dano mental = custo + −1 SAN permanente);
  *  4. Card com execução/alcance/área/duração, resistência (com botão para o
  *     alvo rolar) e efeito.
  */
@@ -2543,14 +2626,24 @@ export async function conjurarRitual(actor, item) {
     }
   }
 
-  // ---- Diálogo de conjuração (aprimoramentos + confirmação) ----
+  // ---- Diálogo de conjuração (aprimoramentos em TABELA + confirmação) ----
   const aprimoramentos = Array.isArray(sys.aprimoramentosLista) ? sys.aprimoramentosLista : [];
-  const aprHtml = aprimoramentos.map((a, i) => `
-    <label class="op-apr-opcao">
-      <input type="checkbox" name="apr" value="${i}" data-custo="${Number(a.custoPe) || 0}" />
-      <strong>${Handlebars.escapeExpression(a.nome || "—")}</strong> (+${Number(a.custoPe) || 0} PE)
-      ${a.descricao ? `<span class="hint">${Handlebars.escapeExpression(a.descricao)}</span>` : ""}
-    </label>`).join("");
+  const aprHtml = aprimoramentos.length ? `<table class="op-popup-tabela apr-tabela">
+    <thead><tr>
+      <th class="col-check"></th>
+      <th>${game.i18n.localize("ORDEM.Campo.nome")}</th>
+      <th class="col-pe">PE</th>
+      <th>${game.i18n.localize("ORDEM.Campo.efeito")}</th>
+    </tr></thead>
+    <tbody>
+      ${aprimoramentos.map((a, i) => `<tr>
+        <td class="col-check"><input type="checkbox" name="apr" value="${i}" data-custo="${Number(a.custoPe) || 0}" /></td>
+        <td class="col-nome">${Handlebars.escapeExpression(a.nome || "—")}</td>
+        <td class="col-pe">+${Number(a.custoPe) || 0}</td>
+        <td class="col-efeito">${Handlebars.escapeExpression(a.descricao || "")}</td>
+      </tr>`).join("")}
+    </tbody>
+  </table>` : "";
 
   const metaLinhas = [];
   const addMeta = (rotuloKey, valor) => { if (valor) metaLinhas.push(`<b>${game.i18n.localize(rotuloKey)}:</b> ${Handlebars.escapeExpression(String(valor))}`); };
@@ -2639,11 +2732,25 @@ export async function conjurarRitual(actor, item) {
     retidoHtml = `<div class="ritual-custo retido"><i class="fas fa-anchor"></i> ${game.i18n.format("ORDEM.ReterRitual.Aplicado", { custo, san: custoSan })}</div>`;
   }
 
-  // ---- "O Custo do Paranormal": elementos ≠ Medo exigem teste de Ocultismo ----
-  const exigeTeste = (sys.elemento || "") !== "medo";
+  // ---- "O Custo do Paranormal" / "Invocando o Medo" ----
+  // Rituais de Medo NÃO exigem teste de Ocultismo, mas SEMPRE cobram o preço:
+  // dano mental = custo em PE + perda PERMANENTE de 1 ponto de Sanidade
+  // (2 na forma discente, 3 na verdadeira). Demais elementos: teste de Ocultismo
+  // contra DT 15 + PE gasto (falha = dano mental; falha por 5+ = −1 SAN permanente).
+  const ehMedo = (sys.elemento || "") === "medo";
   let custoHtml = "";
   let rolls = [];
-  if (exigeTeste && custo > 0) {
+  if (ehMedo && custo > 0) {
+    const danoMental = custo;
+    const perdaSan = 1;
+    custoHtml = `<div class="ritual-custo falha">
+      <div><i class="fas fa-ghost"></i> ${game.i18n.localize("ORDEM.Ritual.CustoMedo")}</div>
+      <div>${game.i18n.format("ORDEM.Ritual.DanoMental", { dano: danoMental })} · ${game.i18n.localize("ORDEM.Ritual.PerdaPermanente")}</div>
+      <button type="button" class="ordem-card-botao" data-acao="custo-paranormal" data-actor-uuid="${actor.uuid}" data-dano="${danoMental}" data-perda="${perdaSan}">
+        <i class="fas fa-brain"></i> ${game.i18n.localize("ORDEM.Ritual.AplicarPerda")}
+      </button>
+    </div>`;
+  } else if (custo > 0) {
     const dtCusto = 15 + custo;
     const calc = actor.system.periciasCalc?.ocultismo;
     const numDados = Number(calc?.dados ?? actor.system.atributosEfetivos?.int ?? 0);
@@ -4186,6 +4293,275 @@ export async function importarFichas() {
 }
 
 /* -------------------------------------------------------------------------- */
+/*  COMPARTILHAR CONTEÚDO — COMPÊNDIOS ↔ GITHUB (Itens e Atores)               */
+/* -------------------------------------------------------------------------- */
+
+const _PACOTE_VERSAO = 1;
+
+/** Tipos de documento do sistema, por classe. @private */
+const _TIPOS_ITEM  = ["poder", "ritual", "arma", "protecao", "equipamento", "origem", "trilha", "condicao"];
+const _TIPOS_ATOR  = ["agente", "criatura"];
+
+/** Mapa tipo de documento → nome do compêndio do sistema. @private */
+const _PACK_POR_TIPO = {
+  poder: "poderes", ritual: "rituais", arma: "armas", protecao: "protecoes",
+  equipamento: "equipamentos", origem: "origens", trilha: "trilhas", condicao: "condicoes",
+  criatura: "criaturas", agente: "agentes"
+};
+
+/** Collection id do compêndio para um tipo (ex.: "ordem-paranormal.poderes"). @private */
+function _packIdDeTipo(type) {
+  const nome = _PACK_POR_TIPO[type];
+  return nome ? `ordem-paranormal.${nome}` : null;
+}
+
+/** "Item" | "Actor" a partir do tipo de documento. @private */
+function _documentNameDeTipo(type) {
+  if (_TIPOS_ITEM.includes(type)) return "Item";
+  if (_TIPOS_ATOR.includes(type)) return "Actor";
+  return null;
+}
+
+/** Lista os compêndios do sistema (para os seletores de exportação). @private */
+function _packsDoSistema() {
+  return Object.values(_PACK_POR_TIPO)
+    .map(nome => game.packs.get(`ordem-paranormal.${nome}`))
+    .filter(Boolean);
+}
+
+/**
+ * Exporta um compêndio inteiro para um arquivo JSON (todos os documentos, com
+ * itens embutidos no caso de atores). O arquivo pode ser versionado no GitHub
+ * e reimportado para o compêndio por outro Mestre/criador.
+ *
+ * @param {string} packId  Collection id (ex.: "ordem-paranormal.poderes")
+ */
+export async function exportarCompendio(packId) {
+  const pack = game.packs.get(packId);
+  if (!pack) return ui.notifications.warn(game.i18n.localize("ORDEM.Conteudo.PackInvalido"));
+
+  const docs = await pack.getDocuments();
+  const payload = {
+    _ordemPacote: _PACOTE_VERSAO,
+    sistema: "ordem-paranormal",
+    versaoSistema: game.system?.version ?? "",
+    exportadoEm: new Date().toISOString(),
+    pack: packId,
+    documentName: pack.documentName,
+    documentos: docs.map(d => d.toObject())
+  };
+
+  const nome = packId.split(".").pop();
+  saveDataToFile(JSON.stringify(payload, null, 2), "text/json", `ordem-${nome}.json`);
+  ui.notifications.info(game.i18n.format("ORDEM.Conteudo.Exportado", { qtd: docs.length, pack: pack.title }));
+}
+
+/**
+ * Exporta TODOS os compêndios do sistema num único arquivo `ordem-conteudo.json`.
+ * Cada documento mantém seu `type`; o roteamento na importação usa o tipo.
+ */
+export async function exportarTodosCompendios() {
+  const documentos = [];
+  for (const pack of _packsDoSistema()) {
+    const docs = await pack.getDocuments();
+    for (const d of docs) documentos.push(d.toObject());
+  }
+  const payload = {
+    _ordemPacote: _PACOTE_VERSAO,
+    sistema: "ordem-paranormal",
+    versaoSistema: game.system?.version ?? "",
+    exportadoEm: new Date().toISOString(),
+    documentos
+  };
+  saveDataToFile(JSON.stringify(payload, null, 2), "text/json", "ordem-conteudo.json");
+  ui.notifications.info(game.i18n.format("ORDEM.Conteudo.ExportadoTudo", { qtd: documentos.length }));
+}
+
+/**
+ * Extrai documentos (Itens e Atores) de um JSON em qualquer formato suportado:
+ * envelope de pacote { _ordemPacote, documentos[] }, envelope de ficha
+ * { _ordemFicha, actor }, objeto cru com `type`, ou array de qualquer um deles.
+ * @private
+ * @returns {Array<{ documentName: string, type: string, data: object }>}
+ */
+function _extrairDocumentos(json) {
+  if (!json) return [];
+  if (Array.isArray(json)) return json.flatMap(_extrairDocumentos);
+  if (json._ordemPacote && Array.isArray(json.documentos)) return json.documentos.flatMap(_extrairDocumentos);
+  if (json._ordemFicha && json.actor) return _extrairDocumentos(json.actor);
+
+  const documentName = _documentNameDeTipo(json.type);
+  if (documentName) return [{ documentName, type: json.type, data: json }];
+  return [];
+}
+
+/**
+ * Importa documentos (de arquivos/links) para os compêndios do sistema,
+ * roteando cada um pelo seu tipo. Em conflito de nome, PERGUNTA ao usuário a
+ * política (atualizar / pular / criar novo), aplicada ao lote.
+ *
+ * @param {object[]} jsons  JSONs brutos já carregados
+ */
+export async function importarParaCompendios(jsons) {
+  if (!game.user.isGM) return ui.notifications.warn(game.i18n.localize("ORDEM.Conteudo.SoGM"));
+
+  const docs = jsons.flatMap(_extrairDocumentos);
+  if (!docs.length) return ui.notifications.warn(game.i18n.localize("ORDEM.Conteudo.SemDocumentos"));
+
+  // Agrupa por compêndio de destino.
+  const porPack = {};
+  for (const d of docs) {
+    const packId = _packIdDeTipo(d.type);
+    if (!packId) continue;
+    (porPack[packId] ??= []).push(d);
+  }
+
+  // Detecta conflitos por nome (usa o índice de cada pack).
+  let totalConflitos = 0;
+  for (const [packId, lista] of Object.entries(porPack)) {
+    const pack = game.packs.get(packId);
+    if (!pack) continue;
+    const idx = await pack.getIndex();
+    const nomes = new Set(idx.map(e => e.name));
+    for (const d of lista) if (nomes.has(d.data.name)) totalConflitos++;
+  }
+
+  // Pergunta a política de conflito (se houver).
+  let politica = "criar";
+  if (totalConflitos > 0) {
+    politica = await new Promise(resolve => {
+      new Dialog({
+        title: game.i18n.localize("ORDEM.Conteudo.ConflitoTitulo"),
+        content: `<p>${game.i18n.format("ORDEM.Conteudo.ConflitoTexto", { qtd: totalConflitos })}</p>`,
+        buttons: {
+          atualizar: { icon: '<i class="fas fa-rotate"></i>', label: game.i18n.localize("ORDEM.Conteudo.Atualizar"), callback: () => resolve("atualizar") },
+          pular:     { icon: '<i class="fas fa-forward"></i>', label: game.i18n.localize("ORDEM.Conteudo.Pular"),     callback: () => resolve("pular") },
+          novo:      { icon: '<i class="fas fa-copy"></i>',    label: game.i18n.localize("ORDEM.Conteudo.CriarNovo"),  callback: () => resolve("criar") }
+        },
+        default: "atualizar",
+        close: () => resolve(null)
+      }, { classes: ["ordem-paranormal", "op-theme", "dialog"], width: 440 }).render(true);
+    });
+    if (!politica) return; // cancelado
+  }
+
+  // Processa cada compêndio.
+  let criados = 0, atualizados = 0, pulados = 0;
+  for (const [packId, lista] of Object.entries(porPack)) {
+    const pack = game.packs.get(packId);
+    if (!pack) continue;
+    if (pack.locked) await pack.configure({ locked: false });
+
+    const cls = getDocumentClass(pack.documentName);
+    const existentes = await pack.getDocuments();
+    const porNome = new Map(existentes.map(d => [d.name, d]));
+    const novos = [];
+
+    for (const d of lista) {
+      const dados = foundry.utils.deepClone(d.data);
+      delete dados._id;
+      if (Array.isArray(dados.items)) for (const it of dados.items) delete it._id;
+
+      const existente = porNome.get(dados.name);
+      if (existente && politica === "pular") { pulados++; continue; }
+      if (existente && politica === "atualizar") {
+        // Substituição limpa (evita merge de itens embutidos).
+        await existente.delete();
+        novos.push(dados);
+        atualizados++;
+        continue;
+      }
+      // "criar" (sem conflito ou política criar): nova cópia.
+      novos.push(dados);
+      criados++;
+    }
+
+    if (novos.length) await cls.createDocuments(novos, { pack: packId });
+  }
+
+  ui.notifications.info(game.i18n.format("ORDEM.Conteudo.Relatorio", { criados, atualizados, pulados }));
+  return { criados, atualizados, pulados };
+}
+
+/**
+ * Hub de conteúdo (aba Compêndios): exportar um compêndio para JSON ou importar
+ * de arquivos/GitHub direto para os compêndios certos.
+ */
+export async function abrirGerenciadorConteudo() {
+  if (!game.user.isGM) return ui.notifications.warn(game.i18n.localize("ORDEM.Conteudo.SoGM"));
+
+  const packOptions = _packsDoSistema()
+    .map(p => `<option value="${p.collection}">${p.title}</option>`).join("");
+
+  const conteudo = `<form class="ordem-roll-dialog op-conteudo">
+    <fieldset>
+      <legend><i class="fas fa-file-export"></i> ${game.i18n.localize("ORDEM.Conteudo.Exportar")}</legend>
+      <p class="hint">${game.i18n.localize("ORDEM.Conteudo.ExportarAjuda")}</p>
+      <div class="op-conteudo-linha">
+        <select name="packExport">
+          <option value="__todos__">${game.i18n.localize("ORDEM.Conteudo.Todos")}</option>
+          ${packOptions}
+        </select>
+        <button type="button" data-action="exportar"><i class="fas fa-download"></i> ${game.i18n.localize("ORDEM.Conteudo.BaixarJson")}</button>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend><i class="fas fa-file-import"></i> ${game.i18n.localize("ORDEM.Conteudo.Importar")}</legend>
+      <p class="hint">${game.i18n.localize("ORDEM.Conteudo.ImportarAjuda")}</p>
+      <div class="form-group">
+        <label><i class="fab fa-github"></i> ${game.i18n.localize("ORDEM.IO.UrlLabel")}</label>
+        <input type="text" name="url" placeholder="https://github.com/usuario/repo/tree/main/conteudo" />
+      </div>
+      <div class="op-import-ou">${game.i18n.localize("ORDEM.IO.Ou")}</div>
+      <div class="form-group">
+        <label><i class="fas fa-file-arrow-up"></i> ${game.i18n.localize("ORDEM.IO.ArquivoLabel")}</label>
+        <input type="file" name="arquivo" accept=".json,application/json" multiple />
+      </div>
+    </fieldset>
+  </form>`;
+
+  new Dialog({
+    title: game.i18n.localize("ORDEM.Conteudo.Titulo"),
+    content: conteudo,
+    buttons: {
+      importar: {
+        icon: '<i class="fas fa-file-import"></i>',
+        label: game.i18n.localize("ORDEM.Conteudo.Importar"),
+        callback: async html => {
+          const form = html[0].querySelector("form");
+          const url = form.url?.value?.trim() ?? "";
+          const arquivos = form.arquivo?.files ?? [];
+          if (!url && !arquivos.length) return ui.notifications.warn(game.i18n.localize("ORDEM.IO.NadaSelecionado"));
+
+          const jsons = [];
+          try {
+            for (const file of arquivos) jsons.push(JSON.parse(await readTextFromFile(file)));
+            if (url) jsons.push(...await _buscarFichasDeUrl(url));
+          } catch (e) {
+            console.error("Ordem Paranormal | Erro ao ler conteúdo", e);
+            return ui.notifications.error(game.i18n.localize("ORDEM.IO.ErroLeitura"));
+          }
+          await importarParaCompendios(jsons);
+        }
+      },
+      fechar: {
+        icon: '<i class="fas fa-times"></i>',
+        label: game.i18n.localize("ORDEM.Dialog.Cancelar")
+      }
+    },
+    default: "fechar",
+    render: html => {
+      html[0].querySelector("[data-action='exportar']")?.addEventListener("click", ev => {
+        ev.preventDefault();
+        const v = html[0].querySelector("[name='packExport']")?.value;
+        if (v === "__todos__") exportarTodosCompendios();
+        else if (v) exportarCompendio(v);
+      });
+    }
+  }, { classes: ["ordem-paranormal", "op-theme", "dialog", "op-conteudo-dialog"], width: 480 }).render(true);
+}
+
+/* -------------------------------------------------------------------------- */
 /*  CRIADOR DE ITENS PASSO A PASSO (assistente com fórmulas)                   */
 /* -------------------------------------------------------------------------- */
 
@@ -4439,6 +4815,7 @@ Hooks.once("init", function () {
     rolarManobra,
     acaoDefesa,
     abrirAcoesCombate,
+    rolarIniciativaAtor,
     // Criaturas
     rolarTesteCriatura,
     rolarAtaqueCriatura,
@@ -4454,9 +4831,13 @@ Hooks.once("init", function () {
     // Exportar / importar fichas
     exportarAgente,
     importarFichas,
-    // Criação de conteúdo
+    // Criação e compartilhamento de conteúdo
     abrirCriadorItem,
     editarResistenciasDanos,
+    abrirGerenciadorConteudo,
+    exportarCompendio,
+    exportarTodosCompendios,
+    importarParaCompendios,
     // Rituais & progressão
     conjurarRitual,
     subirNex,
@@ -4580,6 +4961,21 @@ Hooks.on("renderItemDirectory", (app, html) => {
   const acoes = html.find(".header-actions").first();
   if (acoes.length) acoes.append(btn);
   else html.find(".directory-footer").append(btn);
+});
+
+// Botão "Conteúdo Ordem (GitHub)" no rodapé da aba de Compêndios (só GM).
+Hooks.on("renderCompendiumDirectory", (app, html) => {
+  if (!game.user.isGM) return;
+  if (html.find(".op-conteudo-github").length) return;
+
+  const btn = $(`<button type="button" class="op-conteudo-github">
+    <i class="fab fa-github"></i> ${game.i18n.localize("ORDEM.Conteudo.Botao")}
+  </button>`);
+  btn.on("click", () => abrirGerenciadorConteudo());
+
+  const rodape = html.find(".directory-footer");
+  if (rodape.length) rodape.append(btn);
+  else html.find(".header-actions").first().append(btn);
 });
 
 /* -------------------------------------------------------------------------- */
@@ -4729,7 +5125,12 @@ Hooks.on("updateCombat", async (combat, changed, options, userId) => {
   if (!game.user.isGM || userId !== game.user.id) return;
   if (changed.turn === undefined && changed.round === undefined) return;
   const actor = combat.combatant?.actor;
-  if (!actor || actor.type !== "agente") return;
+  if (!actor) return;
+
+  // Decrementa a duração (em turnos) dos modificadores temporários do ator ativo.
+  await _tickModificadores(actor);
+
+  if (actor.type !== "agente") return;
 
   const morrendo = actor.items.some(i => i.type === "condicao" && i.system.chave === "morrendo");
   const enlouquecendo = actor.items.some(i => i.type === "condicao" && i.system.chave === "enlouquecendo");
@@ -4767,7 +5168,7 @@ Hooks.on("updateCombat", async (combat, changed, options, userId) => {
  * Nenhuma ação afeta outros atores automaticamente.
  */
 Hooks.on("renderChatMessage", (message, html) => {
-  html.find(".ordem-chat-card").addClass("ordem-paranormal");
+  // Os cards usam o visual NATIVO do chat do Foundry (não forçamos o tema da ficha).
 
   // --- Pedido de Teste em grupo ---
   const ptFlags = message.flags?.["ordem-paranormal"];

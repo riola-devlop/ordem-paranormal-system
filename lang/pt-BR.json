@@ -119,6 +119,28 @@
       "SemPermissao": "Você não tem permissão para criar itens."
     },
 
+    "Conteudo": {
+      "Botao": "Conteúdo Ordem (GitHub)",
+      "Titulo": "Compartilhar Conteúdo — Compêndios ↔ GitHub",
+      "Exportar": "Exportar compêndio",
+      "ExportarAjuda": "Baixa um JSON com todos os documentos do compêndio (ou de todos). Commit no GitHub para compartilhar.",
+      "Importar": "Importar conteúdo",
+      "ImportarAjuda": "Cole um link do GitHub (arquivo, pasta /tree/ ou repositório) ou selecione arquivos. Cada documento entra no compêndio certo pelo tipo.",
+      "Todos": "Todos os compêndios",
+      "BaixarJson": "Baixar JSON",
+      "Exportado": "{qtd} documento(s) de \"{pack}\" exportado(s).",
+      "ExportadoTudo": "{qtd} documento(s) de todos os compêndios exportado(s).",
+      "PackInvalido": "Compêndio inválido.",
+      "SoGM": "Apenas o Mestre pode gerenciar compêndios.",
+      "SemDocumentos": "Nenhum documento válido encontrado no conteúdo.",
+      "ConflitoTitulo": "Documentos já existentes",
+      "ConflitoTexto": "{qtd} documento(s) com nome já existente nos compêndios. O que fazer?",
+      "Atualizar": "Atualizar existentes",
+      "Pular": "Pular existentes",
+      "CriarNovo": "Criar novos (cópias)",
+      "Relatorio": "Importação concluída: {criados} criado(s), {atualizados} atualizado(s), {pulados} pulado(s)."
+    },
+
     "IO": {
       "Exportar": "Exportar JSON",
       "Exportado": "Ficha de {nome} exportada como JSON.",
@@ -236,7 +258,21 @@
       "pe": "Pontos de Esforço",
       "san": "Sanidade",
       "MaxDerivado": "Máximo calculado pela classe + NEX + bônus",
-      "BonusMax": "Bônus manual ao máximo"
+      "BonusMax": "Bônus manual ao máximo",
+      "Dano": "Aplicar dano",
+      "Cura": "Curar",
+      "DanoTitulo": "Aplicar dano",
+      "DanoLabel": "Quanto de dano?",
+      "CuraTitulo": "Curar",
+      "CuraLabel": "Quanto curar?"
+    },
+
+    "Iniciativa": {
+      "Botao": "Rolar iniciativa (entra no combate)",
+      "Rolada": "Iniciativa de {nome} rolada.",
+      "SemCombate": "Não há um combate ativo. Peça ao Mestre para iniciar um.",
+      "SemCena": "Abra uma cena para iniciar o combate.",
+      "SemToken": "Coloque um token deste agente na cena para rolar iniciativa."
     },
 
     "Campo": {
@@ -372,7 +408,9 @@
       "VoltarTitulo": "Voltar de NEX",
       "VoltarConfirma": "Reverter para o estado anterior (NEX {nex}%)? Mudanças manuais feitas depois serão perdidas.",
       "Revertido": "Revertido para NEX {nex}%.",
-      "LimitePeAjuda": "Limite de PE que você pode gastar por turno (= nível de NEX)."
+      "LimitePeAjuda": "Limite de PE que você pode gastar por turno (= nível de NEX).",
+      "Travado": "O NEX evolui pelo botão Subir NEX (aplica PV/PE/SAN e as escolhas do marco).",
+      "OverrideGM": "Ajuste manual de NEX (Mestre). A progressão recomendada é pelo botão Subir NEX."
     },
 
     "Rolar": {
@@ -396,6 +434,7 @@
       "ConjurarTitulo": "Conjurar: {nome}",
       "CustoFalhou": "Custo do Paranormal — falhou no teste de Ocultismo",
       "CustoResistido": "Custo do Paranormal — resistido",
+      "CustoMedo": "Invocando o Medo — preço automático (sem teste)",
       "DanoMental": "Sofre {dano} de dano mental",
       "PerdaPermanente": "−1 Sanidade permanente",
       "AplicarPerda": "Aplicar perda (no próprio agente)",
@@ -564,7 +603,8 @@
       "AgravouTexto": "{de} novamente — em vez disso, fica {para}.",
       "SeletorTitulo": "Aplicar condição — {nome}",
       "SeletorAjuda": "Clique em uma condição oficial para aplicá-la com os efeitos automáticos (penalidades em dados, Defesa, deslocamento). Condições implicadas já estão incluídas.",
-      "Personalizada": "Personalizada"
+      "Personalizada": "Personalizada",
+      "AtivasTitulo": "Condições"
     },
 
     "Morte": {
@@ -788,7 +828,10 @@
       "Vazio": "Nenhum modificador.",
       "Adicionar": "Adicionar modificador",
       "ValorPlaceholder": "5, @FOR+2, 1d6+@NEX",
-      "ValorAjuda": "Fórmula: inteiro, dados (ex.: 1d6) e referências @status. Use @ para qualquer status da ficha: @FOR @AGI @INT @PRE @VIG, @NEX, @NIVEL, @PV/@PVMAX, @PE/@PEMAX, @SAN/@SANMAX, @DEFESA, @DTRITUAIS, @DESLOCAMENTO, @VD, @luta (bônus de perícia) ou caminho cru (@recursos.pv.max). Em valores passivos, os dados usam a média."
+      "ValorAjuda": "Fórmula: inteiro, dados (ex.: 1d6) e referências @status. Use @ para qualquer status da ficha: @FOR @AGI @INT @PRE @VIG, @NEX, @NIVEL, @PV/@PVMAX, @PE/@PEMAX, @SAN/@SANMAX, @DEFESA, @DTRITUAIS, @DESLOCAMENTO, @VD, @luta (bônus de perícia) ou caminho cru (@recursos.pv.max). Em valores passivos, os dados usam a média.",
+      "DuracaoAjuda": "Duração em turnos (vazio/0 = permanente enquanto ativo). Conta no início do turno do ator em combate.",
+      "Expirou": "Modificador expirou — {nome}",
+      "ExpirouTexto": "O efeito \"{rotulo}\" terminou (duração esgotada)."
     },
 
     "Carga": {
