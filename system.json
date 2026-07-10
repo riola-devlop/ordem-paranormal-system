@@ -1,7 +1,7 @@
 {
   "id": "ordem-paranormal",
   "title": "Ordem Paranormal RPG",
-  "description": "Sistema brasileiro de RPG de investigação e terror paranormal. Este é um conteúdo não oficial, publicado sob a Licença da Comunidade de Ordem Paranormal. Ordem Paranormal RPG é propriedade da Jambô Editora / Cellbit. Os compêndios começam vazios — adicione apenas conteúdo original ou homebrew de sua autoria.",
+  "description": "Aviso: este sistema está em desenvolvimento. Sistema brasileiro de RPG de investigação e terror paranormal. Este é um conteúdo não oficial, publicado sob a Licença da Comunidade de Ordem Paranormal. Ordem Paranormal RPG é propriedade da Jambô Editora / Cellbit. Os compêndios começam vazios — adicione apenas conteúdo original ou homebrew de sua autoria.",
   "version": "0.1.0",
   "compatibility": {
     "minimum": "12",
@@ -52,11 +52,11 @@
   },
   "primaryTokenAttribute": "recursos.pv",
   "secondaryTokenAttribute": "recursos.san",
-  "url": "https://github.com/SEU-USUARIO/ordem-paranormal",
-  "manifest": "https://github.com/SEU-USUARIO/ordem-paranormal/releases/latest/download/system.json",
-  "download": "https://github.com/SEU-USUARIO/ordem-paranormal/releases/download/v0.1.0/ordem-paranormal.zip",
+  "url": "https://github.com/riola-devlop/ordem-paranormal-system",
+  "manifest": "https://github.com/riola-devlop/ordem-paranormal-system/releases/latest/download/system.json",
+  "download": "https://github.com/riola-devlop/ordem-paranormal-system/releases/download/v0.1.0/ordem-paranormal.zip",
   "license": "LICENSE",
-  "readme": "https://github.com/SEU-USUARIO/ordem-paranormal/blob/main/README.md",
-  "bugs": "https://github.com/SEU-USUARIO/ordem-paranormal/issues",
-  "changelog": "https://github.com/SEU-USUARIO/ordem-paranormal/releases"
+  "readme": "https://github.com/riola-devlop/ordem-paranormal-system/blob/main/README.md",
+  "bugs": "https://github.com/riola-devlop/ordem-paranormal-system/issues",
+  "changelog": "https://github.com/riola-devlop/ordem-paranormal-system/releases"
 }

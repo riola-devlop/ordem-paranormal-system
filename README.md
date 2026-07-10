@@ -7,6 +7,8 @@
 > Os compêndios são distribuídos **vazios** — adicione apenas conteúdo original/homebrew de sua autoria.
 
 Sistema **não oficial** de RPG de investigação e terror paranormal para **Foundry VTT v12**.
+> **Aviso:** este sistema está em desenvolvimento. Use como versão inicial de testes e valide em uma instalação local do Foundry antes de usar em mesa.
+
 Este documento é o **manual**: como **instalar**, como **começar** e como **usar** cada recurso.
 
 > Sumário: [Requisitos](#requisitos) · [Instalação](#instalação) · [Primeiros passos](#primeiros-passos) · [Modo de regras](#modo-de-regras-padrão--sobrevivendo-ao-horror) · [Guia de uso](#guia-de-uso) · [Ferramentas do Mestre](#ferramentas-do-mestre) · [Conteúdo e compartilhamento](#conteúdo-e-compartilhamento) · [Fórmulas](#fórmulas-status--dados) · [Referência rápida](#referência-rápida) · [API](#api-para-macros-e-console) · [Estrutura](#estrutura-de-arquivos-desenvolvimento)
