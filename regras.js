@@ -38,10 +38,17 @@ export const SAH_CONFIG = {
     // Transcender vira ritual (deixa de ser poder de classe automático).
     transcenderComoRitual: true
   },
-  // Reter Ritual (duração retida). Regra funcional; custos ajustáveis.
+  // Reter Ritual (duração retida) — Arquivos Secretos 01, regra opcional.
   reterRitual: {
-    custoSan: 1,            // SAN perdida ao reter (referência: 1 SAN).
-    reduzPeMaximo: true     // PE retido sai do máximo e do atual.
+    custoSan: 1,             // Perde 1 SAN ao reter (AS1).
+    reduzPeMaximo: true,     // PE retido sai do atual E do máximo (AS1).
+    // Liberar como ação livre/reação recupera só o MÁXIMO retido (não o atual).
+    // Alternativa no turno: ação padrão + teste de Ocultismo (DT 20 + custo do
+    // ritual). Se passar, recupera máximo E atual; se falhar, só o máximo.
+    dtOcultismoLiberar: 20,
+    // Perdendo o Foco: estas condições fazem o conjurador deixar de reter TODOS
+    // os rituais imediatamente (recuperando apenas o máximo).
+    condicoesPerdeFoco: ["atordoado", "exausto", "pasmo"]
   },
   // Os Limites da Compreensão Humana (SaH, p. ~113). TODO(SaH): efeitos reais.
   compreensao: {

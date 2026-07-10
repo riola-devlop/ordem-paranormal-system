@@ -1,7 +1,7 @@
 {
   "id": "ordem-paranormal",
   "title": "Ordem Paranormal RPG",
-  "description": "Sistema brasileiro de RPG de investigação e terror paranormal.",
+  "description": "Sistema brasileiro de RPG de investigação e terror paranormal. Este é um conteúdo não oficial, publicado sob a Licença da Comunidade de Ordem Paranormal. Ordem Paranormal RPG é propriedade da Jambô Editora / Cellbit. Os compêndios começam vazios — adicione apenas conteúdo original ou homebrew de sua autoria.",
   "version": "0.1.0",
   "compatibility": {
     "minimum": "12",

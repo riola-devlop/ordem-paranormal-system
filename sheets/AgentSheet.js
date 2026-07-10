@@ -293,6 +293,18 @@ export class OrdemAgentSheet extends ActorSheet {
       efeito: game.i18n.localize(`ORDEM.Manobra.Efeito.${key}`)
     }));
 
+    // ---- Rastreador de ações do turno (economia de ações da rodada) ----
+    // Marcador puramente visual: indica o que o agente já "gastou" nesta rodada.
+    // Não impõe limites (ex.: quantas ações mínimas) — isso fica a critério do Mestre.
+    // Reseta sozinho no início do turno do agente em combate (ver hook updateCombat).
+    const at = sys.acoesTurno ?? {};
+    context.acoesTurno = [
+      { key: "acao",       icone: "fa-hand-fist",   label: game.i18n.localize("ORDEM.Combate.Acao"),       gasta: !!at.acao },
+      { key: "movimento",  icone: "fa-shoe-prints", label: game.i18n.localize("ORDEM.Combate.Movimento"),  gasta: !!at.movimento },
+      { key: "acaoMinima", icone: "fa-hand",        label: game.i18n.localize("ORDEM.Combate.AcaoMinima"), gasta: !!at.acaoMinima },
+      { key: "reacao",     icone: "fa-reply",       label: game.i18n.localize("ORDEM.Combate.Reacao"),     gasta: !!at.reacao }
+    ];
+
     // ---- Ações de defesa (treinamento exigido) ----
     context.defesas = {
       bloqueio:     (Number(sys.pericias?.fortitude?.treino) || 0) > 0,
@@ -440,6 +452,16 @@ export class OrdemAgentSheet extends ActorSheet {
     html.find("[data-action='abrir-condicoes']").on("click", (ev) => {
       ev.preventDefault();
       return abrirSeletorCondicao(this.actor);
+    });
+
+    // Rastreador de ações do turno: alterna "gasta ↔ disponível" (marcador visual,
+    // sem impor limites). As ações voltam sozinhas no início do turno em combate.
+    html.find("[data-action='toggle-acao-turno']").on("click", (ev) => {
+      ev.preventDefault();
+      const key = ev.currentTarget.dataset.acao;
+      if (!key) return;
+      const gasta = !!this.actor.system.acoesTurno?.[key];
+      return this.actor.update({ [`system.acoesTurno.${key}`]: !gasta });
     });
 
     // Setas de ajuste rápido dos recursos (« ‹ › »).

@@ -118,7 +118,9 @@ ORDEM.condicoes = CONDICOES;
 ORDEM.tiposCena = {
   acao:          "ORDEM.Cena.acao",
   investigacao:  "ORDEM.Cena.investigacao",
-  interludio:    "ORDEM.Cena.interludio"
+  interludio:    "ORDEM.Cena.interludio",
+  perseguicao:   "ORDEM.Cena.perseguicao",
+  furtividade:   "ORDEM.Cena.furtividade"
 };
 
 // Dificuldades (CD) padrão sugeridas ao Mestre.
@@ -248,6 +250,17 @@ ORDEM.tierAtaqueEspecial = (nex) =>
   nex >= 55 ? { bonus: 15, custo: 4 } :
   nex >= 25 ? { bonus: 10, custo: 3 } :
               { bonus: 5,  custo: 2 };
+
+/**
+ * Dados de dano adicionais do Ataque Furtivo (trilha Infiltrador) conforme o NEX
+ * (Livro de Regras): +1d6 (10%), +2d6 (40%), +3d6 (65%), +4d6 (99%). Custo fixo
+ * de 1 PE. Os dados NÃO são multiplicados em acerto crítico.
+ */
+ORDEM.tierFurtivo = (nex) =>
+  nex >= 99 ? { dados: "4d6", custo: 1 } :
+  nex >= 65 ? { dados: "3d6", custo: 1 } :
+  nex >= 40 ? { dados: "2d6", custo: 1 } :
+              { dados: "1d6", custo: 1 };
 
 /**
  * Alvos canônicos que um modificador de item pode afetar. Usado pelo motor de
@@ -676,7 +689,7 @@ class OrdemActor extends Actor {
  * @param {number}     [opcoes.cd]           CD pré-preenchida no diálogo
  * @param {string}     [opcoes.manobra]      Chave da manobra de combate (agarrar...)
  */
-export async function rolarTeste(actor, { atributoKey, periciaKey, titulo, arma, cd: cdInicial, manobra } = {}) {
+export async function rolarTeste(actor, { atributoKey, periciaKey, titulo, arma, cd: cdInicial, manobra, dadosBonus = 0 } = {}) {
   if (!actor) return ui.notifications.warn(game.i18n.localize("ORDEM.Aviso.SemAtor"));
 
   const sys = actor.system;
@@ -741,6 +754,10 @@ export async function rolarTeste(actor, { atributoKey, periciaKey, titulo, arma,
     (periciaKey ? (modsAtor[`dados.pericia.${periciaKey}`] || 0) : 0) +
     (ehAtaque ? (modsAtor["dados.ataque"] || 0) : 0);
   baseDados += dadosCondicao;
+
+  // Bônus de dados pontual passado pelo chamador (ex.: +Ⓞ da Investida) —
+  // aplica-se só a esta rolagem, sem virar um modificador persistente.
+  baseDados += Number(dadosBonus) || 0;
 
   // Linha informativa exibida no topo do diálogo.
   const atribLabel = game.i18n.localize(ORDEM.atributos[atributo] ?? "");
@@ -1103,7 +1120,7 @@ function _dobrarDados(formula) {
  * @param {boolean}     [opts.critico]    Dobra os dados de dano
  * @param {number}      [opts.bonusExtra] Bônus numérico adicional
  */
-export async function rolarDano(actor, item, { critico = false, bonusExtra = 0 } = {}) {
+export async function rolarDano(actor, item, { critico = false, bonusExtra = 0, dadosExtra = "" } = {}) {
   const sys = item.system ?? item;
   // A fórmula de dano aceita atributos (ex.: "1d6+5+FOR"): resolve os tokens.
   let formula = resolverTokensFormula((sys.dano || "1d6").trim(), actor) || "1d6";
@@ -1122,6 +1139,8 @@ export async function rolarDano(actor, item, { critico = false, bonusExtra = 0 }
     const v = Number(actor.system.atributosEfetivos?.[atrKey] ?? actor.system.atributos?.[atrKey] ?? 0);
     if (v) partes.push(String(v));
   }
+  // Dados extras (ex.: Ataque Furtivo) entram DEPOIS do crítico — não são dobrados.
+  if (dadosExtra) partes.push(resolverTokensFormula(String(dadosExtra).trim(), actor));
   if (bonusExtra) partes.push(String(bonusExtra));
   const formulaFinal = partes.join(" + ");
 
@@ -1321,7 +1340,56 @@ export async function aplicarCondicao(actor, chave, { anunciar = true } = {}) {
     titulo: game.i18n.format("ORDEM.Condicao.Recebeu", { nome: cond.nome }),
     texto: cond.descricao
   });
+
+  // Perdendo o Foco (Arquivos Secretos 01): atordoado/exausto/pasmo fazem o
+  // conjurador deixar de reter TODOS os rituais imediatamente (só recupera máximo).
+  const perdeFoco = SAH_CONFIG.reterRitual?.condicoesPerdeFoco ?? [];
+  if (perdeFoco.includes(chave) && (actor.system.rituaisRetidos?.length ?? 0) > 0) {
+    if (anunciar) await _cardEvento(actor, {
+      icone: "fa-link-slash", classe: "condicao",
+      titulo: game.i18n.localize("ORDEM.ReterRitual.PerdeFoco"),
+      texto: game.i18n.format("ORDEM.ReterRitual.PerdeFocoTexto", { condicao: cond.nome })
+    });
+    let guard = 0;
+    while ((actor.system.rituaisRetidos?.length ?? 0) > 0 && guard++ < 50) {
+      await liberarRitual(actor, 0, { modo: "livre" });
+    }
+  }
   return item;
+}
+
+/**
+ * Aplica um MODIFICADOR TEMPORÁRIO ao ator (ex.: −5 Defesa da Investida) como um
+ * item transitório do tipo "condicao", reutilizando a expiração por turnos de
+ * {@link _tickModificadores}. O item é marcado com a flag `temporario` para que
+ * `novaCena` possa limpá-lo. `duracao` é em turnos (1 = até o próximo turno do ator).
+ *
+ * @param {OrdemActor} actor
+ * @param {object}     opcoes
+ * @param {string}     opcoes.alvo     Alvo do modificador (ex.: "defesa", "dados.ataque")
+ * @param {number}     opcoes.valor    Valor (pode ser negativo)
+ * @param {number}     [opcoes.duracao=1]  Duração em turnos
+ * @param {string}     [opcoes.nome]   Nome exibido do efeito
+ * @param {string}     [opcoes.rotulo] Descrição curta
+ * @param {string}     [opcoes.icone]  Caminho do ícone
+ */
+export async function aplicarModificadorTemporario(actor, { alvo, valor, duracao = 1, nome = "", rotulo = "", icone = "icons/svg/downgrade.svg" } = {}) {
+  if (!actor || !alvo) return null;
+  const itemData = {
+    name: nome || rotulo || game.i18n.localize("ORDEM.Mod.Temporario"),
+    type: "condicao",
+    img: icone,
+    system: {
+      ativo: true,
+      chave: "",
+      implicadas: [],
+      descricao: rotulo,
+      modificadores: [{ alvo, valor, duracao, restante: duracao, ativo: true, rotulo: rotulo || alvo }]
+    },
+    flags: { "ordem-paranormal": { temporario: true } }
+  };
+  const [criado] = await actor.createEmbeddedDocuments("Item", [itemData]);
+  return criado ?? null;
 }
 
 /** Remove uma condição do ator pela chave do catálogo. */
@@ -2345,6 +2413,12 @@ export async function novaCena() {
     // Zera usos por cena dos poderes.
     const poderes = actor.items.filter(i => i.type === "poder" && Number(i.system.usosAtuais) > 0);
     for (const p of poderes) await p.update({ "system.usosAtuais": 0 });
+
+    // Remove modificadores temporários (ex.: guarda aberta da Investida) que
+    // tenham sobrado fora de combate.
+    const temporarios = actor.items.filter(i =>
+      i.getFlag?.("ordem-paranormal", "temporario") === true).map(i => i.id);
+    if (temporarios.length) await actor.deleteEmbeddedDocuments("Item", temporarios);
   }
 
   await ChatMessage.create({
@@ -2834,31 +2908,85 @@ export async function conjurarRitual(actor, item) {
 }
 
 /**
- * Libera um ritual retido (modo SaH): devolve o PE ao MÁXIMO (não ao atual,
- * conforme a regra) e remove da lista de rituais retidos.
+ * Libera um ritual retido (Arquivos Secretos 01). Pergunta como liberar:
+ *  - Ação livre/reação: devolve o PE ao MÁXIMO retido (não ao atual).
+ *  - Teste de Ocultismo (DT 20 + custo): se passar, devolve MÁXIMO e ATUAL;
+ *    se falhar, devolve apenas o máximo.
  *
  * @param {OrdemActor} actor
  * @param {number}     indice  Índice em system.rituaisRetidos
+ * @param {object}     [opcoes]
+ * @param {"livre"|"teste"} [opcoes.modo]  Pula o diálogo se informado (ex.: "Perde Foco").
  */
-export async function liberarRitual(actor, indice) {
+export async function liberarRitual(actor, indice, { modo } = {}) {
   if (!actor) return;
   const retidos = foundry.utils.deepClone(actor.system.rituaisRetidos ?? []);
   const r = retidos[indice];
   if (!r) return;
 
+  const cfg = SAH_CONFIG.reterRitual;
+  const custoPe = Number(r.custoPe) || 0;
+  const dt = (Number(cfg.dtOcultismoLiberar) || 20) + custoPe;
+
+  // Escolha do modo de liberação (a menos que já informado pelo chamador).
+  let escolha = modo;
+  if (!escolha) {
+    escolha = await new Promise(resolve => {
+      new Dialog({
+        title: game.i18n.format("ORDEM.ReterRitual.LiberarTitulo", { nome: r.nome }),
+        content: `<p>${game.i18n.format("ORDEM.ReterRitual.LiberarPergunta", { custo: custoPe, dt })}</p>`,
+        buttons: {
+          livre:  { icon: '<i class="fas fa-link-slash"></i>', label: game.i18n.localize("ORDEM.ReterRitual.LiberarLivre"), callback: () => resolve("livre") },
+          teste:  { icon: '<i class="fas fa-dice-d20"></i>',    label: game.i18n.localize("ORDEM.ReterRitual.LiberarTeste"), callback: () => resolve("teste") },
+          cancel: { icon: '<i class="fas fa-times"></i>',       label: game.i18n.localize("ORDEM.Dialog.Cancelar"),          callback: () => resolve(null) }
+        },
+        default: "livre"
+      }, { classes: ["ordem-paranormal", "dialog"] }).render(true);
+    });
+  }
+  if (!escolha) return;
+
+  // Teste de Ocultismo opcional para recuperar também o PE atual.
+  let recuperaAtual = false;
+  const rolls = [];
+  let testeHtml = "";
+  if (escolha === "teste") {
+    const calc = actor.system.periciasCalc?.ocultismo;
+    const numDados = Number(calc?.dados ?? actor.system.atributosEfetivos?.int ?? 0);
+    const bonus = Number(calc?.bonus ?? 0);
+    const roll = await (new Roll(numDados <= 0 ? "2d20kl" : `${numDados}d20kh`)).evaluate();
+    rolls.push(roll);
+    const nat = roll.dice[0].results.find(x => x.active)?.result ?? roll.total;
+    const total = nat + bonus;
+    recuperaAtual = total >= dt;
+    testeHtml = recuperaAtual
+      ? `<div class="ritual-custo ok"><i class="fas fa-check"></i> ${game.i18n.format("ORDEM.ReterRitual.TestePassou", { total, dt })}</div>`
+      : `<div class="ritual-custo falha"><i class="fas fa-times"></i> ${game.i18n.format("ORDEM.ReterRitual.TesteFalhou", { total, dt })}</div>`;
+  }
+
   const upd = {};
-  if (SAH_CONFIG.reterRitual.reduzPeMaximo) {
-    const bonusMax = Number(actor.system.recursos?.pe?.bonusMax) || 0;
-    upd["system.recursos.pe.bonusMax"] = bonusMax + (Number(r.custoPe) || 0);
+  const peRec = actor.system.recursos?.pe;
+  if (cfg.reduzPeMaximo) {
+    upd["system.recursos.pe.bonusMax"] = (Number(peRec?.bonusMax) || 0) + custoPe;
+  }
+  if (recuperaAtual) {
+    upd["system.recursos.pe.value"] = (Number(peRec?.value) || 0) + custoPe;
   }
   retidos.splice(indice, 1);
   upd["system.rituaisRetidos"] = retidos;
   await actor.update(upd);
 
-  await _cardEvento(actor, {
-    icone: "fa-link-slash", classe: "",
-    titulo: game.i18n.format("ORDEM.ReterRitual.Liberado", { nome: r.nome }),
-    texto: game.i18n.format("ORDEM.ReterRitual.LiberadoTexto", { custo: Number(r.custoPe) || 0 })
+  await ChatMessage.create({
+    speaker: ChatMessage.getSpeaker({ actor }),
+    content: `<div class="ordem-chat-card evento">
+      <header class="card-header"><i class="fas fa-link-slash"></i>
+        <h3>${game.i18n.format("ORDEM.ReterRitual.Liberado", { nome: r.nome })}</h3></header>
+      <div class="card-content">
+        <div class="descricao">${game.i18n.format("ORDEM.ReterRitual.LiberadoTexto", { custo: custoPe })}${recuperaAtual ? " " + game.i18n.localize("ORDEM.ReterRitual.RecuperouAtual") : ""}</div>
+        ${testeHtml}
+      </div></div>`,
+    rolls,
+    flags: { "ordem-paranormal": { tipo: "evento" } }
   });
 }
 
@@ -2917,7 +3045,12 @@ export async function progredirXP(actor, ganho = 0) {
   if (!actor) return ui.notifications.warn(game.i18n.localize("ORDEM.Aviso.SemAtor"));
   const sys = actor.system;
   const xp = sys.xp ?? { atual: 0, total: 0 };
-  const custo = Number(SAH_CONFIG.xp.custoPorMarco) || 10;
+  // Custo por marco: setting do Mestre tem prioridade sobre o default do SAH_CONFIG.
+  let custo = Number(SAH_CONFIG.xp.custoPorMarco) || 10;
+  try {
+    const s = Number(game.settings.get("ordem-paranormal", "xpCustoPorMarco"));
+    if (Number.isFinite(s) && s > 0) custo = s;
+  } catch (_e) { /* setting ainda não registrado: usa o default */ }
 
   // Soma o XP informado (ganho pode vir 0 → apenas abre o diálogo de gasto).
   let atual = (Number(xp.atual) || 0) + (Number(ganho) || 0);
@@ -3210,7 +3343,9 @@ async function _preCarregarTemplates() {
     "systems/ordem-paranormal/templates/combat-carousel.hbs",
     "systems/ordem-paranormal/templates/teste-estendido.hbs",
     "systems/ordem-paranormal/templates/investigacao.hbs",
-    "systems/ordem-paranormal/templates/pedido-teste.hbs"
+    "systems/ordem-paranormal/templates/pedido-teste.hbs",
+    "systems/ordem-paranormal/templates/pedido-acao.hbs",
+    "systems/ordem-paranormal/templates/cena-sah.hbs"
   ]);
 }
 
@@ -3561,6 +3696,205 @@ export async function abrirCenaInvestigacao() {
       default: "criar"
     }, { classes: ["ordem-paranormal", "dialog"] }).render(true);
   });
+}
+
+/* -------------------------------------------------------------------------- */
+/*  CENAS DE SOBREVIVÊNCIA (SaH) — Perseguição, Furtividade e Efeitos de Medo  */
+/* -------------------------------------------------------------------------- */
+/*  SCAFFOLDING AJUSTÁVEL: as regras-fim das cenas de perseguição/furtividade  */
+/*  e dos efeitos de medo estão num capítulo do SaH ainda não fornecido (o     */
+/*  Cap. 1 só as referencia como "p. XX"). A ESTRUTURA abaixo é fiel às ações  */
+/*  citadas; as DTs são definidas pelo Mestre na janela. Plugue os valores     */
+/*  exatos aqui quando o texto da regra estiver disponível.                    */
+
+/** Configuração das cenas de sobrevivência (ações = atalhos de teste). @private */
+const CENAS_SAH = {
+  perseguicao: {
+    titulo: "ORDEM.Cena.perseguicao",
+    icone: "fa-person-running",
+    dtDefault: 20,
+    contador: null,
+    acoes: [
+      { key: "fugir",     periciaKey: "atletismo",   icone: "fa-person-running" },
+      { key: "manobrar",  periciaKey: "pilotagem",   icone: "fa-car-side" },
+      { key: "despistar", periciaKey: "furtividade", icone: "fa-user-secret" },
+      { key: "obstaculo", periciaKey: "atletismo",   icone: "fa-mound" }
+    ]
+  },
+  furtividade: {
+    titulo: "ORDEM.Cena.furtividade",
+    icone: "fa-user-ninja",
+    dtDefault: 20,
+    contador: { rotulo: "ORDEM.CenaSaH.Visibilidade", limiar: 5 },
+    acoes: [
+      { key: "esconder", periciaKey: "furtividade", icone: "fa-eye-slash" },
+      { key: "mover",    periciaKey: "furtividade", icone: "fa-shoe-prints" },
+      { key: "distrair", periciaKey: "enganacao",   icone: "fa-comment" }
+    ]
+  }
+};
+
+/**
+ * Janela genérica de cena de sobrevivência. Rastreia rodada, uma DT ajustável e
+ * (furtividade) um contador de visibilidade. Cada ação é um atalho que rola a
+ * perícia adequada do token controlado contra a DT da cena.
+ */
+class OrdemCenaSaH extends Application {
+  constructor(tipo) {
+    const cfg = CENAS_SAH[tipo] ?? CENAS_SAH.perseguicao;
+    super({ width: 380, height: "auto", resizable: true,
+            title: game.i18n.localize(cfg.titulo), classes: ["ordem-paranormal", "op-theme", "op-cena-sah-app"] });
+    this.tipo = tipo;
+    this.cfg = cfg;
+    this.estado = { rodada: 1, dt: cfg.dtDefault, contador: 0 };
+  }
+
+  static get defaultOptions() {
+    return foundry.utils.mergeObject(super.defaultOptions, {
+      template: "systems/ordem-paranormal/templates/cena-sah.hbs",
+      classes: ["ordem-paranormal", "op-theme", "op-cena-sah-app"]
+    });
+  }
+
+  getData() {
+    const cfg = this.cfg;
+    return {
+      titulo: game.i18n.localize(cfg.titulo),
+      icone: cfg.icone,
+      rodada: this.estado.rodada,
+      dt: this.estado.dt,
+      temContador: !!cfg.contador,
+      contadorRotulo: cfg.contador ? game.i18n.localize(cfg.contador.rotulo) : "",
+      contador: this.estado.contador,
+      limiar: cfg.contador?.limiar ?? 0,
+      acoes: cfg.acoes.map(a => ({
+        key: a.key, icone: a.icone,
+        label: game.i18n.localize(`ORDEM.CenaSaH.Acao.${a.key}`),
+        ajuda: game.i18n.localize(`ORDEM.CenaSaH.Ajuda.${a.key}`)
+      }))
+    };
+  }
+
+  activateListeners(html) {
+    super.activateListeners(html);
+    html.find("[name='dt']").on("change", ev => { this.estado.dt = Number(ev.currentTarget.value) || 0; });
+    html.find("[data-action='cena-rodada']").on("click", () => { this.estado.rodada++; this.render(); });
+    html.find("[data-action='cont-mais']").on("click", () => this._contador(1));
+    html.find("[data-action='cont-menos']").on("click", () => this._contador(-1));
+    html.find("[data-action='cena-acao']").on("click", ev => this._acao(ev.currentTarget.dataset.acao));
+  }
+
+  _contador(delta) {
+    this.estado.contador = Math.max(0, this.estado.contador + delta);
+    this.render();
+    const lim = this.cfg.contador?.limiar ?? 0;
+    if (lim && this.estado.contador >= lim) {
+      ChatMessage.create({
+        whisper: ChatMessage.getWhisperRecipients("GM"),
+        content: `<div class="ordem-chat-card evento morte"><div class="card-content">
+          <i class="fas fa-bell"></i> ${game.i18n.format("ORDEM.CenaSaH.AlarmeTexto", { titulo: game.i18n.localize(this.cfg.titulo) })}
+        </div></div>`,
+        flags: { "ordem-paranormal": { tipo: "cena-sah" } }
+      });
+    }
+  }
+
+  async _acao(key) {
+    const acao = this.cfg.acoes.find(a => a.key === key);
+    if (!acao) return;
+    const actor = canvas?.tokens?.controlled[0]?.actor ?? game.user?.character;
+    if (!actor) return ui.notifications.warn(game.i18n.localize("ORDEM.Aviso.SemAtor"));
+    await rolarTeste(actor, {
+      periciaKey: acao.periciaKey,
+      cd: this.estado.dt,
+      titulo: game.i18n.localize(`ORDEM.CenaSaH.Acao.${key}`)
+    });
+  }
+}
+
+/** Abre a janela da Cena de Perseguição. */
+export async function abrirCenaPerseguicao() { return new OrdemCenaSaH("perseguicao").render(true); }
+
+/** Abre a janela da Cena de Furtividade. */
+export async function abrirCenaFurtividade() { return new OrdemCenaSaH("furtividade").render(true); }
+
+/**
+ * Efeitos de Medo (SaH): aplica uma condição de medo ao alvo, ou permite
+ * "entregar-se ao medo". As condições usadas são as oficiais (abalado/apavorado).
+ * O benefício de PE temporários do "entregar-se ao medo" é informado ao Mestre
+ * para adjudicação (não há recurso de PE temporário no motor).
+ */
+export async function efeitosDeMedo(actor) {
+  actor = actor ?? canvas?.tokens?.controlled[0]?.actor ?? game.user?.character;
+  if (!actor) return ui.notifications.warn(game.i18n.localize("ORDEM.Aviso.SemAtor"));
+
+  return new Dialog({
+    title: game.i18n.localize("ORDEM.Medo.Titulo"),
+    content: `<form class="ordem-roll-dialog">
+      <p class="roll-info">${game.i18n.format("ORDEM.Medo.Info", { nome: actor.name })}</p>
+      <p class="op-cena-nota"><i class="fas fa-circle-info"></i> ${game.i18n.localize("ORDEM.CenaSaH.Nota")}</p>
+    </form>`,
+    buttons: {
+      abalado: {
+        icon: '<i class="fas fa-face-frown-open"></i>',
+        label: CONDICOES.abalado.nome,
+        callback: () => aplicarCondicao(actor, "abalado")
+      },
+      apavorado: {
+        icon: '<i class="fas fa-skull"></i>',
+        label: CONDICOES.apavorado.nome,
+        callback: () => aplicarCondicao(actor, "apavorado")
+      },
+      entregar: {
+        icon: '<i class="fas fa-hand-holding-heart"></i>',
+        label: game.i18n.localize("ORDEM.Medo.Entregar"),
+        callback: async () => {
+          await aplicarCondicao(actor, "abalado");
+          await _cardEvento(actor, {
+            icone: "fa-ghost", classe: "morte",
+            titulo: game.i18n.localize("ORDEM.Medo.EntregarTitulo"),
+            texto: game.i18n.format("ORDEM.Medo.EntregarTexto", { nome: actor.name })
+          });
+        }
+      },
+      cancelar: {
+        icon: '<i class="fas fa-times"></i>',
+        label: game.i18n.localize("ORDEM.Dialog.Cancelar")
+      }
+    },
+    default: "abalado"
+  }, { classes: ["ordem-paranormal", "dialog"] }).render(true);
+}
+
+/**
+ * Botão único do Mestre que abre um seletor das ferramentas de sobrevivência:
+ * Cena de Perseguição, Cena de Furtividade e Efeitos de Medo.
+ */
+export async function abrirCenasSaH() {
+  if (!game.user.isGM) return ui.notifications.warn(game.i18n.localize("ORDEM.Aviso.SemPermissao"));
+
+  const conteudo = `<div class="op-acoes-combate"><section><div class="op-acao-grade">
+    <button type="button" class="op-acao-btn" data-cena="perseguicao"><i class="fas fa-person-running"></i> ${game.i18n.localize("ORDEM.Cena.perseguicao")}</button>
+    <button type="button" class="op-acao-btn" data-cena="furtividade"><i class="fas fa-user-ninja"></i> ${game.i18n.localize("ORDEM.Cena.furtividade")}</button>
+    <button type="button" class="op-acao-btn" data-cena="medo"><i class="fas fa-ghost"></i> ${game.i18n.localize("ORDEM.Medo.Titulo")}</button>
+  </div></section></div>`;
+
+  const dlg = new Dialog({
+    title: game.i18n.localize("ORDEM.CenaSaH.Titulo"),
+    content: conteudo,
+    buttons: { fechar: { icon: '<i class="fas fa-times"></i>', label: game.i18n.localize("ORDEM.Dialog.Cancelar") } },
+    default: "fechar",
+    render: html => {
+      html[0].querySelectorAll("[data-cena]").forEach(btn => btn.addEventListener("click", () => {
+        const cena = btn.dataset.cena;
+        dlg.close();
+        if (cena === "perseguicao") abrirCenaPerseguicao();
+        else if (cena === "furtividade") abrirCenaFurtividade();
+        else efeitosDeMedo();
+      }));
+    }
+  }, { classes: ["ordem-paranormal", "op-theme", "dialog"], width: 420 });
+  dlg.render(true);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -4052,6 +4386,270 @@ export async function abrirPedirTeste() {
         // "Selecionar todos" marca/desmarca todas as linhas.
         todos?.addEventListener("change", () => checks().forEach(c => { c.checked = todos.checked; }));
         // Mantém o "todos" coerente com as marcações individuais.
+        checks().forEach(c => c.addEventListener("change", () => {
+          if (todos) todos.checked = checks().every(x => x.checked);
+        }));
+      }
+    }, { classes: ["ordem-paranormal", "dialog"], width: 440 }).render(true);
+  });
+}
+
+/* -------------------------------------------------------------------------- */
+/*  PEDIDO DE AÇÃO DE COMBATE (Mestre dispara → tokens executam)               */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Catálogo das ações de combate despacháveis. `custoPe` é o custo padrão pago
+ * pelo ator que executa; `corpoACorpo` filtra o seletor de arma; `icone` é a
+ * classe FontAwesome usada no card/diálogo.
+ * @private
+ */
+const PA_ACOES = {
+  investida:    { icone: "fa-bolt",       custoPe: 0, corpoACorpo: true  },
+  oportunidade: { icone: "fa-hand-fist",  custoPe: 1, corpoACorpo: true  },
+  furtivo:      { icone: "fa-user-ninja", custoPe: 1, corpoACorpo: false }
+};
+
+/** Monta os dados do template do card de Pedido de Ação. @private */
+function _dadosPA(flags, participantes) {
+  const meta = PA_ACOES[flags.acao] ?? { icone: "fa-burst" };
+  const executaram = participantes.filter(p => p.executou).length;
+  return {
+    titulo:     flags.titulo || game.i18n.localize(`ORDEM.PA.Acao.${flags.acao}`),
+    acaoLabel:  game.i18n.localize(`ORDEM.PA.Acao.${flags.acao}`),
+    acaoIcone:  meta.icone,
+    botaoLabel: game.i18n.localize(`ORDEM.PA.Botao.${flags.acao}`),
+    subtitulo:  flags.subtitulo || "",
+    participantes,
+    executaram,
+    total:      participantes.length,
+    messageId:  flags._messageId ?? ""
+  };
+}
+
+/**
+ * Cria a mensagem reativa de Pedido de Ação para uma lista de tokens.
+ * Espelha {@link criarPedidoTeste}: cada token ganha um botão para executar.
+ */
+export async function criarPedidoAcao({ acao, tokens, subtitulo = "" }) {
+  const participantes = tokens.map(t => ({
+    actorId:  t.actor.id,
+    tokenId:  t.id,
+    nome:     t.name,
+    img:      t.document.texture?.src ?? t.actor.img ?? "icons/svg/mystery-man.svg",
+    executou: false,
+    resumo:   null
+  }));
+
+  const flags = { tipo: "pedido-acao", acao, subtitulo, participantes };
+  const msg = await ChatMessage.create({
+    content: await renderTemplate(
+      "systems/ordem-paranormal/templates/pedido-acao.hbs",
+      _dadosPA({ ...flags, _messageId: "" }, participantes)
+    ),
+    flags: { "ordem-paranormal": flags }
+  });
+
+  if (msg) {
+    const updated = await renderTemplate(
+      "systems/ordem-paranormal/templates/pedido-acao.hbs",
+      _dadosPA({ ...flags, _messageId: msg.id }, participantes)
+    );
+    await msg.update({ content: updated, "flags.ordem-paranormal._messageId": msg.id });
+  }
+  return msg;
+}
+
+/**
+ * Seleciona a arma que o ator usará na ação. Prefere a única equipada; com mais
+ * de uma opção, abre um seletor. Retorna o Item ou `null`.
+ * @private
+ */
+async function _escolherArma(actor, { corpoACorpo = false } = {}) {
+  let armas = actor.items.filter(i => i.type === "arma");
+  if (corpoACorpo) {
+    const cac = armas.filter(a => (a.system.alcance ?? "") === "corpoacorpo");
+    if (cac.length) armas = cac;
+  }
+  if (!armas.length) return null;
+  if (armas.length === 1) return armas[0];
+  const equipadas = armas.filter(a => a.system.equipado);
+  if (equipadas.length === 1) return equipadas[0];
+
+  const opts = armas.map(a => `<option value="${a.id}">${a.name}</option>`).join("");
+  return new Promise(resolve => {
+    new Dialog({
+      title: game.i18n.localize("ORDEM.PA.EscolherArma"),
+      content: `<form class="ordem-roll-dialog"><div class="form-group">
+        <label>${game.i18n.localize("ORDEM.PA.Arma")}</label>
+        <select name="arma">${opts}</select></div></form>`,
+      buttons: {
+        ok: { icon: '<i class="fas fa-check"></i>', label: game.i18n.localize("ORDEM.Dialog.Confirmar"),
+          callback: html => resolve(actor.items.get(html[0].querySelector("[name='arma']").value)) },
+        cancelar: { icon: '<i class="fas fa-times"></i>', label: game.i18n.localize("ORDEM.Dialog.Cancelar"),
+          callback: () => resolve(null) }
+      },
+      default: "ok"
+    }, { classes: ["ordem-paranormal", "dialog"] }).render(true);
+  });
+}
+
+/** Desconta PE do ator (avisa, mas não bloqueia, se faltar). @private */
+async function _gastarPe(actor, custo) {
+  if (custo <= 0) return true;
+  const pe = Number(actor.system.recursos?.pe?.value) || 0;
+  if (pe < custo) ui.notifications.warn(game.i18n.format("ORDEM.Aviso.PEInsuficiente", { custo, atual: pe }));
+  await actor.update({ "system.recursos.pe.value": Math.max(0, pe - custo) });
+  return pe >= custo;
+}
+
+/**
+ * Executa a ação de combate de um participante e atualiza o card de grupo.
+ * Espelha {@link _ptRolar}.
+ * @private
+ */
+async function _paExecutar(message, actorId) {
+  const flags = message.flags?.["ordem-paranormal"];
+  const actor = game.actors.get(actorId);
+  if (!actor || !flags) return;
+
+  const participantes = foundry.utils.deepClone(flags.participantes ?? []);
+  const p = participantes.find(x => x.actorId === actorId);
+  if (!p || p.executou) return;
+
+  const acao = flags.acao;
+  const meta = PA_ACOES[acao] ?? {};
+  const labelAcao = game.i18n.localize(`ORDEM.PA.Acao.${acao}`);
+  let resumo = null;
+
+  if (acao === "investida") {
+    const arma = await _escolherArma(actor, { corpoACorpo: true });
+    if (!arma) return ui.notifications.warn(game.i18n.localize("ORDEM.PA.SemArmaCorpo"));
+    // Ataque com +Ⓞ (um d20 a mais). Cancelar não consome a ação.
+    const res = await rolarTeste(actor, { arma, dadosBonus: 1, titulo: `${labelAcao}: ${arma.name}` });
+    if (res === null || res === undefined) return;
+    // Só então: −5 na Defesa até o próximo turno (guarda aberta).
+    await aplicarModificadorTemporario(actor, {
+      alvo: "defesa", valor: -5, duracao: 1,
+      nome: game.i18n.localize("ORDEM.PA.InvestidaGuardaNome"),
+      rotulo: game.i18n.localize("ORDEM.PA.InvestidaGuarda"),
+      icone: "icons/svg/sword.svg"
+    });
+    resumo = game.i18n.localize("ORDEM.PA.Feito");
+
+  } else if (acao === "oportunidade") {
+    const arma = await _escolherArma(actor, { corpoACorpo: true });
+    if (!arma) return ui.notifications.warn(game.i18n.localize("ORDEM.PA.SemArmaCorpo"));
+    const res = await rolarTeste(actor, { arma, titulo: `${labelAcao}: ${arma.name}` });
+    if (res === null || res === undefined) return;
+    await _gastarPe(actor, Number(meta.custoPe) || 0);
+    resumo = `−${Number(meta.custoPe) || 0} PE`;
+
+  } else if (acao === "furtivo") {
+    const arma = await _escolherArma(actor, { corpoACorpo: false });
+    if (!arma) return ui.notifications.warn(game.i18n.localize("ORDEM.PA.SemArma"));
+    const nex = Number(actor.system.nex) || 0;
+    const tier = ORDEM.tierFurtivo(nex);
+    await _gastarPe(actor, tier.custo);
+    await rolarDano(actor, arma, { dadosExtra: tier.dados });
+    resumo = `+${tier.dados}`;
+
+  } else {
+    return;
+  }
+
+  // Atualiza o participante e o card de grupo.
+  p.executou = true;
+  p.resumo   = resumo ?? game.i18n.localize("ORDEM.PA.Feito");
+  const novoContent = await renderTemplate(
+    "systems/ordem-paranormal/templates/pedido-acao.hbs",
+    _dadosPA({ ...flags, _messageId: message.id }, participantes)
+  );
+  await message.update({
+    content: novoContent,
+    "flags.ordem-paranormal.participantes": participantes
+  });
+}
+
+/**
+ * Abre o diálogo do Mestre para escolher uma ação de combate e os tokens que a
+ * executarão, despachando um card reativo. Espelha {@link abrirPedirTeste}.
+ */
+export async function abrirPedirAcao() {
+  if (!game.user.isGM) return ui.notifications.warn(game.i18n.localize("ORDEM.Aviso.SemPermissao"));
+
+  const tokens = (canvas?.tokens?.placeables ?? []).filter(t => t.actor);
+  const tokenRows = tokens.map(t => {
+    const checked = t.actor.type === "agente" ? "checked" : "";
+    const img = t.document.texture?.src ?? t.actor.img ?? "icons/svg/mystery-man.svg";
+    const tipo = game.i18n.localize(`TYPES.Actor.${t.actor.type}`);
+    return `<tr class="pt-token-linha">
+      <td class="pt-col-check"><input type="checkbox" name="token" value="${t.id}" ${checked} /></td>
+      <td class="pt-col-nome"><img src="${img}" alt="" /> <span>${t.name}</span></td>
+      <td class="pt-col-tipo">${tipo}</td>
+    </tr>`;
+  }).join("");
+
+  const tokenTabela = tokens.length
+    ? `<table class="pt-tokens-tabela">
+        <thead><tr>
+          <th class="pt-col-check"><input type="checkbox" class="pt-sel-todos" checked title="${game.i18n.localize("ORDEM.PT.SelTodos")}" /></th>
+          <th class="pt-col-nome">${game.i18n.localize("ORDEM.PT.ColToken")}</th>
+          <th class="pt-col-tipo">${game.i18n.localize("ORDEM.PT.ColTipo")}</th>
+        </tr></thead>
+        <tbody>${tokenRows}</tbody>
+      </table>`
+    : `<p class="vazio">${game.i18n.localize("ORDEM.PT.SemTokens")}</p>`;
+
+  const acaoOptions = Object.keys(PA_ACOES).map(k =>
+    `<option value="${k}">${game.i18n.localize(`ORDEM.PA.Acao.${k}`)}</option>`
+  ).join("");
+
+  const conteudo = `<form class="ordem-roll-dialog pt-form">
+    <div class="form-group">
+      <label>${game.i18n.localize("ORDEM.PA.AcaoLabel")}</label>
+      <select name="acao">${acaoOptions}</select>
+    </div>
+    <p class="hint">${game.i18n.localize("ORDEM.PA.Ajuda")}</p>
+    <fieldset class="pt-tokens">
+      <legend>${game.i18n.localize("ORDEM.PT.TokensLabel")}</legend>
+      ${tokenTabela}
+    </fieldset>
+  </form>`;
+
+  return new Promise(resolve => {
+    new Dialog({
+      title: game.i18n.localize("ORDEM.PA.DialogTitulo"),
+      content: conteudo,
+      buttons: {
+        solicitar: {
+          icon: '<i class="fas fa-paper-plane"></i>',
+          label: game.i18n.localize("ORDEM.PT.Solicitar"),
+          callback: async html => {
+            const form = html[0].querySelector("form");
+            const acao = form.acao.value;
+            const tokensSel = [...form.querySelectorAll("[name='token']:checked")]
+              .map(cb => canvas.tokens.get(cb.value))
+              .filter(Boolean);
+            if (!tokensSel.length) {
+              ui.notifications.warn(game.i18n.localize("ORDEM.PT.SemTokensSelecionados"));
+              return resolve(null);
+            }
+            resolve(await criarPedidoAcao({ acao, tokens: tokensSel }));
+          }
+        },
+        cancelar: {
+          icon: '<i class="fas fa-times"></i>',
+          label: game.i18n.localize("ORDEM.Dialog.Cancelar"),
+          callback: () => resolve(null)
+        }
+      },
+      default: "solicitar",
+      render: html => {
+        const root = html[0];
+        const todos = root.querySelector(".pt-sel-todos");
+        const checks = () => [...root.querySelectorAll("[name='token']")];
+        todos?.addEventListener("change", () => checks().forEach(c => { c.checked = todos.checked; }));
         checks().forEach(c => c.addEventListener("change", () => {
           if (todos) todos.checked = checks().every(x => x.checked);
         }));
@@ -4826,6 +5424,13 @@ Hooks.once("init", function () {
     abrirCenaInvestigacao,
     abrirPedirTeste,
     criarPedidoTeste,
+    abrirPedirAcao,
+    criarPedidoAcao,
+    aplicarModificadorTemporario,
+    abrirCenaPerseguicao,
+    abrirCenaFurtividade,
+    efeitosDeMedo,
+    abrirCenasSaH,
     novaCena,
     abrirInterludio,
     // Exportar / importar fichas
@@ -4872,6 +5477,18 @@ Hooks.once("init", function () {
     onChange: () => game.ordem?.carrossel?.render()
   });
 
+  // Configuração (Mestre): custo de XP para avançar um marco de NEX no modo
+  // "Sobrevivendo ao Horror". Valor-base ajustável (a tabela oficial não consta
+  // do material disponível — confirme com o livro do Mestre quando houver).
+  game.settings.register("ordem-paranormal", "xpCustoPorMarco", {
+    name: "ORDEM.XP.SettingCusto",
+    hint: "ORDEM.XP.SettingCustoHint",
+    scope: "world",
+    config: true,
+    type: Number,
+    default: Number(SAH_CONFIG.xp.custoPorMarco) || 10
+  });
+
   // Registra as fichas de Ator.
   Actors.unregisterSheet("core", ActorSheet);
   Actors.registerSheet("ordem-paranormal", OrdemAgentSheet, {
@@ -4909,26 +5526,48 @@ Hooks.once("ready", function () {
   }
 });
 
-// Botões do sistema na barra de controles de cena (visíveis apenas para o GM).
+// Grupo dedicado do sistema na barra lateral de controles de cena (só GM).
 Hooks.on("getSceneControlButtons", controls => {
   if (!game.user.isGM) return;
-  const tokenGroup = controls.find(c => c.name === "token");
-  if (!tokenGroup) return;
-  tokenGroup.tools.push({
-    name:    "pedir-teste",
-    title:   game.i18n.localize("ORDEM.PT.BotaoLabel"),
-    icon:    "fas fa-dice-d20",
+  controls.push({
+    name:    "ordem-paranormal",
+    title:   "Ordem Paranormal",
+    icon:    "fas fa-eye",
     visible: true,
-    onClick: () => abrirPedirTeste(),
-    button:  true
-  });
-  tokenGroup.tools.push({
-    name:    "nova-cena",
-    title:   game.i18n.localize("ORDEM.Cena.Nova"),
-    icon:    "fas fa-clapperboard",
-    visible: true,
-    onClick: () => novaCena(),
-    button:  true
+    tools: [
+      {
+        name:    "pedir-teste",
+        title:   game.i18n.localize("ORDEM.PT.BotaoLabel"),
+        icon:    "fas fa-dice-d20",
+        visible: true,
+        onClick: () => abrirPedirTeste(),
+        button:  true
+      },
+      {
+        name:    "pedir-acao",
+        title:   game.i18n.localize("ORDEM.PA.BotaoLabel"),
+        icon:    "fas fa-burst",
+        visible: true,
+        onClick: () => abrirPedirAcao(),
+        button:  true
+      },
+      {
+        name:    "cenas-sah",
+        title:   game.i18n.localize("ORDEM.CenaSaH.Titulo"),
+        icon:    "fas fa-skull-crossbones",
+        visible: true,
+        onClick: () => abrirCenasSaH(),
+        button:  true
+      },
+      {
+        name:    "nova-cena",
+        title:   game.i18n.localize("ORDEM.Cena.Nova"),
+        icon:    "fas fa-clapperboard",
+        visible: true,
+        onClick: () => novaCena(),
+        button:  true
+      }
+    ]
   });
 });
 
@@ -5132,6 +5771,15 @@ Hooks.on("updateCombat", async (combat, changed, options, userId) => {
 
   if (actor.type !== "agente") return;
 
+  // Início do turno: devolve as ações da rodada (economia de ações) do agente ativo.
+  // Só grava se algo estava gasto, para evitar updates/re-render desnecessários.
+  const at = actor.system.acoesTurno ?? {};
+  if (at.acao || at.movimento || at.acaoMinima || at.reacao) {
+    await actor.update({
+      "system.acoesTurno": { acao: false, movimento: false, acaoMinima: false, reacao: false }
+    });
+  }
+
   const morrendo = actor.items.some(i => i.type === "condicao" && i.system.chave === "morrendo");
   const enlouquecendo = actor.items.some(i => i.type === "condicao" && i.system.chave === "enlouquecendo");
   if (!morrendo && !enlouquecendo) return;
@@ -5187,6 +5835,24 @@ Hooks.on("renderChatMessage", (message, html) => {
       });
     });
     return; // evita re-processar os demais handlers neste card
+  }
+
+  // --- Pedido de Ação de Combate (Mestre dispara → tokens executam) ---
+  if (ptFlags?.tipo === "pedido-acao") {
+    html.find("[data-action='pa-executar']").each((_, btn) => {
+      const actorId = btn.dataset.actorId;
+      const actor   = game.actors.get(actorId);
+      // Esconde o botão se o usuário não é o dono nem o GM.
+      if (!actor?.isOwner && !game.user.isGM) {
+        btn.style.display = "none";
+        return;
+      }
+      btn.addEventListener("click", ev => {
+        ev.preventDefault();
+        _paExecutar(message, actorId);
+      });
+    });
+    return;
   }
 
   // Botões exclusivos do Mestre ficam ocultos para jogadores.

@@ -1,0 +1,32 @@
+AVISO DE LICENÇA — Ordem Paranormal RPG (sistema Foundry VTT, não oficial)
+============================================================================
+
+Este é um conteúdo NÃO OFICIAL, publicado sob a Licença da Comunidade de
+Ordem Paranormal (https://ordemparanormal.com.br/licenca).
+
+"Ordem Paranormal" e "Ordem Paranormal RPG" são marcas e obras de propriedade
+da Jambô Editora / Cellbit. Este projeto não é afiliado, patrocinado nem
+aprovado por eles.
+
+O QUE ESTE PROJETO CONTÉM
+-------------------------
+Apenas o MOTOR do sistema (código, fichas, diálogos, mecânicas e terminologias
+gerais de jogo — atributos, perícias, testes, condições), que a Licença da
+Comunidade permite. Os compêndios (packs/) são distribuídos VAZIOS.
+
+O QUE FOI REMOVIDO E POR QUÊ
+----------------------------
+Para respeitar a licença, foi removido o conteúdo que a violava:
+
+1. Logo/marca oficial (assets/Ordem_Paranormal_RPG_Logo.png) — a licença proíbe
+   reproduzir a identidade visual / logotipo oficial.
+
+2. Conteúdo dos compêndios (rituais, poderes, origens, trilhas, criaturas/NPCs,
+   armas, proteções e equipamentos com nomes e estatísticas do cânone) — a
+   licença proíbe a reprodução/distribuição de materiais oficiais e o uso de
+   nomes específicos de personagens/lugares do cânone.
+
+USO
+---
+Adicione aos compêndios APENAS conteúdo original ou homebrew de sua autoria.
+Não reintroduza material copiado do livro oficial.

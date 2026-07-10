@@ -1,0 +1,43 @@
+{{!-- Card de Pedido de Ação de Combate (Mestre dispara → tokens executam) --}}
+<div class="ordem-chat-card pedido-teste pedido-acao">
+
+  <header class="card-header">
+    <i class="fas {{acaoIcone}}"></i>
+    <h3>{{titulo}}</h3>
+    <span class="atributo">{{acaoLabel}}{{#if subtitulo}} &bull; {{subtitulo}}{{/if}}</span>
+  </header>
+
+  <div class="card-content">
+
+    <div class="pt-participantes">
+      {{#each participantes}}
+        <div class="pt-linha {{#if this.executou}}rolou{{/if}}" data-actor-id="{{this.actorId}}">
+          <img class="pt-avatar" src="{{this.img}}" alt="{{this.nome}}" />
+          <span class="pt-nome">{{this.nome}}</span>
+          <span class="pt-status">
+            {{#if this.executou}}
+              <span class="pt-resultado sucesso">
+                <i class="fas fa-check"></i> {{this.resumo}}
+              </span>
+            {{else}}
+              <span class="pt-aguardando">
+                <button type="button" class="ordem-card-botao pa-executar-btn"
+                  data-action="pa-executar"
+                  data-actor-id="{{this.actorId}}"
+                  data-message-id="{{../messageId}}">
+                  <i class="fas {{../acaoIcone}}"></i> {{../botaoLabel}}
+                </button>
+              </span>
+            {{/if}}
+          </span>
+        </div>
+      {{/each}}
+    </div>
+
+    <div class="pt-resumo">
+      <span class="pt-res-item"><i class="fas fa-users"></i> {{executaram}}/{{total}}</span>
+    </div>
+
+  </div>
+
+</div>

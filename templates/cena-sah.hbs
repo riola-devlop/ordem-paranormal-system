@@ -1,0 +1,37 @@
+{{!-- Janela genérica de cena de Sobrevivendo ao Horror (perseguição/furtividade) --}}
+<form class="op-cena-sah">
+
+  <header class="op-cena-cab">
+    <i class="fas {{icone}}"></i>
+    <h2>{{titulo}}</h2>
+  </header>
+
+  <div class="op-cena-linha">
+    <span class="op-cena-rodada"><i class="fas fa-hourglass-half"></i> {{localize "ORDEM.CenaSaH.Rodada"}} {{rodada}}</span>
+    <label class="op-cena-dt">{{localize "ORDEM.CenaSaH.DT"}}
+      <input type="number" name="dt" value="{{dt}}" min="0" />
+    </label>
+    <button type="button" class="op-acao-btn" data-action="cena-rodada" title="{{localize 'ORDEM.CenaSaH.ProximaRodadaAjuda'}}">
+      <i class="fas fa-forward-step"></i> {{localize "ORDEM.CenaSaH.ProximaRodada"}}
+    </button>
+  </div>
+
+  {{#if temContador}}
+  <div class="op-cena-linha op-cena-contador">
+    <span>{{contadorRotulo}}: <strong class="op-cena-cont-val">{{contador}}</strong>{{#if limiar}} / {{limiar}}{{/if}}</span>
+    <button type="button" class="op-acao-btn" data-action="cont-menos"><i class="fas fa-minus"></i></button>
+    <button type="button" class="op-acao-btn" data-action="cont-mais"><i class="fas fa-plus"></i></button>
+  </div>
+  {{/if}}
+
+  <div class="op-cena-acoes op-acao-grade">
+    {{#each acoes}}
+      <button type="button" class="op-acao-btn" data-action="cena-acao" data-acao="{{this.key}}" title="{{this.ajuda}}">
+        <i class="fas {{this.icone}}"></i> {{this.label}}
+      </button>
+    {{/each}}
+  </div>
+
+  <p class="op-cena-nota"><i class="fas fa-circle-info"></i> {{localize "ORDEM.CenaSaH.Nota"}}</p>
+
+</form>

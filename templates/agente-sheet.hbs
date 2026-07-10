@@ -405,10 +405,12 @@
         {{!-- ---------------------------- COMBATE -------------------------- --}}
         <div class="tab op-combate" data-group="primary" data-tab="combate">
           <div class="op-acoes">
-            <div class="op-acao"><i class="fas fa-hand-fist"></i> {{localize "ORDEM.Combate.Acao"}}</div>
-            <div class="op-acao"><i class="fas fa-shoe-prints"></i> {{localize "ORDEM.Combate.Movimento"}}</div>
-            <div class="op-acao"><i class="fas fa-hand"></i> {{localize "ORDEM.Combate.AcaoMinima"}}</div>
-            <div class="op-acao"><i class="fas fa-reply"></i> {{localize "ORDEM.Combate.Reacao"}}</div>
+            {{#each acoesTurno}}
+              <a class="op-acao op-acao-toggle {{#if this.gasta}}gasta{{/if}}" data-action="toggle-acao-turno" data-acao="{{this.key}}"
+                 title="{{localize 'ORDEM.Combate.AlternarAjuda'}}">
+                <i class="fas {{this.icone}}"></i> {{this.label}}
+              </a>
+            {{/each}}
             <a class="op-acao op-interludio" data-action="abrir-interludio" title="{{localize 'ORDEM.Interludio.Ajuda'}}">
               <i class="fas fa-mug-hot"></i> {{localize "ORDEM.Interludio.Botao"}}
             </a>

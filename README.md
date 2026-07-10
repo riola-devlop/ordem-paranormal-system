@@ -1,5 +1,11 @@
 # Ordem Paranormal RPG — Manual do Sistema (Foundry VTT v12)
 
+<img src="assets/selo-licenca-comunidade-preto.png" alt="Selo da Licença da Comunidade de Ordem Paranormal — Não oficial, Não canônico" width="180" />
+
+> **Este é um conteúdo não oficial, publicado sob a [Licença da Comunidade de Ordem Paranormal](https://ordemparanormal.com.br/licenca).**
+> *Ordem Paranormal RPG* é propriedade da Jambô Editora / Cellbit. Não afiliado, patrocinado ou aprovado por eles.
+> Os compêndios são distribuídos **vazios** — adicione apenas conteúdo original/homebrew de sua autoria.
+
 Sistema **não oficial** de RPG de investigação e terror paranormal para **Foundry VTT v12**.
 Este documento é o **manual**: como **instalar**, como **começar** e como **usar** cada recurso.
 

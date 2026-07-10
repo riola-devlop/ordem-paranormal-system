@@ -74,6 +74,7 @@
       "condicoes": [],
       "recursosCustom": [],
       "acoesCustom": [],
+      "acoesTurno": { "acao": false, "movimento": false, "acaoMinima": false, "reacao": false },
       "xp": { "atual": 0, "total": 0 },
       "rituaisRetidos": [],
       "compreensao": {},

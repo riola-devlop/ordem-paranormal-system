@@ -640,30 +640,43 @@
 /*  CARDS DE CHAT                                                              */
 /* -------------------------------------------------------------------------- */
 
+/* Bloco ÚNICO e autoritativo dos cards de chat — visual NATIVO do Foundry.
+   Sem caixa escura forçada: o card herda o balão do chat e a cor do tema
+   (legível tanto no tema claro/pergaminho quanto no escuro). Cobre TODOS os
+   tipos de mensagem: teste, dano, evento, poder, trilha, ritual, NEX, ataque
+   e habilidade de criatura, pedido de teste e pedido de ação.
+   NÃO duplicar estas regras mais abaixo no arquivo — tudo mora aqui. */
 .ordem-chat-card {
-  border: 1px solid var(--op-borda, #3a2c2e);
-  border-radius: 5px;
-  background: linear-gradient(160deg, #16161a, #0d0d0f);
-  color: #d9d4cc;
-  overflow: hidden;
-  font-family: "Signika", "Segoe UI", sans-serif;
+  /* Acentos legíveis em qualquer tema (roxo/dourado da identidade do sistema). */
+  --opc-acento: #8b5cd6;     /* roxo claro o bastante p/ ler no escuro e no claro */
+  --opc-ouro:   #b8860b;     /* dourado escurecido p/ continuar legível no claro */
+  --opc-verde:  #2f9e4f;
+  --opc-vermelho: #c0303a;
+  --opc-linha: rgba(127, 127, 127, 0.28);  /* bordas neutras independentes de tema */
+  --opc-chip:  rgba(127, 127, 127, 0.16);
+
+  background: none; border: none; border-radius: 0; overflow: visible;
+  color: inherit; font-family: inherit;
 }
 
+/* --------------------------------- CABEÇALHO ------------------------------ */
 .ordem-chat-card .card-header {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: linear-gradient(90deg, #5c1018, #16161a);
-  padding: 5px 8px;
-  border-bottom: 1px solid #c9a24b;
+  background: none;
+  padding: 0 0 5px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--opc-linha);
 }
-.ordem-chat-card .card-header img { width: 30px; height: 30px; border: 1px solid #c9a24b; border-radius: 3px; }
-.ordem-chat-card .card-header i { color: #e6c878; }
-.ordem-chat-card .card-header h3 { flex: 1; margin: 0; border: none; color: #e6c878; font-size: 14px; }
-.ordem-chat-card .card-header .atributo { font-size: 10px; color: #c9a24b; text-transform: uppercase; }
+.ordem-chat-card .card-header img { width: 30px; height: 30px; border: 1px solid var(--opc-linha); border-radius: 4px; object-fit: cover; flex: 0 0 auto; }
+.ordem-chat-card .card-header i { color: var(--opc-acento); }
+.ordem-chat-card .card-header h3 { flex: 1; margin: 0; border: none; color: inherit; font-size: 14px; font-weight: 700; line-height: 1.2; }
+.ordem-chat-card .card-header .atributo { font-size: 10px; color: var(--opc-acento); text-transform: uppercase; letter-spacing: .5px; flex: 0 0 auto; }
 
-.ordem-chat-card .card-content { padding: 8px; }
+.ordem-chat-card .card-content { padding: 2px 0; }
 
+/* ------------------------------ DADOS LANÇADOS ---------------------------- */
 .ordem-chat-card .dados-lancados {
   display: flex;
   flex-wrap: wrap;
@@ -671,30 +684,32 @@
   justify-content: center;
   margin-bottom: 6px;
 }
-
 .ordem-die {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-width: 26px;
   height: 26px;
-  padding: 0 4px;
-  border: 1px solid #3a2c2e;
+  padding: 0 5px;
+  border: 1px solid var(--opc-linha);
   border-radius: 4px;
-  background: #232329;
+  background: var(--opc-chip);
   font-weight: 700;
-  color: #8e8a82;
+  color: inherit;
+  opacity: .6;                 /* dados descartados ficam apagados */
 }
-.ordem-die.mantido {
+.ordem-die.mantido {           /* dado escolhido (melhor/pior) — destaque dourado */
+  opacity: 1;
   border-color: #c9a24b;
-  color: #e6c878;
-  background: #2a2418;
-  box-shadow: 0 0 6px rgba(201, 162, 75, 0.4);
+  background: rgba(201, 162, 75, 0.18);
+  box-shadow: 0 0 6px rgba(201, 162, 75, 0.35);
 }
-.ordem-die.max { color: #6ee07a; border-color: #6ee07a; }
-.ordem-die.min { color: #c0303a; border-color: #c0303a; }
-.ordem-die.dano { background: #2a1416; color: #e6c878; }
+.ordem-die.max { opacity: 1; color: var(--opc-verde); border-color: var(--opc-verde); background: rgba(47, 158, 79, 0.15); }
+.ordem-die.min { opacity: 1; color: var(--opc-vermelho); border-color: var(--opc-vermelho); background: rgba(192, 48, 58, 0.15); }
+.ordem-die.dano { opacity: 1; background: rgba(192, 48, 58, 0.16); border-color: rgba(192, 48, 58, 0.5); }
+.ordem-die.perito { opacity: 1; color: var(--opc-acento); border-color: var(--opc-acento); background: rgba(139, 92, 214, 0.16); }
 
+/* ------------------------------- A CONTA --------------------------------- */
 .ordem-chat-card .conta {
   display: flex;
   align-items: center;
@@ -702,29 +717,133 @@
   gap: 6px;
   font-size: 16px;
 }
-.ordem-chat-card .conta .escolhido { color: #e6c878; font-weight: 700; }
-.ordem-chat-card .conta .op { color: #8e8a82; }
-.ordem-chat-card .conta .total { font-size: 22px; font-weight: 700; color: #fff; }
-.ordem-chat-card .conta .dano-total { color: #c0303a; }
-.ordem-chat-card .conta .formula { font-family: monospace; color: #8e8a82; }
+.ordem-chat-card .conta .escolhido { color: var(--opc-acento); font-weight: 700; }
+.ordem-chat-card .conta .op { color: inherit; opacity: .5; }
+.ordem-chat-card .conta .total { font-size: 22px; font-weight: 700; color: var(--opc-acento); }
+.ordem-chat-card .conta .dano-total { color: var(--opc-vermelho); }
+.ordem-chat-card .conta .formula { font-family: monospace; color: inherit; opacity: .55; }
 
-.ordem-chat-card .cd-linha { text-align: center; font-size: 12px; color: #b8b2a8; margin-top: 4px; }
+.ordem-chat-card .cd-linha { text-align: center; font-size: 12px; color: inherit; opacity: .85; margin-top: 4px; }
 
+/* ----------------------- RODAPÉ DE RESULTADO ----------------------------- */
+/* Barras sólidas com texto branco: legíveis sobre qualquer tema de chat. */
 .ordem-chat-card .card-footer {
   text-align: center;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
   padding: 5px;
+  margin-top: 6px;
+  border-radius: 4px;
   font-size: 13px;
 }
-.ordem-chat-card .card-footer.sucesso  { background: rgba(40, 120, 50, 0.35); color: #7ee089; }
-.ordem-chat-card .card-footer.falha    { background: rgba(120, 40, 40, 0.30); color: #d68a8a; }
-.ordem-chat-card .card-footer.critico  { background: linear-gradient(90deg, #1d5c28, #2f8f3f); color: #d8ffd8; }
-.ordem-chat-card .card-footer.desastre { background: linear-gradient(90deg, #5c1018, #c0303a); color: #ffe0e0; }
+.ordem-chat-card .card-footer.sucesso        { background: #1f6b35; color: #fff; }
+.ordem-chat-card .card-footer.falha          { background: #7a2230; color: #fff; }
+.ordem-chat-card .card-footer.critico        { background: linear-gradient(90deg, #1d5c28, #2f8f3f); color: #fff; }
+.ordem-chat-card .card-footer.desastre       { background: linear-gradient(90deg, #5c1018, #b21f2a); color: #fff; }
+.ordem-chat-card .card-footer.extraordinario { background: linear-gradient(90deg, #1f6b35, #b58a2a); color: #fff; }
+.ordem-chat-card .card-footer.neutro         { background: rgba(127, 127, 127, 0.18); color: inherit; }
 
-.ordem-chat-card .meta { font-size: 11px; color: #c9a24b; margin-bottom: 4px; }
-.ordem-chat-card .descricao { font-size: 12px; }
+/* ----------------------------- TEXTO COMUM ------------------------------- */
+.ordem-chat-card .meta { font-size: 11px; color: inherit; opacity: .8; margin-bottom: 4px; }
+.ordem-chat-card .descricao { font-size: 12px; color: inherit; }
+.ordem-chat-card .pe-gasto { color: #c97e10; font-weight: 700; }
+
+/* --------------------- LINHAS DE EFEITO / SITUAÇÃO ----------------------- */
+.ordem-chat-card .hab-linha { margin-top: 5px; font-size: 11px; text-align: center; color: inherit; }
+.ordem-chat-card .hab-linha i { color: var(--opc-acento); }
+.ordem-chat-card .hab-linha.aviso { color: var(--opc-vermelho); }
+.ordem-chat-card .hab-linha.aviso i { color: var(--opc-vermelho); }
+.ordem-chat-card .hab-linha.situacoes { color: var(--opc-ouro); }
+.ordem-chat-card .hab-linha.manobra { color: inherit; }
+.ordem-chat-card .hab-linha.circ-favoravel { color: var(--opc-verde); }
+.ordem-chat-card .hab-linha.circ-desfavoravel { color: var(--opc-vermelho); }
+
+/* ------------------------------- BOTÕES ---------------------------------- */
+.ordem-chat-card .card-botoes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.ordem-chat-card .card-botoes.gm-only { margin-top: 4px; }
+.ordem-chat-card .ordem-card-botao {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  flex: 1 1 auto; min-height: 28px; padding: 5px 10px;
+  border: 1px solid #6a2da8; border-radius: 6px;
+  background: #6a2da8; color: #fff;
+  cursor: pointer; font-size: 12px; font-weight: 600;
+}
+.ordem-chat-card .ordem-card-botao:hover { background: #7d3cc0; border-color: #c9a24b; color: #fff; }
+.ordem-chat-card .ordem-card-botao:disabled { opacity: .5; cursor: default; }
+.ordem-chat-card .dano-preview { opacity: .8; font-size: 11px; font-weight: 400; }
+
+/* -------------------------------- RITUAL --------------------------------- */
+.ordem-chat-card.ritual .ritual-custo { margin: 6px 0; padding: 5px 8px; border-radius: 4px; font-size: 11px; }
+.ordem-chat-card.ritual .ritual-custo.falha { background: #7a1620; color: #fff; }
+.ordem-chat-card.ritual .ritual-custo.ok { background: #1f5c2c; color: #fff; }
+.ordem-chat-card .ritual-custo.retido {
+  color: inherit; background: rgba(139, 92, 214, 0.12);
+  border-left: 2px solid var(--opc-acento); padding-left: 8px; margin: 4px 0;
+}
+.ordem-chat-card .ritual-meta { font-size: 11px; color: inherit; opacity: .8; margin: 2px 0 4px; }
+.ordem-chat-card .ritual-resist {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  margin: 4px 0; padding: 5px 8px;
+  background: rgba(139, 92, 214, 0.12);
+  border-left: 2px solid var(--opc-acento);
+  border-radius: 0 4px 4px 0;
+  font-size: 12px;
+}
+
+/* ----------------------------- CARD DE NEX ------------------------------- */
+.ordem-chat-card.nex .card-header {
+  background: linear-gradient(90deg, #3a1670, #1d1226);
+  padding: 5px 8px; margin: -1px -1px 6px; border-radius: 4px 4px 0 0; border-bottom: none;
+}
+.ordem-chat-card.nex .card-header h3,
+.ordem-chat-card.nex .card-header .atributo,
+.ordem-chat-card.nex .card-header i { color: #fff; }
+.ordem-chat-card.nex .nex-ganhos-card { display: flex; justify-content: center; gap: 6px; margin: 4px 0 6px; }
+.ordem-chat-card.nex .descricao { text-align: center; color: inherit; }
+.ordem-chat-card.nex .descricao i { color: var(--opc-ouro); }
+
+/* ------------------------- CARDS DE EVENTO ------------------------------- */
+.ordem-chat-card.evento .card-header { padding-bottom: 4px; }
+.ordem-chat-card.evento.morte .card-header h3,
+.ordem-chat-card.evento.morte .card-header i { color: #d83a3a; }
+.ordem-chat-card.evento.condicao .card-header h3,
+.ordem-chat-card.evento.condicao .card-header i { color: var(--opc-ouro); }
+.ordem-chat-card.evento.sucesso .card-header h3,
+.ordem-chat-card.evento.sucesso .card-header i { color: var(--opc-verde); }
+.ordem-chat-card.evento.aviso .card-header h3,
+.ordem-chat-card.evento.aviso .card-header i { color: #d18a2a; }
+
+/* ----------------- PEDIDO DE TESTE / PEDIDO DE AÇÃO ---------------------- */
+/* Antes sem CSS: as linhas de participantes vinham empilhadas e cruas. */
+.ordem-chat-card.pedido-teste.oculto .card-header h3 { opacity: .85; }
+.ordem-chat-card.pedido-teste.oculto .card-header i { color: inherit; opacity: .6; }
+.ordem-chat-card .pt-participantes { display: flex; flex-direction: column; gap: 3px; margin: 2px 0; }
+.ordem-chat-card .pt-linha {
+  display: flex; align-items: center; gap: 8px;
+  padding: 3px 4px; border-radius: 4px;
+  border-bottom: 1px solid rgba(127, 127, 127, 0.18);
+}
+.ordem-chat-card .pt-linha:last-child { border-bottom: none; }
+.ordem-chat-card .pt-linha.rolou { opacity: .85; }
+.ordem-chat-card .pt-avatar { width: 26px; height: 26px; flex: 0 0 auto; border: 1px solid var(--opc-linha); border-radius: 4px; object-fit: cover; }
+.ordem-chat-card .pt-nome { flex: 1 1 auto; min-width: 0; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ordem-chat-card .pt-status { flex: 0 0 auto; margin-left: auto; }
+.ordem-chat-card .pt-aguardando .ordem-card-botao { flex: 0 0 auto; min-height: 24px; padding: 3px 8px; }
+.ordem-chat-card .pt-resultado {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 1px 7px; border-radius: 4px; font-weight: 700; font-size: 12px;
+}
+.ordem-chat-card .pt-resultado.sucesso { color: var(--opc-verde); background: rgba(47, 158, 79, 0.15); }
+.ordem-chat-card .pt-resultado.falha { color: var(--opc-vermelho); background: rgba(192, 48, 58, 0.15); }
+.ordem-chat-card .pt-resumo {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;
+  margin-top: 6px; padding-top: 5px; border-top: 1px solid var(--opc-linha);
+  font-size: 11px;
+}
+.ordem-chat-card .pt-res-item { display: inline-flex; align-items: center; gap: 4px; opacity: .85; }
+.ordem-chat-card .pt-res-item.sucesso { color: var(--opc-verde); opacity: 1; }
+.ordem-chat-card .pt-res-item.falha { color: var(--opc-vermelho); opacity: 1; }
 
 /* ==========================================================================
    FICHA DO AGENTE — LAYOUT "ORDEM PARANORMAL" (preto / roxo / vermelho / âmbar)
@@ -786,7 +905,19 @@
   flex: 1;
   min-height: 0;
 }
-.ordem-agente-sheet .op-esquerda { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; padding-right: 4px; }
+/* Coluna esquerda: tamanho fixo (300px do grid × altura disponível) com scroll
+   SEMPRE ativo. min-height:0 permite rolar dentro do grid em vez de transbordar;
+   os filhos não encolhem (flex-shrink:0), então mantêm tamanho fixo e nunca se
+   sobrepõem — o excedente vira rolagem. */
+.ordem-agente-sheet .op-esquerda {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  overflow-y: scroll;
+  padding-right: 4px;
+}
+.ordem-agente-sheet .op-esquerda > * { flex-shrink: 0; }
 .ordem-agente-sheet .op-direita  { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 
 /* ----------------------------- PENTÁGONO -------------------------------- */
@@ -1058,6 +1189,21 @@
   padding: 6px; font-size: 11px; text-align: center;
 }
 .ordem-agente-sheet .op-acao i { color: var(--op-roxo-claro); margin-right: 4px; }
+/* Rastreador de ações do turno: clicável + estado "gasta" nesta rodada. */
+.ordem-agente-sheet .op-acao-toggle {
+  cursor: pointer; color: inherit; text-decoration: none;
+  transition: opacity .12s, border-color .12s, background .12s;
+}
+.ordem-agente-sheet .op-acao-toggle:hover {
+  border-left-color: var(--op-dourado, #c9a24b);
+  background: rgba(106, 45, 168, 0.28);
+}
+.ordem-agente-sheet .op-acao.gasta {
+  opacity: .4;
+  border-left-color: var(--op-texto-fraco, #9a8fb0);
+  text-decoration: line-through;
+}
+.ordem-agente-sheet .op-acao.gasta i { color: var(--op-texto-fraco, #9a8fb0); }
 .ordem-agente-sheet .op-ataque { border-left: 3px solid var(--op-roxo); }
 .ordem-agente-sheet .op-ataque .dado { color: var(--op-roxo-claro); }
 
@@ -1134,15 +1280,7 @@
 .ordem-paranormal .ordem-nex-dialog .nex-hab i { color: var(--op-dourado); }
 .ordem-paranormal .ordem-nex-dialog .nex-aviso { font-size: 10px; color: var(--op-texto-fraco); font-style: italic; text-align: center; margin-top: 4px; }
 
-/* ------------------- ADIÇÕES AOS CARDS DE CHAT ------------------------- */
-.ordem-die.perito { background: #2a1a40; color: #c9a6f0; border-color: var(--op-roxo-claro); }
-.ordem-chat-card .hab-linha { margin-top: 5px; font-size: 11px; text-align: center; color: #c9a6f0; }
-.ordem-chat-card .hab-linha i { color: var(--op-dourado); }
-.ordem-chat-card .pe-gasto { color: #e0a020; font-weight: 700; }
-.ordem-chat-card.nex .card-header { background: linear-gradient(90deg, #3a1670, #16161a); }
-.ordem-chat-card.nex .nex-ganhos-card { display: flex; justify-content: center; gap: 6px; margin: 4px 0 6px; }
-.ordem-chat-card.nex .descricao { text-align: center; color: #e6c878; }
-.ordem-chat-card.nex .descricao i { color: var(--op-dourado); }
+/* (Cards de chat: regras consolidadas na seção "CARDS DE CHAT" no topo.) */
 
 /* ==========================================================================
    LÓGICA COMPLETA DA FICHA — derivados, combate, modificadores, NEX modal
@@ -1227,18 +1365,7 @@
 .ordem-paranormal .ordem-nex-modal .nex-lembrete,
 .ordem-paranormal .ordem-nex-modal .nex-aviso { font-size: 10px; color: var(--op-texto-fraco); font-style: italic; }
 
-/* Card de ritual + custo do paranormal + botões de card */
-.ordem-chat-card.ritual .ritual-custo { margin: 6px 0; padding: 5px; border-radius: 3px; font-size: 11px; }
-.ordem-chat-card.ritual .ritual-custo.falha { background: rgba(192,32,43,0.2); color: #e0a0a0; }
-.ordem-chat-card.ritual .ritual-custo.ok { background: rgba(40,120,50,0.2); color: #8fd89a; }
-.ordem-chat-card .card-botoes { display: flex; gap: 6px; margin-top: 6px; }
-.ordem-chat-card .ordem-card-botao {
-  flex: 1; background: var(--op-vinho); color: var(--op-dourado-claro); border: 1px solid var(--op-dourado);
-  border-radius: 3px; padding: 4px 8px; cursor: pointer; font-size: 12px; font-weight: 700;
-}
-.ordem-chat-card .ordem-card-botao:hover { background: var(--op-vinho-claro); }
-.ordem-chat-card .ordem-card-botao:disabled { opacity: 0.5; cursor: default; }
-.ordem-chat-card .hab-linha.aviso { color: var(--op-vermelho); }
+/* (Card de ritual e botões de card: consolidados na seção "CARDS DE CHAT".) */
 
 /* ==========================================================================
    RECURSOS & AÇÕES CUSTOMIZADOS + CARROSSEL DE COMBATE
@@ -1364,37 +1491,8 @@
    trilhas, rituais completos, criaturas e patentes
    ========================================================================== */
 
-/* --- Grau de sucesso: Sucesso Extraordinário --- */
-.ordem-chat-card .card-footer.extraordinario {
-  background: linear-gradient(90deg, #1f6b35, #c9a24b);
-  color: #fff; font-weight: 700;
-}
-.ordem-chat-card .card-footer.neutro {
-  background: rgba(255, 255, 255, 0.06); color: var(--op-texto);
-}
-
-/* --- Notas de situação / manobra nos cards --- */
-.ordem-chat-card .hab-linha.situacoes { color: var(--op-dourado-claro); }
-.ordem-chat-card .hab-linha.manobra { color: var(--op-texto); }
-.ordem-chat-card .ritual-meta {
-  font-size: 11px; color: var(--op-texto-fraco);
-  margin: 2px 0 4px;
-}
-.ordem-chat-card .ritual-resist {
-  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
-  margin: 4px 0; padding: 4px 6px;
-  background: rgba(106, 45, 168, 0.15);
-  border-left: 2px solid var(--op-roxo-claro);
-  font-size: 12px;
-}
-.ordem-chat-card .card-botoes.gm-only { margin-top: 4px; }
-
-/* --- Cards de evento (condições, morte, sanidade, defesa) --- */
-.ordem-chat-card.evento .card-header { padding: 4px 8px; }
-.ordem-chat-card.evento.morte .card-header { color: #e25555; }
-.ordem-chat-card.evento.condicao .card-header { color: var(--op-dourado-claro); }
-.ordem-chat-card.evento.sucesso .card-header { color: #4caf50; }
-.ordem-chat-card.evento.aviso .card-header { color: #e2a855; }
+/* (Graus de sucesso, situações, ritual e eventos de chat: consolidados na
+   seção "CARDS DE CHAT" no topo do arquivo.) */
 
 /* --- Diálogo de ritual --- */
 .op-ritual-dialog .ritual-nota { font-size: 12px; margin: 2px 0; }
@@ -1514,8 +1612,7 @@
 .op-presenca input { width: 56px; }
 .recursos-rapidos .recurso.pe .preenchimento.pe { background: var(--op-roxo, #6a2da8); }
 
-/* --- Pedido de teste oculto --- */
-.ordem-chat-card.pedido-teste.oculto .card-header { color: var(--op-texto-fraco); }
+/* (Pedido de teste oculto: consolidado na seção "CARDS DE CHAT".) */
 
 /* --- Diálogo de teste: seção de situação --- */
 .op-situacao .form-group { margin: 4px 0; }
@@ -1971,8 +2068,6 @@
   border-left: 2px solid var(--op-roxo-claro, #8a4fd0); border-radius: 4px;
 }
 
-/* Preview da fórmula de dano no botão do card */
-.ordem-chat-card .dano-preview { opacity: 0.8; font-size: 11px; }
 
 /* RD / perícias estruturadas e multi-selects da criatura */
 .ordem-criatura-sheet .rd-linha { display: flex; align-items: center; gap: 6px; }
@@ -2055,12 +2150,6 @@
 .lista-itens.rituais-retidos .item-linha { opacity: 0.95; }
 .lista-itens.rituais-retidos .dado { color: var(--op-roxo-claro, #8a4fd0); }
 
-/* Nota de ritual retido no card de chat */
-.ordem-chat-card .ritual-custo.retido {
-  color: var(--op-roxo-claro, #8a4fd0);
-  border-left: 2px solid var(--op-roxo-claro, #8a4fd0);
-  padding-left: 6px; margin: 4px 0;
-}
 
 /* Opção "Reter" no diálogo de conjuração */
 .op-ritual-dialog .op-reter { display: block; margin-top: 6px; }
@@ -2072,32 +2161,44 @@
 .pt-tokens legend { padding: 0 6px; font-size: 12px; color: var(--op-dourado-claro, #d8b86a); }
 
 .pt-tokens-tabela {
-  width: 100%; border-collapse: collapse;
-  display: block; max-height: 240px; overflow-y: auto;
+  width: 100%; display: block; max-height: 240px; overflow-y: auto; border-collapse: collapse;
+}
+/* Cabeçalho e corpo como blocos; cada linha é uma grade com as MESMAS colunas,
+   garantindo o alinhamento (o display:block puro desalinhava as colunas). */
+.pt-tokens-tabela thead,
+.pt-tokens-tabela tbody { display: block; width: 100%; }
+.pt-tokens-tabela thead tr,
+.pt-tokens-tabela tbody tr {
+  display: grid; grid-template-columns: 30px 1fr 92px; align-items: center; column-gap: 4px;
 }
 .pt-tokens-tabela thead th {
-  position: sticky; top: 0;
+  position: sticky; top: 0; z-index: 1;
   background: var(--op-painel, #1a1320);
   font-size: 11px; text-transform: uppercase; letter-spacing: .5px;
   color: var(--op-texto-fraco, #9a8fb0);
-  text-align: left; padding: 4px 6px;
+  text-align: left; padding: 5px 6px;
   border-bottom: 1px solid rgba(255,255,255,0.15);
 }
 .pt-tokens-tabela tbody td {
-  padding: 3px 6px; border-bottom: 1px solid rgba(255,255,255,0.06);
-  vertical-align: middle;
+  padding: 4px 6px; min-width: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
 }
-.pt-tokens-tabela tbody tr:hover { background: rgba(106, 45, 168, 0.15); }
+.pt-tokens-tabela tbody tr { border-radius: 4px; }
+.pt-tokens-tabela tbody tr:hover { background: rgba(106, 45, 168, 0.18); }
 
-.pt-tokens-tabela .pt-col-check { width: 28px; text-align: center; }
-.pt-tokens-tabela .pt-col-tipo  { width: 84px; font-size: 11px; color: var(--op-texto-fraco, #9a8fb0); }
+.pt-tokens-tabela .pt-col-check { text-align: center; }
+.pt-tokens-tabela .pt-col-check input { margin: 0; cursor: pointer; }
+.pt-tokens-tabela .pt-col-tipo  { font-size: 11px; color: var(--op-texto-fraco, #9a8fb0); }
 
-.pt-tokens-tabela .pt-col-nome { display: flex; align-items: center; gap: 8px; }
+.pt-tokens-tabela .pt-col-nome { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .pt-tokens-tabela .pt-col-nome img {
-  width: 28px; height: 28px; flex: 0 0 28px;
+  width: 26px; height: 26px; flex: 0 0 26px;
   object-fit: cover; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(0,0,0,0.3);
 }
-.pt-tokens-tabela .pt-col-nome span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pt-tokens-tabela .pt-col-nome span {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--op-texto, #e8e3f0);
+}
 
 /* ==========================================================================
    ABA DE COMBATE — botão de ações + modal de Manobras/Defesa
@@ -2393,15 +2494,7 @@
   background: rgba(0,0,0,0.22); padding: 7px;
 }
 
-/* ---- Cards de chat: respiro e botões consistentes ---- */
-.ordem-chat-card .card-botoes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
-.ordem-chat-card .ordem-card-botao {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;
-  color: var(--op-texto); background: rgba(106,45,168,0.22); border: 1px solid var(--op-roxo-claro);
-}
-.ordem-chat-card .ordem-card-botao:hover { border-color: var(--op-dourado); background: rgba(106,45,168,0.36); color: #fff; }
-.ordem-chat-card .ordem-card-botao:disabled { opacity: .5; cursor: default; }
+/* (Botões dos cards de chat: consolidados na seção "CARDS DE CHAT" no topo.) */
 
 /* ==========================================================================
    UI DESIGN v2 — LEGIBILIDADE DAS PERÍCIAS + TREINO EM SELECT
@@ -2486,27 +2579,7 @@
   color: var(--op-roxo-claro); border-color: rgba(155,89,208,0.45);
 }
 
-/* ==========================================================================
-   CHAT — usa o visual NATIVO do Foundry (sem caixa escura forçada)
-   ========================================================================== */
-.ordem-chat-card {
-  background: none; border: none; border-radius: 0; overflow: visible;
-  color: inherit; font-family: inherit;
-}
-.ordem-chat-card .card-header {
-  background: none; padding: 0 0 4px; margin-bottom: 4px;
-  border-bottom: 1px solid var(--color-border-light-primary, rgba(0,0,0,0.1));
-}
-.ordem-chat-card .card-header h3 { color: inherit; font-weight: 700; }
-.ordem-chat-card .card-header i,
-.ordem-chat-card .card-header .atributo { color: var(--op-roxo, #6a2da8); }
-.ordem-chat-card .card-content { padding: 2px 0; }
-.ordem-chat-card .descricao,
-.ordem-chat-card .meta,
-.ordem-chat-card .cd-linha { color: inherit; }
-/* Mantém os elementos informativos (dados, total, rodapé de resultado) com acento,
-   mas sem o fundo de "cartão" — eles funcionam sobre o balão nativo do chat. */
-.ordem-chat-card .card-footer { margin-top: 4px; border-radius: 4px; }
+/* (CHAT nativo: consolidado na seção "CARDS DE CHAT" no topo do arquivo.) */
 
 /* ==========================================================================
    FICHA DE ITEM — formulário polido (vale p/ ritual e demais tipos)
@@ -2554,65 +2627,9 @@
 .ordem-paranormal.dialog .dialog-content .op-popup-tabela input[type="checkbox"] { min-height: 0; }
 
 /* ==========================================================================
-   CHAT — LEGIBILIDADE NO TEMA NATIVO (claro OU escuro)
-   Texto herda a cor do tema do Foundry; caixas coloridas ficam SÓLIDAS.
+   CHAT — legibilidade em tema claro/escuro: regras consolidadas na seção
+   "CARDS DE CHAT" no topo deste arquivo (bloco único e autoritativo).
    ========================================================================== */
-
-/* Texto comum herda a cor do chat nativo (dark no pergaminho / claro no escuro) */
-.ordem-chat-card .conta .total { color: var(--op-roxo); }
-.ordem-chat-card .conta .escolhido { color: var(--op-roxo); font-weight: 700; }
-.ordem-chat-card .conta .op,
-.ordem-chat-card .conta .formula { color: inherit; opacity: .55; }
-.ordem-chat-card .conta .dano-total { color: #b21f2a; }
-.ordem-chat-card .cd-linha,
-.ordem-chat-card .meta,
-.ordem-chat-card .descricao,
-.ordem-chat-card .hab-linha { color: inherit; }
-.ordem-chat-card .cd-linha, .ordem-chat-card .meta { opacity: .8; }
-.ordem-chat-card .hab-linha i { color: var(--op-roxo); }
-.ordem-chat-card .pe-gasto { color: #a85e00; font-weight: 700; }
-
-/* Cabeçalho: ícone/rótulo em roxo (legível em claro e escuro) */
-.ordem-chat-card .card-header h3 { color: inherit; }
-.ordem-chat-card .card-header i,
-.ordem-chat-card .card-header .atributo { color: var(--op-roxo); }
-
-/* Card de NEX: faixa roxa com texto branco garantido */
-.ordem-chat-card.nex .card-header { background: linear-gradient(90deg, #3a1670, #1d1226); border-radius: 4px 4px 0 0; }
-.ordem-chat-card.nex .card-header h3,
-.ordem-chat-card.nex .card-header .atributo,
-.ordem-chat-card.nex .card-header i { color: #fff; }
-.ordem-chat-card.nex .descricao { color: inherit; }
-.ordem-chat-card.nex .descricao i { color: var(--op-dourado); }
-
-/* Custo do Paranormal e retenção: fundo sólido + texto branco */
-.ordem-chat-card.ritual .ritual-custo.falha { background: #7a1620; color: #fff; }
-.ordem-chat-card.ritual .ritual-custo.ok { background: #1f5c2c; color: #fff; }
-.ordem-chat-card .ritual-custo.retido { background: rgba(106,45,168,0.20); color: inherit; }
-
-/* Rodapés de resultado: barras sólidas com texto branco */
-.ordem-chat-card .card-footer.sucesso { background: #1f6b35; color: #fff; }
-.ordem-chat-card .card-footer.falha { background: #7a2230; color: #fff; }
-.ordem-chat-card .card-footer.extraordinario { background: linear-gradient(90deg,#1f6b35,#b58a2a); color: #fff; }
-.ordem-chat-card .card-footer.critico { background: linear-gradient(90deg,#1d5c28,#2f8f3f); color: #fff; }
-.ordem-chat-card .card-footer.desastre { background: linear-gradient(90deg,#5c1018,#b21f2a); color: #fff; }
-.ordem-chat-card .card-footer.neutro { background: rgba(0,0,0,0.10); color: inherit; }
-
-/* Notas coloridas legíveis em qualquer tema */
-.ordem-chat-card .hab-linha.situacoes { color: #8a5a00; }
-.ordem-chat-card .hab-linha.aviso { color: #b21f2a; }
-.ordem-chat-card .hab-linha.circ-favoravel { color: #1f6b35; }
-.ordem-chat-card .hab-linha.circ-desfavoravel { color: #b21f2a; }
-
-/* Botões do card: sólidos (legíveis sobre fundo claro) */
-.ordem-chat-card .ordem-card-botao { background: var(--op-roxo); border-color: var(--op-roxo); color: #fff; }
-.ordem-chat-card .ordem-card-botao:hover { background: #7d3cc0; border-color: var(--op-dourado); color: #fff; }
-
-/* Eventos: cor do título legível no claro */
-.ordem-chat-card.evento.morte .card-header { color: #b21f2a; }
-.ordem-chat-card.evento.condicao .card-header { color: #6a2da8; }
-.ordem-chat-card.evento.sucesso .card-header { color: #1f6b35; }
-.ordem-chat-card.evento.aviso .card-header { color: #9a6a00; }
 
 /* ==========================================================================
    CORREÇÃO — botões de diálogo não devem esticar na vertical
@@ -2692,3 +2709,44 @@
   border: 1px dashed rgba(201,162,75,0.5); border-radius: 50%; color: var(--op-dourado); cursor: pointer;
 }
 .ordem-agente-sheet .op-cond-add:hover { background: rgba(201,162,75,0.15); color: var(--op-dourado-claro); }
+
+/* ----- Cenas de Sobrevivência (SaH): perseguição / furtividade ----- */
+.op-cena-sah-app .window-content { color: var(--op-texto, #e8e3f0); padding: 4px; }
+.op-cena-sah { display: flex; flex-direction: column; gap: 10px; padding: 8px 10px; }
+.op-cena-sah .op-cena-cab { display: flex; align-items: center; gap: 8px; }
+.op-cena-sah .op-cena-cab i { color: var(--op-dourado, #c9a24b); }
+.op-cena-sah .op-cena-cab h2 { margin: 0; font-size: 16px; color: var(--op-dourado-claro, #d8b86a); border: none; }
+.op-cena-sah .op-cena-linha { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.op-cena-sah .op-cena-rodada { font-size: 13px; color: var(--op-texto, #e8e3f0); }
+.op-cena-sah .op-cena-rodada i { color: var(--op-dourado, #c9a24b); }
+.op-cena-sah .op-cena-dt { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; }
+.op-cena-sah .op-cena-dt input {
+  width: 56px; text-align: center; color: var(--op-texto, #e8e3f0);
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.18); border-radius: 5px;
+}
+.op-cena-sah .op-cena-contador .op-cena-cont-val { font-size: 16px; color: var(--op-dourado, #c9a24b); }
+
+/* Botões da cena — não herdam o escopo .op-acoes-combate, então estilizamos aqui */
+.op-cena-sah .op-cena-acoes { display: flex; flex-direction: column; gap: 6px; margin-top: 2px; }
+.op-theme .op-cena-sah .op-acao-btn,
+.op-cena-sah .op-acao-btn {
+  display: flex; align-items: center; justify-content: flex-start; gap: 8px;
+  width: 100%; padding: 9px 12px; font-size: 13px; line-height: 1.1; cursor: pointer;
+  background: rgba(255,255,255,0.06); color: var(--op-texto, #e8e3f0);
+  border: 1px solid rgba(255,255,255,0.18); border-radius: 6px;
+  transition: background .12s, border-color .12s, color .12s;
+}
+.op-cena-sah .op-acao-btn i { width: 16px; text-align: center; color: var(--op-dourado, #c9a24b); }
+.op-theme .op-cena-sah .op-acao-btn:hover,
+.op-cena-sah .op-acao-btn:hover {
+  background: rgba(201,162,75,0.16); border-color: var(--op-dourado, #c9a24b); color: var(--op-dourado-claro, #d8b86a);
+}
+.op-cena-sah .op-acao-btn:hover i { color: var(--op-dourado-claro, #d8b86a); }
+/* "Próxima rodada" e os +/- do contador ficam compactos, não em largura total */
+.op-cena-sah .op-cena-linha .op-acao-btn { width: auto; padding: 6px 10px; font-size: 12px; }
+.op-cena-sah .op-cena-contador .op-acao-btn { width: auto; padding: 5px 10px; }
+
+.op-cena-sah .op-cena-nota {
+  font-size: 11px; color: var(--op-texto-fraco, #9a8fb0); font-style: italic;
+  border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; margin: 4px 0 0;
+}

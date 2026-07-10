@@ -73,8 +73,47 @@
       "acao": "Cena de Ação",
       "investigacao": "Cena de Investigação",
       "interludio": "Interlúdio",
+      "perseguicao": "Cena de Perseguição",
+      "furtividade": "Cena de Furtividade",
       "Nova": "Nova Cena",
       "NovaTexto": "Contadores de morrendo/enlouquecendo e usos de poderes por cena foram zerados. Lembrete: condições terminam no fim da cena, salvo indicação contrária."
+    },
+
+    "CenaSaH": {
+      "Titulo": "Cenas de Sobrevivência",
+      "Rodada": "Rodada",
+      "DT": "DT",
+      "ProximaRodada": "Próxima rodada",
+      "ProximaRodadaAjuda": "Avança a rodada da cena.",
+      "Visibilidade": "Visibilidade",
+      "AlarmeTexto": "Limiar atingido em {titulo} — os inimigos perceberam o grupo!",
+      "Nota": "Estrutura ajustável: as DTs e o limiar são definidos pelo Mestre. Os valores exatos do livro Sobrevivendo ao Horror podem ser plugados depois.",
+      "Acao": {
+        "fugir": "Fugir",
+        "manobrar": "Manobrar",
+        "despistar": "Despistar",
+        "obstaculo": "Criar obstáculo",
+        "esconder": "Esconder-se",
+        "mover": "Mover-se em silêncio",
+        "distrair": "Distrair"
+      },
+      "Ajuda": {
+        "fugir": "Teste de Atletismo para ganhar distância na perseguição.",
+        "manobrar": "Teste de Pilotagem para manobrar o veículo.",
+        "despistar": "Teste de Furtividade para despistar o perseguidor.",
+        "obstaculo": "Teste de Atletismo para criar um obstáculo no caminho.",
+        "esconder": "Teste de Furtividade para esconder-se.",
+        "mover": "Teste de Furtividade para mover-se sem ser notado.",
+        "distrair": "Teste de Enganação para distrair a atenção."
+      }
+    },
+
+    "Medo": {
+      "Titulo": "Efeitos de Medo",
+      "Info": "Aplicar um efeito de medo a {nome} ou permitir que se entregue ao medo.",
+      "Entregar": "Entregar-se ao medo",
+      "EntregarTitulo": "Entregou-se ao medo",
+      "EntregarTexto": "{nome} fica abalado e abraça o terror. Pela regra do SaH, recebe PE temporários — o Mestre define a quantidade e aplica."
     },
 
     "Modo": {
@@ -91,7 +130,9 @@
       "GanharTitulo": "Ganhar Experiência",
       "Gastar": "Gastar XP",
       "Acumulado": "XP acumulado: {atual} (faltam {custo} para avançar).",
-      "Ajuda": "Modo Sobrevivendo ao Horror: progressão por pontos de experiência. Os custos exatos ficam em SAH_CONFIG."
+      "Ajuda": "Modo Sobrevivendo ao Horror: progressão por pontos de experiência. Os custos exatos ficam em SAH_CONFIG.",
+      "SettingCusto": "XP por marco de NEX (SaH)",
+      "SettingCustoHint": "Custo em XP para avançar um marco de NEX no modo Sobrevivendo ao Horror. Valor-base ajustável pelo Mestre (a tabela oficial não consta do material disponível)."
     },
 
     "ReterRitual": {
@@ -101,7 +142,16 @@
       "Vazio": "Nenhum ritual retido.",
       "Liberar": "Liberar ritual (devolve PE máximo)",
       "Liberado": "Ritual liberado: {nome}",
-      "LiberadoTexto": "PE máximo recuperado: +{custo}."
+      "LiberadoTexto": "PE máximo recuperado: +{custo}.",
+      "LiberarTitulo": "Liberar ritual retido: {nome}",
+      "LiberarPergunta": "Como deseja liberar? <b>Ação livre</b> devolve só os PE máximos (+{custo}). <b>Teste de Ocultismo</b> (DT {dt}) devolve máximos e atuais se passar.",
+      "LiberarLivre": "Ação livre (só máximo)",
+      "LiberarTeste": "Teste de Ocultismo",
+      "TestePassou": "Ocultismo {total} ≥ {dt}: recupera PE máximo e atual.",
+      "TesteFalhou": "Ocultismo {total} < {dt}: recupera apenas o PE máximo.",
+      "RecuperouAtual": "PE atuais também recuperados.",
+      "PerdeFoco": "Perdeu o foco!",
+      "PerdeFocoTexto": "Sob {condicao}, o conjurador deixa de reter todos os rituais (recupera apenas os PE máximos)."
     },
 
     "Criador": {
@@ -376,6 +426,7 @@
       "Movimento": "Movimento",
       "AcaoMinima": "Ação Mínima",
       "Reacao": "Reação",
+      "AlternarAjuda": "Clique para marcar como gasta nesta rodada. Reseta sozinho no início do seu turno em combate.",
       "Atacar": "Atacar (teste vs Defesa do alvo)",
       "AcoesBotao": "Manobras & Defesa",
       "AcoesTitulo": "Ações de combate"
@@ -465,6 +516,7 @@
       "PEAtual": "PE atual",
       "Rolar": "Rolar",
       "Cancelar": "Cancelar",
+      "Confirmar": "Confirmar",
       "Circunstancia": "Circunstância",
       "Normal": "Normal",
       "Favoravel": "Favorável (+1d20)",
@@ -831,7 +883,8 @@
       "ValorAjuda": "Fórmula: inteiro, dados (ex.: 1d6) e referências @status. Use @ para qualquer status da ficha: @FOR @AGI @INT @PRE @VIG, @NEX, @NIVEL, @PV/@PVMAX, @PE/@PEMAX, @SAN/@SANMAX, @DEFESA, @DTRITUAIS, @DESLOCAMENTO, @VD, @luta (bônus de perícia) ou caminho cru (@recursos.pv.max). Em valores passivos, os dados usam a média.",
       "DuracaoAjuda": "Duração em turnos (vazio/0 = permanente enquanto ativo). Conta no início do turno do ator em combate.",
       "Expirou": "Modificador expirou — {nome}",
-      "ExpirouTexto": "O efeito \"{rotulo}\" terminou (duração esgotada)."
+      "ExpirouTexto": "O efeito \"{rotulo}\" terminou (duração esgotada).",
+      "Temporario": "Efeito temporário"
     },
 
     "Carga": {
@@ -952,6 +1005,30 @@
       "Oculto": "Oculto",
       "OcultoLabel": "Rolagem secreta (o Mestre rola tudo agora)",
       "OcultoAjuda": "Rola imediatamente a perícia de cada token, sem diálogo, e mostra os resultados apenas para o Mestre (ex.: Percepção passiva)."
+    },
+
+    "PA": {
+      "BotaoLabel": "Pedir Ação de Combate",
+      "DialogTitulo": "Despachar Ação de Combate aos Tokens",
+      "AcaoLabel": "Ação",
+      "Ajuda": "Escolha a ação e os tokens. Cada jogador (ou o Mestre) executa pelo botão no card.",
+      "EscolherArma": "Escolher arma",
+      "Arma": "Arma",
+      "Feito": "Executado",
+      "SemArma": "Este agente não possui nenhuma arma.",
+      "SemArmaCorpo": "Este agente não possui arma corpo a corpo.",
+      "InvestidaGuardaNome": "Investida (guarda aberta)",
+      "InvestidaGuarda": "Guarda aberta pela investida: −5 na Defesa até o próximo turno.",
+      "Acao": {
+        "investida": "Investida",
+        "oportunidade": "Ataque de Oportunidade",
+        "furtivo": "Ataque Furtivo"
+      },
+      "Botao": {
+        "investida": "Investir",
+        "oportunidade": "Reagir",
+        "furtivo": "Atacar"
+      }
     },
 
     "Inv": {

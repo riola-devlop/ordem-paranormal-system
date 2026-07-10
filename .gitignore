@@ -1,0 +1,58 @@
+# ===== Ordem Paranormal (sistema Foundry VTT) — .gitignore =====
+
+# --- Dependências / gerenciadores de pacote ---
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# --- Artefatos de build e distribuição ---
+# O release (GitHub Actions) gera o .zip; não versionar o empacotado.
+*.zip
+*.tgz
+dist/
+build/
+out/
+
+# --- Compêndios LevelDB (packs/) ---
+# IMPORTANTE: o conteúdo dos packs É versionado (arquivos .ldb, NNNNNN.log,
+# CURRENT e MANIFEST-*). Ignore APENAS os arquivos transitórios de runtime.
+# NÃO use "*.log" aqui — isso apagaria o WAL do LevelDB (ex.: 000013.log),
+# que contém os dados dos compêndios.
+packs/**/LOCK
+packs/**/LOG
+packs/**/LOG.old
+
+# --- Logs e temporários ---
+*.bak
+*.tmp
+*.temp
+*.swp
+*~
+
+# --- Editores / IDE ---
+.vscode/
+.idea/
+*.code-workspace
+*.sublime-project
+*.sublime-workspace
+
+# --- Sistema operacional ---
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+# Linux
+.directory
+
+# --- Ambiente / segredos ---
+.env
+.env.local
+.env.*.local
