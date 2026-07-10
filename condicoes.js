@@ -1,11 +1,16 @@
 /**
- * Catálogo OFICIAL de condições — Ordem Paranormal RPG (Apêndice, pág. 310).
+ * Catálogo de condições do sistema (motor de jogo).
  * ---------------------------------------------------------------------------
+ * As descrições abaixo são REDIGIDAS COM PALAVRAS PRÓPRIAS (paráfrase das
+ * regras), não reproduzem o texto do livro oficial. Mantêm apenas a mecânica
+ * (valores, DTs, penalidades em dados), que não é protegida por direitos
+ * autorais. Ver licença.md.
+ *
  * Cada condição define:
  *  - nome / icone / descricao  : exibição
  *  - categoria                 : medo | mental | paralisia | fadiga | sentidos | fisica | especial
  *  - modificadores[]           : efeitos automáticos (mesmo formato dos itens)
- *      · alvos "dados.*" são PENALIDADES/BÔNUS EM DADOS (−Ⓞ do livro = −1 d20 no pool)
+ *      · alvos "dados.*" são PENALIDADES/BÔNUS EM DADOS (−1 d20 no pool)
  *      · alvos planos (defesa, custoPe...) somam direto
  *  - implica[]                 : outras condições incluídas (ex.: agarrado → desprevenido)
  *  - agravaPara                : aplicar de novo vira esta condição (ex.: abalado → apavorado)
@@ -20,39 +25,39 @@ export const CONDICOES = {
     nome: "Abalado", icone: "icons/svg/terror.svg", categoria: "medo",
     agravaPara: "apavorado",
     modificadores: [{ alvo: "dados.todos", valor: -1 }],
-    descricao: "Sofre −1d20 em testes. Se ficar abalado novamente, em vez disso fica apavorado. Condição de medo."
+    descricao: "Penalidade de −1d20 em seus testes. Uma nova aplicação de Abalado o torna Apavorado. (Medo.)"
   },
 
   agarrado: {
     nome: "Agarrado", icone: "icons/svg/net.svg", categoria: "paralisia",
     implica: ["desprevenido", "imovel"],
     modificadores: [{ alvo: "dados.ataque", valor: -1 }],
-    descricao: "Desprevenido e imóvel; sofre −1d20 em testes de ataque e só pode atacar com armas leves. Pode se soltar com uma ação padrão, vencendo um teste de manobra oposto. Ataques à distância contra o agarrão têm 50% de chance de acertar o alvo errado."
+    descricao: "Fica Desprevenido e Imóvel. Ataques recebem −1d20 e ficam limitados a armas leves. Para escapar, gaste uma ação padrão e vença uma manobra oposta. Tiros à distância mirando quem o agarra têm 50% de errar e atingir o outro envolvido."
   },
 
   alquebrado: {
     nome: "Alquebrado", icone: "icons/svg/downgrade.svg", categoria: "mental",
     modificadores: [{ alvo: "custoPe", valor: 1 }],
-    descricao: "O custo em PE das habilidades e dos rituais aumenta em +1. Condição mental."
+    descricao: "Toda habilidade ou ritual custa +1 PE a mais. (Mental.)"
   },
 
   apavorado: {
     nome: "Apavorado", icone: "icons/svg/terror.svg", categoria: "medo",
     modificadores: [{ alvo: "dados.todos", valor: -2 }],
-    descricao: "Sofre −2d20 em testes de perícia e deve fugir da fonte do medo da maneira mais eficiente possível. Se não puder, pode agir, mas não pode se aproximar voluntariamente da fonte do medo. Condição de medo."
+    descricao: "−2d20 em testes de perícia. Precisa se afastar da origem do medo pelo caminho mais rápido possível; sem rota de fuga, ainda pode agir, mas nunca se aproximar dela por vontade própria. (Medo.)"
   },
 
   asfixiado: {
     nome: "Asfixiado", icone: "icons/svg/silenced.svg", categoria: "fisica",
     modificadores: [],
-    descricao: "Não pode respirar. Pode prender o fôlego por um total de rodadas igual a Vigor +1 (cada dano sofrido reduz em 1). Ao final do último turno, fica morrendo."
+    descricao: "Sem ar. Aguenta prender o fôlego por (Vigor + 1) rodadas, e cada dano recebido corta 1 rodada desse total. Esgotado o prazo, ao fim do turno passa a Morrendo."
   },
 
   atordoado: {
     nome: "Atordoado", icone: "icons/svg/daze.svg", categoria: "mental",
     implica: ["desprevenido"],
     modificadores: [],
-    descricao: "Fica desprevenido e não pode fazer ações. Condição mental."
+    descricao: "Fica Desprevenido e incapaz de agir. (Mental.)"
   },
 
   caido: {
@@ -61,7 +66,7 @@ export const CONDICOES = {
       { alvo: "dados.ataque", valor: -2 },
       { alvo: "defesa", valor: -5 }
     ],
-    descricao: "Deitado no chão. Sofre −2d20 em ataques corpo a corpo e deslocamento reduzido a 1,5m. Sofre −5 na Defesa contra ataques corpo a corpo, mas recebe +5 na Defesa contra ataques à distância (ajuste manual conforme o ataque). Levantar-se gasta uma ação de movimento.",
+    descricao: "No chão. Ataques corpo a corpo sofrem −2d20 e o deslocamento cai para 1,5m. A Defesa perde 5 contra corpo a corpo, mas ganha 5 contra ataques à distância (ajuste manual conforme o tipo de ataque). Ficar de pé consome uma ação de movimento.",
     especial: "lento"
   },
 
@@ -72,13 +77,13 @@ export const CONDICOES = {
       { alvo: "dados.atributo.agi", valor: -2 },
       { alvo: "dados.atributo.for", valor: -2 }
     ],
-    descricao: "Desprevenido e lento; não pode fazer testes de Percepção para observar e sofre −2d20 em perícias baseadas em Agilidade ou Força. Todos os alvos de seus ataques recebem camuflagem total (50% de falha). Condição de sentidos."
+    descricao: "Fica Desprevenido e Lento. Não enxerga: falha em Percepção visual e leva −2d20 em perícias de Agilidade e de Força. Qualquer alvo seu conta com camuflagem total, dando 50% de chance de errar o golpe. (Sentidos.)"
   },
 
   confuso: {
     nome: "Confuso", icone: "icons/svg/stoned.svg", categoria: "mental",
     modificadores: [],
-    descricao: "Comporta-se de modo aleatório. Role 1d6 no início dos turnos: 1) move-se em direção aleatória (1d8); 2–3) não faz ações, balbucia; 4–5) ataca o ser mais próximo (ou a si mesmo, se sozinho); 6) a condição termina. Condição mental."
+    descricao: "Age sem controle. No começo de cada turno, role 1d6: 1) caminha para uma direção sorteada (1d8); 2–3) fica balbuciando, sem agir; 4–5) parte para cima da criatura mais perto — ou de si mesmo, se estiver só; 6) recupera a lucidez e a condição acaba. (Mental.)"
   },
 
   debilitado: {
@@ -89,7 +94,7 @@ export const CONDICOES = {
       { alvo: "dados.atributo.for", valor: -2 },
       { alvo: "dados.atributo.vig", valor: -2 }
     ],
-    descricao: "Sofre −2d20 em testes de Agilidade, Força e Vigor. Se ficar debilitado novamente, em vez disso fica inconsciente."
+    descricao: "−2d20 em testes de Agilidade, Força e Vigor. Receber Debilitado de novo o deixa Inconsciente."
   },
 
   desprevenido: {
@@ -98,38 +103,38 @@ export const CONDICOES = {
       { alvo: "defesa", valor: -5 },
       { alvo: "dados.pericia.reflexos", valor: -1 }
     ],
-    descricao: "Despreparado para reagir. Sofre −5 na Defesa e −1d20 em Reflexos. Você fica desprevenido contra inimigos que não possa perceber."
+    descricao: "Pego sem reação: −5 na Defesa e −1d20 em Reflexos. Você está sempre Desprevenido diante de inimigos que não consegue perceber."
   },
 
   doente: {
     nome: "Doente", icone: "icons/svg/biohazard.svg", categoria: "fisica",
     modificadores: [],
-    descricao: "Sob efeito de uma doença (veja a descrição da doença)."
+    descricao: "Afetado por uma doença — consulte os efeitos descritos na própria doença."
   },
 
   emChamas: {
     nome: "Em Chamas", icone: "icons/svg/fire.svg", categoria: "fisica",
     modificadores: [],
-    descricao: "Pegando fogo. No início de seus turnos, sofre 1d6 de dano de fogo. Pode gastar uma ação padrão para apagar o fogo. Imersão em água também apaga as chamas."
+    descricao: "Em brasas. Sofre 1d6 de dano de fogo no início de cada turno. Apagar as chamas exige uma ação padrão — mergulhar na água também resolve."
   },
 
   enjoado: {
     nome: "Enjoado", icone: "icons/svg/poison.svg", categoria: "fisica",
     modificadores: [],
-    descricao: "Só pode realizar uma ação padrão OU de movimento (não ambas) por rodada."
+    descricao: "Por rodada, escolhe apenas uma coisa: uma ação padrão ou uma de movimento, nunca as duas."
   },
 
   enredado: {
     nome: "Enredado", icone: "icons/svg/net.svg", categoria: "paralisia",
     implica: ["lento", "vulneravel"],
     modificadores: [{ alvo: "dados.ataque", valor: -1 }],
-    descricao: "Fica lento, vulnerável e sofre −1d20 em testes de ataque. Condição de paralisia."
+    descricao: "Fica Lento e Vulnerável, com −1d20 nos ataques. (Paralisia.)"
   },
 
   envenenado: {
     nome: "Envenenado", icone: "icons/svg/poison.svg", categoria: "fisica",
     modificadores: [],
-    descricao: "O efeito varia de acordo com o veneno: outra condição (fraco, enjoado...) ou dano recorrente. Dano recorrente de venenos sempre se acumula. Sem indicação de duração, dura a cena."
+    descricao: "O resultado depende do veneno: pode impor outra condição (Fraco, Enjoado etc.) ou dano contínuo. Danos contínuos de vários venenos sempre somam. Quando o veneno não indica duração, vale até o fim da cena."
   },
 
   esmorecido: {
@@ -138,7 +143,7 @@ export const CONDICOES = {
       { alvo: "dados.atributo.int", valor: -2 },
       { alvo: "dados.atributo.pre", valor: -2 }
     ],
-    descricao: "Sofre −2d20 em testes de Intelecto e Presença. Condição mental."
+    descricao: "−2d20 em testes de Intelecto e Presença. (Mental.)"
   },
 
   exausto: {
@@ -146,13 +151,13 @@ export const CONDICOES = {
     implica: ["debilitado", "lento", "vulneravel"],
     agravaPara: "inconsciente",
     modificadores: [],
-    descricao: "Fica debilitado, lento e vulnerável. Se ficar exausto novamente, em vez disso fica inconsciente. Condição de fadiga."
+    descricao: "Acumula Debilitado, Lento e Vulnerável. Uma nova aplicação de Exausto o derruba Inconsciente. (Fadiga.)"
   },
 
   fascinado: {
     nome: "Fascinado", icone: "icons/svg/eye.svg", categoria: "mental",
     modificadores: [{ alvo: "dados.pericia.percepcao", valor: -2 }],
-    descricao: "Atenção presa em algo. Sofre −2d20 em Percepção e não pode fazer ações, exceto observar o que o fascinou. Qualquer ação hostil contra o personagem anula a condição. Condição mental."
+    descricao: "Hipnotizado por algo. −2d20 em Percepção e sem poder agir, a não ser contemplar aquilo que o prende. Sofrer qualquer ação hostil quebra o encanto. (Mental.)"
   },
 
   fatigado: {
@@ -160,7 +165,7 @@ export const CONDICOES = {
     implica: ["fraco", "vulneravel"],
     agravaPara: "exausto",
     modificadores: [],
-    descricao: "Fica fraco e vulnerável. Se ficar fatigado novamente, em vez disso fica exausto. Condição de fadiga."
+    descricao: "Fica Fraco e Vulnerável. Receber Fatigado outra vez o torna Exausto. (Fadiga.)"
   },
 
   fraco: {
@@ -171,7 +176,7 @@ export const CONDICOES = {
       { alvo: "dados.atributo.for", valor: -1 },
       { alvo: "dados.atributo.vig", valor: -1 }
     ],
-    descricao: "Sofre −1d20 em testes de Agilidade, Força e Vigor. Se ficar fraco novamente, em vez disso fica debilitado."
+    descricao: "−1d20 em testes de Agilidade, Força e Vigor. Uma nova aplicação de Fraco vira Debilitado."
   },
 
   frustrado: {
@@ -181,13 +186,13 @@ export const CONDICOES = {
       { alvo: "dados.atributo.int", valor: -1 },
       { alvo: "dados.atributo.pre", valor: -1 }
     ],
-    descricao: "Sofre −1d20 em testes de Intelecto e Presença. Se ficar frustrado novamente, em vez disso fica esmorecido. Condição mental."
+    descricao: "−1d20 em testes de Intelecto e Presença. Frustrado outra vez passa a Esmorecido. (Mental.)"
   },
 
   imovel: {
     nome: "Imóvel", icone: "icons/svg/padlock.svg", categoria: "paralisia",
     modificadores: [],
-    descricao: "Todas as formas de deslocamento são reduzidas a 0m. Condição de paralisia.",
+    descricao: "Qualquer deslocamento vai a 0m — não sai do lugar. (Paralisia.)",
     especial: "imovel"
   },
 
@@ -195,7 +200,7 @@ export const CONDICOES = {
     nome: "Inconsciente", icone: "icons/svg/unconscious.svg", categoria: "fisica",
     implica: ["indefeso"],
     modificadores: [],
-    descricao: "Fica indefeso e não pode fazer ações, incluindo reações. Balançar um ser para acordá-lo gasta uma ação padrão. Encerrada por qualquer efeito que cure pelo menos 1 PV."
+    descricao: "Apagado: fica Indefeso e não executa ações nem reações. Sacudir alguém para despertá-lo custa uma ação padrão. Curar 1 PV ou mais encerra a condição."
   },
 
   indefeso: {
@@ -204,13 +209,13 @@ export const CONDICOES = {
       { alvo: "defesa", valor: -10 },
       { alvo: "dados.pericia.reflexos", valor: -1 }
     ],
-    descricao: "Considerado desprevenido, mas sofre −10 na Defesa, falha automaticamente em testes de Reflexos e pode sofrer golpes de misericórdia."
+    descricao: "Conta como Desprevenido, porém com −10 na Defesa e falha automática em Reflexos, ficando exposto a golpes de misericórdia."
   },
 
   lento: {
     nome: "Lento", icone: "icons/svg/walk.svg", categoria: "paralisia",
     modificadores: [],
-    descricao: "Todas as formas de deslocamento são reduzidas à metade (arredonde para baixo em incrementos de 1,5m). Não pode correr ou fazer investidas. Condição de paralisia.",
+    descricao: "Deslocamentos caem pela metade (arredonde para baixo em passos de 1,5m). Fica proibido de correr ou investir. (Paralisia.)",
     especial: "lento"
   },
 
@@ -218,7 +223,7 @@ export const CONDICOES = {
     nome: "Morrendo", icone: "icons/svg/skull.svg", categoria: "especial",
     implica: ["inconsciente"],
     modificadores: [],
-    descricao: "Com 0 PV. Fica inconsciente e, se INICIAR mais de três turnos morrendo na mesma cena (não necessariamente consecutivos), morre. Encerrada ao voltar a ter pelo menos 1 PV ou com um teste de Medicina (DT 20) de outro personagem (estabilizado, mas inconsciente).",
+    descricao: "Está com 0 PV e Inconsciente. Se começar mais de três turnos nesse estado ao longo da cena (não precisam ser seguidos), morre. Recuperar ao menos 1 PV encerra a condição; um aliado também pode estabilizá-lo com Medicina (DT 20), embora ele siga Inconsciente.",
     especial: "morrendo"
   },
 
@@ -228,71 +233,71 @@ export const CONDICOES = {
       { alvo: "dados.ataque", valor: -1 },
       { alvo: "dados.pericia.percepcao", valor: -1 }
     ],
-    descricao: "Sofre −1d20 em testes de ataque e de Percepção. Condição de sentidos."
+    descricao: "−1d20 nos ataques e em Percepção. (Sentidos.)"
   },
 
   paralisado: {
     nome: "Paralisado", icone: "icons/svg/paralysis.svg", categoria: "paralisia",
     implica: ["imovel", "indefeso"],
     modificadores: [],
-    descricao: "Fica imóvel e indefeso e só pode realizar ações puramente mentais. Condição de paralisia."
+    descricao: "Fica Imóvel e Indefeso; só consegue realizar ações puramente mentais. (Paralisia.)"
   },
 
   pasmo: {
     nome: "Pasmo", icone: "icons/svg/daze.svg", categoria: "mental",
     modificadores: [],
-    descricao: "Não pode fazer ações. Condição mental."
+    descricao: "Incapaz de realizar qualquer ação. (Mental.)"
   },
 
   petrificado: {
     nome: "Petrificado", icone: "icons/svg/statue.svg", categoria: "especial",
     implica: ["inconsciente"],
     modificadores: [],
-    descricao: "Fica inconsciente e recebe resistência a dano 10."
+    descricao: "Vira estátua: fica Inconsciente e ganha resistência a dano 10."
   },
 
   sangrando: {
     nome: "Sangrando", icone: "icons/svg/blood.svg", categoria: "fisica",
     modificadores: [],
-    descricao: "Ferimento aberto. No início de seus turnos, faça um teste de Vigor (DT 20). Se passar, estabiliza e remove a condição; se falhar, perde 1d6 PV e continua sangrando."
+    descricao: "Corte aberto. No início de cada turno, role Vigor (DT 20): sucesso estanca o ferimento e remove a condição; falha custa 1d6 PV e o sangramento persiste."
   },
 
   surdo: {
     nome: "Surdo", icone: "icons/svg/deaf.svg", categoria: "sentidos",
     modificadores: [{ alvo: "dados.pericia.iniciativa", valor: -2 }],
-    descricao: "Não pode fazer testes de Percepção para ouvir e sofre −2d20 em Iniciativa. Considerado em condição ruim para conjurar rituais. Condição de sentidos."
+    descricao: "Sem audição: falha em Percepção sonora e leva −2d20 em Iniciativa. Conta como situação desfavorável para conjurar rituais. (Sentidos.)"
   },
 
   surpreendido: {
     nome: "Surpreendido", icone: "icons/svg/daze.svg", categoria: "fisica",
     implica: ["desprevenido"],
     modificadores: [],
-    descricao: "Não ciente de seus inimigos. Fica desprevenido e não pode fazer ações (dura a primeira rodada do combate)."
+    descricao: "Pego de surpresa pelos inimigos. Fica Desprevenido e sem agir durante a primeira rodada do combate."
   },
 
   vulneravel: {
     nome: "Vulnerável", icone: "icons/svg/degen.svg", categoria: "fisica",
     modificadores: [{ alvo: "defesa", valor: -5 }],
-    descricao: "Sofre −5 na Defesa."
+    descricao: "Defesa reduzida em 5."
   },
 
   enlouquecendo: {
     nome: "Enlouquecendo", icone: "icons/svg/aura.svg", categoria: "especial",
     modificadores: [],
-    descricao: "Com Sanidade 0. Se INICIAR mais de três turnos enlouquecendo na mesma cena (não necessariamente consecutivos), fica insano (NPC do Mestre). Encerrada com um teste de Diplomacia (DT 20) de outro personagem ou ao recuperar pelo menos 1 de Sanidade.",
+    descricao: "Está com Sanidade 0. Começar mais de três turnos assim na mesma cena (não necessariamente em sequência) o torna Insano, sob controle do Mestre. Recuperar ao menos 1 de Sanidade encerra a condição; um aliado também pode contê-lo com Diplomacia (DT 20).",
     especial: "enlouquecendo"
   },
 
   insano: {
     nome: "Insano", icone: "icons/svg/aura.svg", categoria: "especial",
     modificadores: [],
-    descricao: "A mente sucumbiu à loucura. O personagem se torna um NPC sob controle do Mestre."
+    descricao: "A sanidade se perdeu de vez: o personagem passa a ser um NPC conduzido pelo Mestre."
   },
 
   morto: {
     nome: "Morto", icone: "icons/svg/skull.svg", categoria: "especial",
     modificadores: [],
-    descricao: "O personagem morreu."
+    descricao: "O personagem faleceu."
   }
 };
 

@@ -907,6 +907,18 @@
       "LimiteAcoes": "Limite de 10 ações personalizadas atingido."
     },
 
+    "Sobre": {
+      "Titulo": "Sobre / Licença",
+      "MenuName": "Sobre / Licença",
+      "MenuLabel": "Sobre / Licença",
+      "MenuHint": "Exibe o selo da Licença da Comunidade de Ordem Paranormal e o aviso de conteúdo não oficial.",
+      "SeloAlt": "Selo da Licença da Comunidade de Ordem Paranormal — conteúdo não oficial, não canônico",
+      "Aviso": "Conteúdo não oficial, publicado sob a Licença da Comunidade de Ordem Paranormal.",
+      "Propriedade": "Ordem Paranormal RPG é propriedade da Jambô Editora / Cellbit. Este projeto não é afiliado, patrocinado nem aprovado por eles.",
+      "LerLicenca": "Ler a Licença da Comunidade (ordemparanormal.com.br/licenca)",
+      "Versao": "Versão do sistema"
+    },
+
     "Carrossel": {
       "Rodada": "Rodada",
       "TurnoAnterior": "Turno anterior",

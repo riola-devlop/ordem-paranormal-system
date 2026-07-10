@@ -56,3 +56,8 @@ $RECYCLE.BIN/
 .env
 .env.local
 .env.*.local
+
+# --- Documentos locais de trabalho (NÃO versionar) ---
+# Contêm trechos do texto oficial (para conferência interna). Nunca subir.
+condicoes-comparacao.md
+_local/

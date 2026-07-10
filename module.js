@@ -3345,7 +3345,8 @@ async function _preCarregarTemplates() {
     "systems/ordem-paranormal/templates/investigacao.hbs",
     "systems/ordem-paranormal/templates/pedido-teste.hbs",
     "systems/ordem-paranormal/templates/pedido-acao.hbs",
-    "systems/ordem-paranormal/templates/cena-sah.hbs"
+    "systems/ordem-paranormal/templates/cena-sah.hbs",
+    "systems/ordem-paranormal/templates/sobre-licenca.hbs"
   ]);
 }
 
@@ -5377,6 +5378,36 @@ export async function abrirCriadorItem() {
 }
 
 /* -------------------------------------------------------------------------- */
+/*  SOBRE / LICENÇA                                                           */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Janela "Sobre / Licença": exibe o selo da Licença da Comunidade de Ordem
+ * Paranormal dentro do sistema (requisito da licença — selo visível), o aviso
+ * de conteúdo não oficial e o link para a licença oficial.
+ */
+class OrdemSobreLicenca extends FormApplication {
+  static get defaultOptions() {
+    return foundry.utils.mergeObject(super.defaultOptions, {
+      id: "ordem-sobre-licenca",
+      title: game.i18n.localize("ORDEM.Sobre.Titulo"),
+      template: "systems/ordem-paranormal/templates/sobre-licenca.hbs",
+      classes: ["ordem-paranormal", "op-sobre-app"],
+      width: 420,
+      height: "auto",
+      resizable: false
+    });
+  }
+
+  getData() {
+    return { versao: game.system?.version ?? "" };
+  }
+
+  /** Janela só de leitura — nada a salvar. */
+  async _updateObject() {}
+}
+
+/* -------------------------------------------------------------------------- */
 /*  HOOKS DO FOUNDRY                                                           */
 /* -------------------------------------------------------------------------- */
 
@@ -5465,6 +5496,17 @@ Hooks.once("init", function () {
   // OrdemCombatant estende Combatant -> registra em CONFIG.Combatant (NÃO CONFIG.Combat).
   CONFIG.Combatant.documentClass = OrdemCombatant;
   CONFIG.Combat.initiative = { formula: "1d20", decimals: 0 };
+
+  // Menu "Sobre / Licença": exibe o selo da Licença da Comunidade dentro do
+  // sistema (requisito da licença) e o link para a licença oficial.
+  game.settings.registerMenu("ordem-paranormal", "sobreLicenca", {
+    name: "ORDEM.Sobre.MenuName",
+    label: "ORDEM.Sobre.MenuLabel",
+    hint: "ORDEM.Sobre.MenuHint",
+    icon: "fas fa-scroll",
+    type: OrdemSobreLicenca,
+    restricted: false
+  });
 
   // Configuração: exibir o carrossel de turnos no topo da tela (por cliente).
   game.settings.register("ordem-paranormal", "mostrarCarrossel", {
